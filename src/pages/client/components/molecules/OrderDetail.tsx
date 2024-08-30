@@ -1,20 +1,20 @@
 import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
 import {useContext} from "react";
-import {OrderContext} from "@src/contexts/OrderContext.tsx";
-import {OrderCategoryContext} from "@src/contexts/OrderCategoryContext.tsx";
+import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
+import {OrderSummaryContext} from "@src/contexts/client/OrderSummary.tsx";
 
 export default function OrderDetail() {
-  const [orders] = useContext(OrderContext);
-  const [orderCategories] = useContext(OrderCategoryContext);
+  const [orderCategories] = useContext(OrderCategoryContext)!;
+  const [orderSummary] = useContext(OrderSummaryContext)!;
 
   return (
-    <Table small style={{ fontSize: '9pt', tableLayout: 'fixed' }}>
+    <Table tablesize='small' style={{ fontSize: '9pt', tableLayout: 'fixed' }}>
       <TBody>
-        {orders.map((order, i) => {
+        {orderSummary.map((order, i) => {
           return (
             <TRow key={i}>
-              <Cell>{order.name}</Cell>
-              <Cell>{orderCategories.find((category) => category.code === order.stt).sttname}</Cell>
+              <Cell>{order.menuName}</Cell>
+              <Cell>{orderCategories.find((category) => category.status === order.status)?.statusName}</Cell>
             </TRow>
           )
         })}

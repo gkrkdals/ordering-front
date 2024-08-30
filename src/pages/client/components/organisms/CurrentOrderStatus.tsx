@@ -1,13 +1,14 @@
-import OrderSummary from "@src/pages/client/components/molecules/OrderSummary.tsx";
+import OrderStatusCount from "@src/pages/client/components/molecules/OrderStatusCount.tsx";
 import OrderDetail from "@src/pages/client/components/molecules/OrderDetail.tsx";
-import DishCollection from "@src/pages/client/components/molecules/DishCollection.tsx";
+import DishDisposal from "@src/pages/client/components/molecules/DishDisposal.tsx";
 
 export default function CurrentOrderStatus() {
+
   return (
     <div className='my-3'>
-      <OrderSummary />
+      <OrderStatusCount />
       <OrderDetail />
-      <DishCollection />
+      <DishDisposal />
     </div>
   )
 }

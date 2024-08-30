@@ -1,32 +1,29 @@
 import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import DisposalDialog from "@src/pages/client/components/DisposalDialog.tsx";
+import client from "@src/utils/client.ts";
+import {Disposal} from "@src/models/client/Disposal.ts";
 
-export interface Disposal {
-  name: string;
-  disposalRequested: boolean;
-  location: string;
-}
+export default function DishDisposal() {
 
-const disposals = [
-  { name: '골뱅이소면', disposalRequested: false, location: '비상구좌측 실외기' },
-  { name: '훈제오리', disposalRequested: false, location: '비상구좌측 실외기' },
-]
+  useEffect(() => {
+    client
+      .get('/api/order/dish')
+      .then((res) => setDishDisposals(res.data));
+  }, []);
 
-export default function DishCollection() {
-
-  const [disp, setDisp] = useState<Disposal[]>(disposals);
+  const [dishDisposals, setDishDisposals] = useState<Disposal[]>([]);
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
 
   return (
     <>
-      <Table small style={{ fontSize: '9pt' }}>
+      <Table tablesize='small' style={{ fontSize: '9pt' }}>
         <TBody>
-          {disp.map((disposal, i) => {
+          {dishDisposals.map((disposal, i) => {
             return (
               <TRow key={i} style={{ height: 30 }}>
-                <Cell style={{ width: '25%' }}>{disposal.name}</Cell>
+                <Cell style={{ width: '25%' }}>{disposal.menu}</Cell>
                 <Cell className='p-0' style={{ width: '25%' }}>
                   {
                     disposal.disposalRequested ?
@@ -52,7 +49,13 @@ export default function DishCollection() {
         </TBody>
       </Table>
 
-      <DisposalDialog open={open} setOpen={setOpen} disp={disp} setDisp={setDisp} index={idx} />
+      <DisposalDialog
+        open={open}
+        setopen={setOpen}
+        disposals={dishDisposals}
+        setdishdisposals={setDishDisposals}
+        index={idx}
+      />
     </>
   );
 }

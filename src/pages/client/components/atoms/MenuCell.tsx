@@ -11,8 +11,8 @@ export default function MenuCell({ menu, onClick }: MenuCellProps) {
   return (
     <Cell
       className='text-center'
-      style={{ fontSize: '9pt', cursor: 'pointer' }}
-      hex={menu.foodCategory.hex}
+      style={{ fontSize: '12pt', cursor: 'pointer' }}
+      hex={menu.menuCategory?.hex}
       onClick={onClick}
     >
       {menu.name}

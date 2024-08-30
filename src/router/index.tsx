@@ -8,6 +8,8 @@ const Router = () => {
       <Routes>
         <Route path="/client" element={<ClientPage />} />
         <Route path="/manager" element={<ManagerPage />} />
+        <Route path="/rider" element={<ManagerPage />} />
+        <Route path="/cook" element={<ManagerPage />} />
       </Routes>
     </BrowserRouter>
   );

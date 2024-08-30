@@ -1,33 +1,35 @@
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
-import {Disposal} from "@src/pages/client/components/molecules/DishCollection.tsx";
 import React, {useEffect, useState} from "react";
-import BasicDialogProps from "@src/interfaces/BasicDiagramProps.ts";
+import BasicDialogProps from "@src/interfaces/BasicModalProps.ts";
+import {Disposal} from "@src/models/client/Disposal.ts";
 
 interface DisposalDialogProps extends BasicDialogProps {
-  disp: Disposal[];
-  setDisp: React.Dispatch<React.SetStateAction<Disposal[]>>;
+  disposals: Disposal[];
+  setdishdisposals: React.Dispatch<React.SetStateAction<Disposal[]>>;
   index: number;
 }
 
-export default function DisposalDialog({ open, setOpen, disp, setDisp, index }: DisposalDialogProps) {
+export default function DisposalDialog({ open, setopen, disposals, setdishdisposals, index }: DisposalDialogProps) {
 
   const [location, setLocation] = useState<string>('');
 
   function handleClose() {
-    setDisp((prev) => {
+    setdishdisposals((prev) => {
       prev[index].location = location;
       prev[index].disposalRequested = true;
       return prev;
     });
-    setOpen(false);
+    setopen(false);
   }
 
   useEffect(() => {
-    setLocation(disp[index].location);
-  }, [index]);
+    if(disposals.length > 0) {
+      setLocation(disposals[index].location);
+    }
+  }, [index, disposals]);
 
   return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
+    <Dialog open={open} onClose={() => setopen(false)}>
       <DialogContent>
         <h6>그릇 위치 입력</h6>
         <input
@@ -35,10 +37,11 @@ export default function DisposalDialog({ open, setOpen, disp, setDisp, index }: 
           className='form-control'
           value={location}
           onChange={(e) => setLocation(e.target.value)}
+          placeholder="그릇 위치 입력"
         />
       </DialogContent>
       <DialogActions>
-        <button className='btn btn-sm btn-secondary' onClick={() => setOpen(false)}>취소</button>
+        <button className='btn btn-sm btn-secondary' onClick={() => setopen(false)}>취소</button>
         <button
           className='btn btn-sm btn-primary'
           onClick={handleClose}

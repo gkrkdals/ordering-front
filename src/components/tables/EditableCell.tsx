@@ -12,7 +12,7 @@ export default function EditableCell({ value, isEditing, onClick, onChange }: Ed
 
   useEffect(() => {
     if(isEditing && inputRef.current) {
-      setTimeout(() => inputRef.current.focus(), 100);
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isEditing]);
 

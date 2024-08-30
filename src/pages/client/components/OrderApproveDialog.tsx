@@ -1,4 +1,4 @@
-import BasicDialogProps from "@src/interfaces/BasicDiagramProps.ts";
+import BasicDialogProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
 
 interface OrderApproveDialogProps extends BasicDialogProps {
@@ -6,9 +6,9 @@ interface OrderApproveDialogProps extends BasicDialogProps {
   onClickProceed: () => void;
 }
 
-export default function OrderApproveDialog({ open, onClose, onClickProceed, onClickCancel }: OrderApproveDialogProps) {
+export default function OrderApproveDialog({ open, onclose, onClickProceed, onClickCancel }: OrderApproveDialogProps) {
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onclose}>
       <DialogContent>
         <h6>주문하시겠습니까?</h6>
       </DialogContent>

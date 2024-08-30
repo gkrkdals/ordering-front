@@ -1,5 +1,5 @@
 export default interface OrderCategory {
   id: number;
-  code: number;
-  sttname: string;
+  status: number;
+  statusName: string;
 }

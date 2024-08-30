@@ -1,7 +1,8 @@
 import {ComponentPropsWithoutRef, forwardRef} from "react";
 
 interface TableProps extends ComponentPropsWithoutRef<'table'> {
-  small?: boolean;
+  tablesize?: 'small' | 'medium' | 'large';
+  font?: 'small' | 'big';
   fixed?: boolean;
 }
 
@@ -17,18 +18,23 @@ export const Table = forwardRef<HTMLTableElement, TableProps>((props, ref) => {
   return (
     <table
       ref={ref}
-      className={`table table-bordered ${props.small ? 'table-sm' : ''} m-0`}
+      className={`table table-bordered ${props.tablesize === 'small' ? 'table-sm' : ''} m-0`}
       style={{
         overflow: 'hidden',
-        tableLayout: props.fixed ? 'fixed' : null,
-        ...props.style
+        tableLayout: props.fixed ? 'fixed' : undefined,
+        fontSize: props.font === 'small' ? '9pt' : '12pt',
+        ...props.style,
       }}
       {...props}
     >
       {props.children}
     </table>
   )
-})
+});
+
+export function THead({ children, ...props }: ComponentPropsWithoutRef<'thead'>) {
+  return <thead {...props}>{children}</thead>;
+}
 
 export function TBody({children, ...props}: TableBodyProps) {
   return <tbody {...props}>{children}</tbody>;

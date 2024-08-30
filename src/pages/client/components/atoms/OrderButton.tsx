@@ -1,8 +1,8 @@
 import React, {ComponentPropsWithoutRef, useContext, useState} from "react";
-import {OrderContext} from "@src/contexts/OrderContext.tsx";
 import SelectedMenu from "@src/models/client/SelectedMenu.ts";
 import OrderApproveDialog from "@src/pages/client/components/OrderApproveDialog.tsx";
 import client from "@src/utils/client.ts";
+import {OrderSummaryContext} from "@src/contexts/client/OrderSummary.tsx";
 
 interface OrderButtonProps extends ComponentPropsWithoutRef<'button'> {
   selectedmenus: SelectedMenu[];
@@ -11,18 +11,20 @@ interface OrderButtonProps extends ComponentPropsWithoutRef<'button'> {
 
 export default function OrderButton({ selectedmenus, setselectedmenus, ...props }: OrderButtonProps) {
 
-  const [, setOrders] = useContext(OrderContext);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [, setOrderSummaries] = useContext(OrderSummaryContext)!;
 
   async function addOrder() {
     await client.post('/api/order', selectedmenus);
   }
 
   async function handleOrder() {
-    setOrders((prev) => prev.concat(selectedmenus.map((selectedMenu) => ({ stt: 1, name: selectedMenu.menu.name }))));
     setselectedmenus([]);
     setOpenDialog(false);
     await addOrder();
+
+    const res = await client.get('/api/order/summary');
+    setOrderSummaries(res.data.map(summary =>({ ...summary, statusName: summary['status_name'], menuName: summary['menu_name'] })));
   }
 
   return (
@@ -39,6 +41,7 @@ export default function OrderButton({ selectedmenus, setselectedmenus, ...props 
         onClickCancel={() => setOpenDialog(false)}
         onClickProceed={handleOrder}
         open={openDialog}
+        setopen={setOpenDialog}
       />
     </>
   )

@@ -1,6 +1,6 @@
 import Menu from "@src/models/common/Menu.ts";
 
-export default class SelectedMenu {
+export default interface SelectedMenu {
   menu: Menu;
   request: string;
 }

@@ -15,7 +15,6 @@ export default function SelectedMenus({ selectedmenus, setselectedmenus }: Selec
   const tableRef = useRef<HTMLTableElement>(null);
 
   function handleCellClick(rowIndex: number) {
-    console.log(rowIndex);
     setEditingCellRow(rowIndex);
   }
 
@@ -48,28 +47,28 @@ export default function SelectedMenus({ selectedmenus, setselectedmenus }: Selec
   }, []);
 
   return (
-    <Card>
-      <Table ref={tableRef} className='table table-sm table-bordered m-0' style={{ fontSize: "9pt" }}>
-        <TBody>
-          {selectedmenus.map((selectedMenu, rowIndex) => {
-            return (
-              <TRow key={rowIndex}>
-                <Cell style={{ width: '40%' }} hex={selectedMenu.menu.foodCategory.hex}>
-                  {selectedMenu.menu.name}
-                </Cell>
-                <Cell style={{ width: '60%' }}>
-                  <EditableCell
-                    value={selectedMenu.request}
-                    isEditing={editingCellRow === rowIndex}
-                    onClick={() => handleCellClick(rowIndex)}
-                    onChange={handleInputChange}
-                  />
-                </Cell>
-              </TRow>
-            )
-          })}
-        </TBody>
-      </Table>
-    </Card>
-  )
+      selectedmenus.length !== 0 && (<Card>
+        <Table ref={tableRef} className='table table-sm table-bordered m-0' style={{ fontSize: "10pt" }}>
+          <TBody>
+            {selectedmenus.map((selectedMenu, rowIndex) => {
+              return (
+                <TRow key={rowIndex}>
+                  <Cell style={{ width: '40%' }} hex={selectedMenu.menu.menuCategory?.hex}>
+                    {selectedMenu.menu.name}
+                  </Cell>
+                  <Cell style={{ width: '60%' }}>
+                    <EditableCell
+                      value={selectedMenu.request}
+                      isEditing={editingCellRow === rowIndex}
+                      onClick={() => handleCellClick(rowIndex)}
+                      onChange={handleInputChange}
+                    />
+                  </Cell>
+                </TRow>
+              )
+            })}
+          </TBody>
+        </Table>
+      </Card>)
+  );
 }

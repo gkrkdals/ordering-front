@@ -1,7 +1,14 @@
 import FoodCategory from "@src/models/common/FoodCategory.ts";
 
-export default class Menu {
-  id: string;
+export default interface Menu {
+  id: number;
   name: string;
-  foodCategory: FoodCategory;
+  category: number;
+  menuCategory?: FoodCategory;
+}
+
+export const defaultMenu: Menu = {
+  id: 0,
+  name: '',
+  category: 1,
 }
