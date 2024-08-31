@@ -13,7 +13,7 @@ const OrderSummaryProvider = ({ children }: { children?: React.ReactNode }) => {
     client
       .get('/api/order/summary')
       .then(res => {
-        setOrderSummary(res.data.map((summary => {
+        setOrderSummary(res.data.map(((summary: any) => {
           return ({
             ...summary,
             statusName: summary['status_name'],

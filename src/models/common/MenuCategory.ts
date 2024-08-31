@@ -1,4 +1,4 @@
-export default interface FoodCategory {
+export default interface MenuCategory {
   id: number;
   hex: string;
   price: number;

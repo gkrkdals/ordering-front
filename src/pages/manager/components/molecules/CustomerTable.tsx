@@ -13,7 +13,8 @@ const columns = [
   '순번',
   '고객명',
   '주소',
-  '그릇 찾는곳/주의사항'
+  '그릇 찾는곳/주의사항',
+  '거래처분류',
 ]
 
 export default function CustomerTable(props: CustomerTableProps) {
@@ -41,6 +42,9 @@ export default function CustomerTable(props: CustomerTableProps) {
                 <Cell>{customer.name}</Cell>
                 <Cell>{customer.address}</Cell>
                 <Cell>{customer.memo}</Cell>
+                <Cell style={{ backgroundColor: `#${customer.categoryJoin?.hex}`, width: 250 }}>
+                  {customer.categoryJoin?.name}
+                </Cell>
               </TRow>
             );
           })}

@@ -1,6 +1,7 @@
 export interface Disposal {
-  menu: string;
-  menuRequested: string;
-  disposalRequested: boolean;
-  location: string;
+  order_code: number;
+  menu: number;
+  menu_name: string;
+  status: number;
+  location: string | null;
 }

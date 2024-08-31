@@ -1,19 +1,41 @@
 import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
 import {OrderSummaryContext} from "@src/contexts/client/OrderSummary.tsx";
+import {getSocket} from "@src/utils/socket.ts";
+import client from "@src/utils/client.ts";
+
+const socket = getSocket();
 
 export default function OrderStatusCount() {
 
   const [orderCategories] = useContext(OrderCategoryContext)!;
-  const [orderSummaries] = useContext(OrderSummaryContext)!;
+  const [orderSummaries, setOrderSummaries] = useContext(OrderSummaryContext)!;
+
+  useEffect(() => {
+    socket.on('refresh_client', async () => {
+      const res = await client.get('/api/order/summary');
+      setOrderSummaries(res.data.map(((summary: any) => {
+        return ({
+          ...summary,
+          statusName: summary['status_name'],
+          menuName: summary['menu_name']
+        });
+      })));
+    })
+
+    return () => {
+      socket.removeAllListeners();
+      socket.disconnect();
+    }
+  }, []);
 
   return (
     <Table tablesize='small' style={{ tableLayout: 'fixed', fontSize: '11pt' }}>
       <TBody>
         <TRow>
           {orderCategories.filter(category => category.status <= 4).map((category) => {
-            return <Cell key={category.statusName}>{category.statusName}</Cell>
+            return <Cell key={category.name}>{category.name}</Cell>
           })}
         </TRow>
         <TRow>

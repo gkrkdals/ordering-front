@@ -14,7 +14,7 @@ interface ModifyMenuModalProps extends BasicModalProps {
 export default function MenuModal({ open, setopen, currentmenu, reload, isupdating, onclose }: ModifyMenuModalProps) {
 
   const [tmpMenu, setTmpMenu] = useState<Menu | null>(null);
-  const [foodCategories, ] = useContext(MenuCategoryContext)!;
+  const [menuCategories, ] = useContext(MenuCategoryContext)!;
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -77,7 +77,7 @@ export default function MenuModal({ open, setopen, currentmenu, reload, isupdati
                     category: parseInt(e.target.value),
                   } as Menu)}
                 >
-                  {foodCategories.map((category, i) => {
+                  {menuCategories.map((category, i) => {
                     return (
                       <option key={i} value={category.id}>
                         {category.name}({category.price}원)

@@ -48,7 +48,7 @@ export default function SelectedMenus({ selectedmenus, setselectedmenus }: Selec
 
   return (
       selectedmenus.length !== 0 && (<Card>
-        <Table ref={tableRef} className='table table-sm table-bordered m-0' style={{ fontSize: "10pt" }}>
+        <Table ref={tableRef} className='table table-sm table-bordered m-0' style={{ fontSize: "10pt", tableLayout: 'fixed' }}>
           <TBody>
             {selectedmenus.map((selectedMenu, rowIndex) => {
               return (

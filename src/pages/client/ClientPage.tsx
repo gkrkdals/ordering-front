@@ -37,7 +37,8 @@ export default function ClientPage() {
   useLayoutEffect(() => {
     const id = searchParams.get('id');
     if(id) {
-      client.post(`/api/auth/signin`, { id })
+      client
+        .post(`/api/auth/signin`, { id })
         .then((res) => setUserState(res.data));
     }
   }, []);

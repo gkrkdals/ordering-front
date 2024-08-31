@@ -1,32 +1,43 @@
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import BasicDialogProps from "@src/interfaces/BasicModalProps.ts";
 import {Disposal} from "@src/models/client/Disposal.ts";
+import client from "@src/utils/client.ts";
+import {useRecoilValue} from "recoil";
+import userState from "@src/recoil/atoms/UserState.ts";
 
 interface DisposalDialogProps extends BasicDialogProps {
-  disposals: Disposal[];
-  setdishdisposals: React.Dispatch<React.SetStateAction<Disposal[]>>;
-  index: number;
+  currentDisposal: Disposal | null;
+  reload: () => void;
 }
 
-export default function DisposalDialog({ open, setopen, disposals, setdishdisposals, index }: DisposalDialogProps) {
+export default function DisposalDialog({ open, setopen, currentDisposal, reload }: DisposalDialogProps) {
+  const user = useRecoilValue(userState);
+  const [location, setLocation] = useState<string>(user?.memo ?? '');
+  const [modifyingDisposal, setModifyingDisposal] = useState<Disposal | null>(null);
 
-  const [location, setLocation] = useState<string>('');
+  function initialize() {
+    setLocation(user?.memo ?? '');
+    setModifyingDisposal(null);
+  }
 
   function handleClose() {
-    setdishdisposals((prev) => {
-      prev[index].location = location;
-      prev[index].disposalRequested = true;
-      return prev;
+    setopen(false);
+    initialize();
+  }
+
+  async function handleDisposal() {
+    await client.post('/api/order/dish', {
+      disposal: modifyingDisposal,
+      location,
     });
     setopen(false);
+    reload();
   }
 
   useEffect(() => {
-    if(disposals.length > 0) {
-      setLocation(disposals[index].location);
-    }
-  }, [index, disposals]);
+    setModifyingDisposal(currentDisposal);
+  }, [currentDisposal]);
 
   return (
     <Dialog open={open} onClose={() => setopen(false)}>
@@ -41,10 +52,10 @@ export default function DisposalDialog({ open, setopen, disposals, setdishdispos
         />
       </DialogContent>
       <DialogActions>
-        <button className='btn btn-sm btn-secondary' onClick={() => setopen(false)}>취소</button>
+        <button className='btn btn-sm btn-secondary' onClick={handleClose}>취소</button>
         <button
           className='btn btn-sm btn-primary'
-          onClick={handleClose}
+          onClick={handleDisposal}
         >
           수거요청
         </button>

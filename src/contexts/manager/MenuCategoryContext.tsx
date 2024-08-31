@@ -1,22 +1,22 @@
-import FoodCategory from "@src/models/common/FoodCategory.ts";
+import MenuCategory from "@src/models/common/MenuCategory.ts";
 import React, {createContext, useEffect, useState} from "react";
 import client from "@src/utils/client.ts";
 
-export type MenuCategoryContextProps = [FoodCategory[], React.Dispatch<React.SetStateAction<FoodCategory[]>>];
+export type MenuCategoryContextProps = [MenuCategory[], React.Dispatch<React.SetStateAction<MenuCategory[]>>];
 
 export const MenuCategoryContext = createContext<MenuCategoryContextProps | null>(null);
 
 const MenuCategoryProvider = ({ children }: { children?: React.ReactNode }) => {
-  const [foodCategories, setFoodCategories] = useState<FoodCategory[]>([]);
+  const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
 
   useEffect(() => {
     client
       .get('/api/manager/menu/category')
-      .then((res) => setFoodCategories(res.data));
+      .then((res) => setMenuCategories(res.data));
   }, []);
 
   return (
-    <MenuCategoryContext.Provider value={[foodCategories, setFoodCategories]}>
+    <MenuCategoryContext.Provider value={[menuCategories, setMenuCategories]}>
       {children}
     </MenuCategoryContext.Provider>
   );

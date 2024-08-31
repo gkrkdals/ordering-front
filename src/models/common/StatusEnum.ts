@@ -4,6 +4,7 @@ export enum StatusEnum {
   WaitingForDelivery,
   InDelivery,
   AwaitingPickup,
+  InPickingUp,
   PickupComplete,
   Canceled,
 }

@@ -1,9 +1,10 @@
 import {Cell, Table, TBody, THead, TRow} from "@src/components/tables/Table.tsx";
 import OrderInfoModal from "@src/pages/manager/modals/OrderInfoModal.tsx";
-import React, {useState} from "react";
-import {OrderStatusRaw} from "@src/models/common/OrderStatusRaw.ts";
+import React, {useContext, useState} from "react";
+import {OrderStatusRaw} from "@src/models/manager/OrderStatusRaw.ts";
 import ClickToGoNextModal from "@src/pages/manager/modals/ClickToGoNextModal.tsx";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
+import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";
 
 const columns = [
   '순번',
@@ -29,6 +30,8 @@ export default function OrderTable({ orderstatus, page, reload }: OrderTableProp
 
   const [openInfoModal, setOpenInfoModal] = useState<boolean>(false);
   const [openStatChangeModal, setOpenStatChangeModal] = useState<boolean>(false);
+
+  const [customerCategories, ] = useContext(CustomerCategoryContext)!;
 
   function handleClickOnRow(orderStatus: OrderStatusRaw, num: number) {
     setModifyingOrder({ ...orderStatus, num });
@@ -69,7 +72,11 @@ export default function OrderTable({ orderstatus, page, reload }: OrderTableProp
             return (
               <TRow key={`1-${i}`} style={{ cursor: 'pointer' }} onClick={() => handleClickOnRow(status, (page - 1) * 20 + i + 1)}>
                 <Cell style={{ width: 80 }}>{(page - 1) * 20 + i + 1}</Cell>
-                <Cell>{status.customer_name}</Cell>
+                <Cell
+                  style={{
+                    backgroundColor: `#${customerCategories.find(c => c.id === status.customer_category)?.hex}`,
+                  }}
+                >{status.customer_name}</Cell>
                 <Cell>{status.menu_name}</Cell>
                 <Cell>{status.request}</Cell>
                 <Cell

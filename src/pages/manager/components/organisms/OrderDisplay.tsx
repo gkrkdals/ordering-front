@@ -2,7 +2,7 @@ import OrderTable from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import Pagination from "@src/pages/manager/components/atoms/Pagination.tsx";
 import SearchData from "@src/pages/manager/components/atoms/SearchData.tsx";
 import {PrimaryButton} from "@src/components/atoms/Buttons.tsx";
-import {OrderStatusRaw} from "@src/models/common/OrderStatusRaw.ts";
+import {OrderStatusRaw} from "@src/models/manager/OrderStatusRaw.ts";
 import MakeOrderBySelfModal from "@src/pages/manager/modals/MakeOrderBySelfModal.tsx";
 import {useState} from "react";
 import Customer from "@src/models/common/Customer.ts";

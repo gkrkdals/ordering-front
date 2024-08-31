@@ -1,8 +1,10 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import Customer from "@src/models/common/Customer.ts";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import client from "@src/utils/client.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+import {Column, ColumnLeft, ColumnRight} from "@src/components/atoms/Columns.tsx";
+import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";
 
 interface ModifyCustomerModalProps extends BasicModalProps {
   currentCustomer: Customer | null;
@@ -20,6 +22,8 @@ export function ModifyCustomerModal(
   const [modifyingCustomer, setModifyingCustomer] = useState<Customer | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
+  const [customerCategories, ] = useContext(CustomerCategoryContext)!;
+
   useEffect(() => {
     setModifyingCustomer(currentCustomer);
   }, [currentCustomer]);
@@ -27,14 +31,12 @@ export function ModifyCustomerModal(
   async function handleUpdate() {
     await client.put('/api/manager/customer', modifyingCustomer);
     setopen(false);
-
     reload();
   }
 
   async function handleDelete() {
     await client.delete('/api/manager/customer', { params: { id: modifyingCustomer?.id } });
     setConfirmDelete(false);
-
     reload();
   }
 
@@ -46,39 +48,55 @@ export function ModifyCustomerModal(
         </DialogTitle>
         <DialogContent sx={{ width: '350px' }}>
           <div className='py-2'>
-            <div className='col d-flex align-items-center mb-3'>
-              <div className='col-3'>고객명</div>
-              <div>
+            <Column>
+              <ColumnLeft>고객명</ColumnLeft>
+              <ColumnRight>
                 <input
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.name}
                   onChange={(e) => setModifyingCustomer({...modifyingCustomer, name: e.target.value} as Customer)}
                 />
-              </div>
-            </div>
-            <div className='col d-flex align-items-center mb-3'>
-              <div className='col-3'>주소</div>
-              <div>
+              </ColumnRight>
+            </Column>
+            <Column>
+              <ColumnLeft>주소</ColumnLeft>
+              <ColumnRight>
                 <input
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.address}
                   onChange={(e) => setModifyingCustomer({...modifyingCustomer, address: e.target.value} as Customer)}
                 />
-              </div>
-            </div>
-            <div className='col d-flex align-items-center mb-3'>
-              <div className='col-3'>그릇 놓는 곳/주의사항</div>
-              <div>
+              </ColumnRight>
+            </Column>
+            <Column>
+              <ColumnLeft>그릇 놓는 곳/<br/>주의사항</ColumnLeft>
+              <ColumnRight>
                 <input
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.memo}
                   onChange={(e) => setModifyingCustomer({...modifyingCustomer, memo: e.target.value} as Customer)}
                 />
-              </div>
-            </div>
+              </ColumnRight>
+            </Column>
+            <Column>
+              <ColumnLeft>거래처분류</ColumnLeft>
+              <ColumnRight>
+                <select
+                  className='form-select'
+                  value={modifyingCustomer?.category}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, category: parseInt(e.target.value)} as Customer)}
+                >
+                  {customerCategories.map((category, i) => {
+                    return (
+                      <option key={i} value={category.id}>{category.name}</option>
+                    );
+                  })}
+                </select>
+              </ColumnRight>
+            </Column>
           </div>
         </DialogContent>
         <DialogActions>

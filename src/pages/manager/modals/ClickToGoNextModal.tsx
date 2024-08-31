@@ -62,7 +62,7 @@ export default function ClickToGoNextModal(props: ClickToGoNextProps) {
                 radiovalue={radioValue}
                 setradiovalue={setRadioValue}
               /> :
-              `상태를 ${orderCategories.find(value => value.status === currentStatus + 1)?.statusName}(으)로 바꾸시겠습니까?`
+              `상태를 ${orderCategories.find(value => value.status === currentStatus + 1)?.name}(으)로 바꾸시겠습니까?`
         }
       </DialogContent>
       <DialogActions>
