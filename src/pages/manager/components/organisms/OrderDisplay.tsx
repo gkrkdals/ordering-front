@@ -46,8 +46,8 @@ export default function OrderDisplay() {
       .then((res) => res.data && startRinging());
 
     socket.on('refresh', reload);
-    socket.on(`new_event_${getUser()}`, () => startRinging());
-    socket.on(`remove_event_${getUser()}`, () => clearRinging());
+    socket.on(`new_event_${getUser()}`, startRinging);
+    socket.on(`remove_event_${getUser()}`, clearRinging);
 
     window.addEventListener('beforeunload', cleanup);
 

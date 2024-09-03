@@ -1,6 +1,6 @@
 import {CustomerEnum} from "@src/models/common/CustomerEnum.ts";
 import {CustomerCategory} from "@src/models/common/CustomerCategory.ts";
-import {CustomerMenuCategory} from "@src/models/manager/CustomerMenuCategory.ts";
+import {CustomerPrice} from "@src/models/manager/CustomerPrice.ts";
 
 export default interface Customer {
   id: number;
@@ -10,7 +10,7 @@ export default interface Customer {
   floor: string;
   category: number;
   categoryJoin?: CustomerCategory;
-  customerPriceJoin: CustomerMenuCategory[];
+  customerPriceJoin: CustomerPrice[];
 }
 
 export const defaultCustomer: Customer = {

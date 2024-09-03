@@ -6,10 +6,10 @@ import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {Column, ColumnLeft, ColumnRight} from "@src/components/atoms/Columns.tsx";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import client from "@src/utils/client.ts";
+import {CustomerPrice} from "@src/models/manager/CustomerPrice.ts";
 
 interface ModifyCustomerPriceModalProps extends BasicModalProps {
   customer: Customer | null;
-  reload: () => void;
 }
 
 export default function ModifyCustomerPriceModal(props: ModifyCustomerPriceModalProps) {
@@ -37,19 +37,21 @@ export default function ModifyCustomerPriceModal(props: ModifyCustomerPriceModal
       2: green,
       customer: props.customer?.id
     });
-    props.reload();
     props.setOpen(false);
   }
 
   useEffect(() => {
     if (props.open) {
-      const prices = props.customer?.customerPriceJoin ?? [];
-
-      setTransparent(prices.find(price => price.category === 1)?.price.toString() ?? '');
-      setBlue(prices.find(price => price.category === 2)?.price.toString() ?? '');
-      setGreen(prices.find(price => price.category === 3)?.price.toString() ?? '');
+      client
+        .get(`/api/manager/customer/price?id=${props.customer?.id}`)
+        .then(res => {
+          const prices: CustomerPrice[] = res.data;
+          setTransparent(prices.find(price => price.category === 1)?.price.toString() ?? '');
+          setBlue(prices.find(price => price.category === 2)?.price.toString() ?? '');
+          setGreen(prices.find(price => price.category === 3)?.price.toString() ?? '');
+        });
     }
-  }, [props.customer, props.open]);
+  }, [props.customer?.id, props.open]);
 
   return (
     <Dialog open={props.open}>

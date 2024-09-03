@@ -119,7 +119,6 @@ export function ModifyCustomerModal(
 
       <ModifyCustomerPriceModal
         customer={modifyingCustomer}
-        reload={reload}
         open={openModifyCustomPrice}
         setOpen={setOpenModifyCustomPrice}
       />
