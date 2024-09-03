@@ -6,9 +6,9 @@ interface OrderApproveDialogProps extends BasicDialogProps {
   onClickProceed: () => void;
 }
 
-export default function OrderApproveDialog({ open, onclose, onClickProceed, onClickCancel }: OrderApproveDialogProps) {
+export default function OrderApproveDialog({ open, onClose, onClickProceed, onClickCancel }: OrderApproveDialogProps) {
   return (
-    <Dialog open={open} onClose={onclose}>
+    <Dialog open={open} onClose={onClose}>
       <DialogContent>
         <h6>주문하시겠습니까?</h6>
       </DialogContent>

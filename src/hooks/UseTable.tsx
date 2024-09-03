@@ -60,7 +60,6 @@ const useTable = <T,>(url: string, params?: object) => {
     totalPage,
     prev,
     next,
-    setCurrentPage,
     reload,
     searchText,
     setSearchText,

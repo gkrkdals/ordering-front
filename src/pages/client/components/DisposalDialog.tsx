@@ -4,15 +4,15 @@ import BasicDialogProps from "@src/interfaces/BasicModalProps.ts";
 import {Disposal} from "@src/models/client/Disposal.ts";
 import client from "@src/utils/client.ts";
 import {useRecoilValue} from "recoil";
-import userState from "@src/recoil/atoms/UserState.ts";
+import customerState from "@src/recoil/atoms/CustomerState.ts";
 
 interface DisposalDialogProps extends BasicDialogProps {
   currentDisposal: Disposal | null;
   reload: () => void;
 }
 
-export default function DisposalDialog({ open, setopen, currentDisposal, reload }: DisposalDialogProps) {
-  const user = useRecoilValue(userState);
+export default function DisposalDialog({ open, setOpen, currentDisposal, reload }: DisposalDialogProps) {
+  const user = useRecoilValue(customerState);
   const [location, setLocation] = useState<string>(user?.memo ?? '');
   const [modifyingDisposal, setModifyingDisposal] = useState<Disposal | null>(null);
 
@@ -22,7 +22,7 @@ export default function DisposalDialog({ open, setopen, currentDisposal, reload 
   }
 
   function handleClose() {
-    setopen(false);
+    setOpen(false);
     initialize();
   }
 
@@ -31,7 +31,7 @@ export default function DisposalDialog({ open, setopen, currentDisposal, reload 
       disposal: modifyingDisposal,
       location,
     });
-    setopen(false);
+    setOpen(false);
     reload();
   }
 
@@ -40,7 +40,7 @@ export default function DisposalDialog({ open, setopen, currentDisposal, reload 
   }, [currentDisposal]);
 
   return (
-    <Dialog open={open} onClose={() => setopen(false)}>
+    <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogContent>
         <h6>그릇 위치 입력</h6>
         <input

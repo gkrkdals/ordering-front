@@ -1,5 +1,6 @@
 import {CustomerEnum} from "@src/models/common/CustomerEnum.ts";
 import {CustomerCategory} from "@src/models/common/CustomerCategory.ts";
+import {CustomerMenuCategory} from "@src/models/manager/CustomerMenuCategory.ts";
 
 export default interface Customer {
   id: number;
@@ -9,6 +10,7 @@ export default interface Customer {
   floor: string;
   category: number;
   categoryJoin?: CustomerCategory;
+  customerPriceJoin: CustomerMenuCategory[];
 }
 
 export const defaultCustomer: Customer = {
@@ -18,4 +20,5 @@ export const defaultCustomer: Customer = {
   memo: '',
   floor: '',
   category: CustomerEnum.InstantPayment,
+  customerPriceJoin: []
 }

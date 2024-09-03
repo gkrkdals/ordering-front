@@ -5,12 +5,16 @@ import client from "@src/utils/client.ts";
 import {Disposal} from "@src/models/client/Disposal.ts";
 import {getSocket} from "@src/utils/socket.ts";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
+import {useRecoilValue} from "recoil";
+import customerState from "@src/recoil/atoms/CustomerState.ts";
 
 const socket = getSocket();
 
 export default function DishDisposal() {
   const [dishDisposals, setDishDisposals] = useState<Disposal[]>([]);
   const [open, setOpen] = useState(false);
+
+  const customer = useRecoilValue(customerState);
 
   const [selectedDisposal, setSelectedDisposal] = useState<Disposal | null>(null);
 
@@ -21,8 +25,10 @@ export default function DishDisposal() {
   }
 
   useEffect(() => {
-    reload();
-  }, []);
+    if(customer) {
+      reload();
+    }
+  }, [customer]);
 
   useEffect(() => {
     socket.on('refresh_client', () => {
@@ -70,7 +76,7 @@ export default function DishDisposal() {
 
       <DisposalDialog
         open={open}
-        setopen={setOpen}
+        setOpen={setOpen}
         currentDisposal={selectedDisposal}
         reload={reload}
       />

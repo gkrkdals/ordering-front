@@ -1,8 +1,8 @@
-import userState from "@src/recoil/atoms/UserState"
+import customerState from "@src/recoil/atoms/CustomerState.ts"
 import { useRecoilValue } from "recoil"
 
 export default function UpperBar() {
-  const user = useRecoilValue(userState);
+  const user = useRecoilValue(customerState);
 
   return (
     <div
@@ -13,6 +13,16 @@ export default function UpperBar() {
         height: "45px",
       }}
     >
+      <img
+        src="/logo.png"
+        className='position-absolute'
+        alt="넘버원푸드 로고"
+        width={38}
+        height={30}
+        style={{
+          left: "8vw"
+        }}
+      />
       <h5 className="m-0 text-light">{user ? user.name : ''}</h5>
       <i
         className="bi bi-gear text-light position-absolute"

@@ -2,7 +2,7 @@ import React, {ComponentPropsWithoutRef, useContext, useState} from "react";
 import SelectedMenu from "@src/models/client/SelectedMenu.ts";
 import OrderApproveDialog from "@src/pages/client/components/OrderApproveDialog.tsx";
 import client from "@src/utils/client.ts";
-import {OrderSummaryContext} from "@src/contexts/client/OrderSummary.tsx";
+import {OrderSummaryContext} from "@src/contexts/client/OrderSummaryContext.tsx";
 
 interface OrderButtonProps extends ComponentPropsWithoutRef<'button'> {
   selectedmenus: SelectedMenu[];
@@ -41,7 +41,7 @@ export default function OrderButton({ selectedmenus, setselectedmenus, ...props 
         onClickCancel={() => setOpenDialog(false)}
         onClickProceed={handleOrder}
         open={openDialog}
-        setopen={setOpenDialog}
+        setOpen={setOpenDialog}
       />
     </>
   )

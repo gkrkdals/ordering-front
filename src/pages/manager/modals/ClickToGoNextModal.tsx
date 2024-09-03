@@ -5,6 +5,8 @@ import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx"
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
 import client from "@src/utils/client.ts";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
+import EnterCustomAmount from "@src/pages/manager/components/molecules/EnterCustomOrderAmount.tsx";
+import EnterAmount from "@src/pages/manager/components/molecules/EnterAmount.tsx";
 
 interface ClickToGoNextProps extends BasicModalProps {
   menu: number | undefined;
@@ -18,13 +20,14 @@ export default function ClickToGoNextModal(props: ClickToGoNextProps) {
   const [currentStatus, setCurrentStatus] = useState<number>(0);
 
   const [paidAmount, setPaidAmount] = useState<string>('');
+  const [menuName, setMenuName] = useState<string>('');
   const [radioValue, setRadioValue] = useState(1);
   const [orderCategories, ] = useContext(OrderCategoryContext)!;
 
   function initialize() {
     setPaidAmount('');
     setRadioValue(1);
-    props.setopen(false);
+    props.setOpen(false);
   }
 
   async function handleChangeStatus() {
@@ -34,8 +37,9 @@ export default function ClickToGoNextModal(props: ClickToGoNextProps) {
       paidAmount: parseInt(paidAmount),
       postpaid: radioValue === 2,
       menu: props.menu,
+      menuName,
     });
-    props.setopen(false);
+    props.setOpen(false);
     props.reload();
   }
 
@@ -50,17 +54,17 @@ export default function ClickToGoNextModal(props: ClickToGoNextProps) {
         {
           props.currentstatus === StatusEnum.InDelivery ?
             <EnterAmount
-              paidamount={paidAmount}
-              setpaidamount={setPaidAmount}
-              radiovalue={radioValue}
-              setradiovalue={setRadioValue}
+              paidAmount={paidAmount}
+              setPaidAmount={setPaidAmount}
+              radioValue={radioValue}
+              setRadioValue={setRadioValue}
             /> :
             props.currentstatus === StatusEnum.PendingReceipt && props.menu === 0 ?
               <EnterCustomAmount
-                paidamount={paidAmount}
-                setpaidamount={setPaidAmount}
-                radiovalue={radioValue}
-                setradiovalue={setRadioValue}
+                paidAmount={paidAmount}
+                setPaidAmount={setPaidAmount}
+                menuName={menuName}
+                setMenuName={setMenuName}
               /> :
               `상태를 ${orderCategories.find(value => value.status === currentStatus + 1)?.name}(으)로 바꾸시겠습니까?`
         }
@@ -71,67 +75,4 @@ export default function ClickToGoNextModal(props: ClickToGoNextProps) {
       </DialogActions>
     </Dialog>
   );
-}
-
-interface EnterAmountProps {
-  paidamount: string;
-  setpaidamount: (paidamount: string) => void;
-  radiovalue: number;
-  setradiovalue: (radiovalue: number) => void;
-}
-
-function EnterCustomAmount({ paidamount, setpaidamount }: EnterAmountProps) {
-  return (
-    <div>
-      <p>금액 입력</p>
-      <input
-        type="number"
-        className='form-control'
-        placeholder='금액 입력'
-        value={paidamount}
-        onChange={e => setpaidamount(e.target.value)}
-      />
-    </div>
-  )
-}
-
-function EnterAmount({ paidamount, setpaidamount, radiovalue, setradiovalue }: EnterAmountProps) {
-  return (
-    <>
-      <div className='mb-4'>
-        <div className='d-flex'>
-          <input
-            id='inputBill'
-            className='me-2'
-            type="radio"
-            value={1}
-            checked={radiovalue === 1}
-            onChange={() => setradiovalue(1)}
-          />
-          <label htmlFor="inputBill">금액 입력</label>
-        </div>
-        <input
-          type="number"
-          className='form-control w-100'
-          placeholder='금액 입력'
-          disabled={radiovalue === 2}
-          value={paidamount ?? ''}
-          onChange={e => setpaidamount(e.target.value)}
-        />
-      </div>
-      <div>
-        <div className='d-flex'>
-          <input
-            id='postpaid'
-            className='me-2'
-            type="radio"
-            value={2}
-            checked={radiovalue === 2}
-            onChange={() => setradiovalue(2)}
-          />
-          <label htmlFor="postpaid">후불 요청</label>
-        </div>
-      </div>
-    </>
-  )
 }

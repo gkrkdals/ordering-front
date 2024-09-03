@@ -2,6 +2,6 @@ import {ModalProps} from "@mui/material/Modal";
 
 export default interface BasicModalProps {
   open: boolean;
-  setopen: (open: boolean) => void;
-  onclose?: ModalProps['onClose'];
+  setOpen: (open: boolean) => void;
+  onClose?: ModalProps['onClose'];
 }

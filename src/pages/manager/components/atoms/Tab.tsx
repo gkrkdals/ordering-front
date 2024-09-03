@@ -1,4 +1,5 @@
 import React from "react";
+import {getUser} from "@src/utils/socket.ts";
 
 interface TabProps {
   menu: string;
@@ -7,8 +8,8 @@ interface TabProps {
 
 export default function Tab({ setmenu, menu }: TabProps) {
 
-  return (
-    <div >
+  return getUser() === 'manager' && (
+    <div>
       <input id="order" type="radio" className='me-2' value="order" checked={menu === 'order'}
              onChange={() => setmenu('order')}/>
       <label htmlFor="order" className='me-4'>주문</label>

@@ -11,7 +11,7 @@ const columns = [
   '고객명',
   '메뉴',
   '요청사항',
-  '상태(클릭하여 다음으로 전환)',
+  '상태',
 ];
 
 export interface OrderStatusWithNumber extends OrderStatusRaw {
@@ -81,7 +81,6 @@ export default function OrderTable({ orderstatus, page, reload }: OrderTableProp
                 <Cell>{status.request}</Cell>
                 <Cell
                   className='btn-secondary'
-                  style={{ width: 300 }}
                   onClick={(e) => handleClickOnStatus(e, status, (page - 1) * 20 + i + 1)}
                 >
                   {getStatusName(status)}
@@ -96,7 +95,7 @@ export default function OrderTable({ orderstatus, page, reload }: OrderTableProp
         modifyingOrder={modifyingOrder}
         reload={reload}
         open={openInfoModal}
-        setopen={setOpenInfoModal}
+        setOpen={setOpenInfoModal}
       />
 
       <ClickToGoNextModal
@@ -105,7 +104,7 @@ export default function OrderTable({ orderstatus, page, reload }: OrderTableProp
         menu={modifyingOrder?.menu}
         reload={reload}
         open={openStatChangeModal}
-        setopen={setOpenStatChangeModal}
+        setOpen={setOpenStatChangeModal}
       />
     </>
   )

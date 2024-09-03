@@ -23,7 +23,7 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
 
   async function handleDelete() {
     await client.delete(`/api/manager/order/${props.modifyingOrder?.id}`);
-    props.setopen(false);
+    props.setOpen(false);
     props.reload();
   }
 
@@ -52,15 +52,15 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
           </Column>
           <Column>
             <ColumnLeft>
-              고객층수
+              주소
             </ColumnLeft>
             <ColumnRight>
-              {formatFloor(currentOrder?.floor)}
+              {currentOrder?.address} {formatFloor(currentOrder?.floor)}
             </ColumnRight>
           </Column>
           <Column>
             <ColumnLeft>
-              상세요청사항
+              상세<br/>요청사항
             </ColumnLeft>
             <ColumnRight>
               {currentOrder?.request}
@@ -77,7 +77,7 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
         </div>
       </DialogContent>
       <DialogActions>
-        <SecondaryButton onClick={() => props.setopen(false)}>
+        <SecondaryButton onClick={() => props.setOpen(false)}>
           닫기
         </SecondaryButton>
         <DangerButton onClick={handleDelete}>

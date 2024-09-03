@@ -1,9 +1,9 @@
 import Customer from "@src/models/common/Customer";
 import { atom } from "recoil";
 
-const userState = atom<Customer | null>({
-  key: 'userState',
+const customerState = atom<Customer | null>({
+  key: 'customerState',
   default: null
 });
 
-export default userState;
+export default customerState;

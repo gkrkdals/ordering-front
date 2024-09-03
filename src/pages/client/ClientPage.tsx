@@ -4,7 +4,7 @@ import MenuProvider from "@src/contexts/client/MenuContext.tsx";
 import Background from "@src/pages/client/components/atoms/Background.tsx";
 import Container from "@src/components/Container.tsx";
 import {useLayoutEffect, useState} from "react";
-import Menu, {defaultMenu} from "@src/models/common/Menu.ts";
+import Menu from "@src/models/common/Menu.ts";
 import SelectedMenus from "@src/pages/client/components/organisms/SelectedMenus.tsx";
 import OrderButton from "@src/pages/client/components/atoms/OrderButton.tsx";
 import CurrentOrderStatus from "@src/pages/client/components/organisms/CurrentOrderStatus.tsx";
@@ -13,26 +13,15 @@ import SelectedMenu from "@src/models/client/SelectedMenu.ts";
 import { useSearchParams } from "react-router-dom";
 import client from "@src/utils/client";
 import { useRecoilState } from "recoil";
-import userState from "@src/recoil/atoms/UserState";
-import OrderSummaryProvider from "@src/contexts/client/OrderSummary.tsx";
-import CustomMenu from "@src/pages/client/components/molecules/CustomMenu.tsx";
+import customerState from "@src/recoil/atoms/CustomerState.ts";
+import OrderSummaryProvider from "@src/contexts/client/OrderSummaryContext.tsx";
 
 export default function ClientPage() {
 
   const [searchParams] = useSearchParams();
   const [selectedMenus, setSelectedMenus] = useState<SelectedMenu[]>([]);
-  const [, setUserState] = useRecoilState(userState);
-
-  const [customMenu, setCustomMenu] = useState('');
-
+  const [, setUserState] = useRecoilState(customerState);
   const handleMenuClick = (menu: Menu) => setSelectedMenus((prev) => prev.concat({ menu, request: '' }));
-
-  function handleClickOnCustom() {
-    const p = defaultMenu;
-    p.name = customMenu;
-    p.category = 4;
-    setSelectedMenus((prev) => prev.concat({ menu: p, request: '' }))
-  }
 
   useLayoutEffect(() => {
     const id = searchParams.get('id');
@@ -49,7 +38,6 @@ export default function ClientPage() {
         <UpperBar/>
         <Container>
           <MenuTable onMenuClick={handleMenuClick}/>
-          <CustomMenu onClick={handleClickOnCustom} customMenuName={customMenu} setCustomMenuName={setCustomMenu} />
           <SelectedMenus selectedmenus={selectedMenus} setselectedmenus={setSelectedMenus} />
           <OrderCategoryProvider>
             <OrderSummaryProvider>
