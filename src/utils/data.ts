@@ -1,3 +1,5 @@
+import User from "@src/models/manager/User.ts";
+
 export function makePair<T>(data: T[]) {
   return data.reduce((prev, cur, index) => {
     if(index % 2 === 0) {
@@ -20,4 +22,13 @@ export function formatFloor(floor: string | undefined) {
 
 export function formatCurrency(num: number | undefined) {
   return `${num?.toLocaleString('ko-KR')}₩`;
+}
+
+export function getUrl(user: User) {
+  switch(user.permission) {
+    case 1: return 'manager';
+    case 2: return 'rider';
+    case 3: return 'cook';
+    case 9: return '';
+  }
 }

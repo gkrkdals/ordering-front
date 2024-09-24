@@ -2,10 +2,8 @@ import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
 import {useContext, useEffect} from "react";
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
 import {OrderSummaryContext} from "@src/contexts/client/OrderSummaryContext.tsx";
-import {getSocket} from "@src/utils/socket.ts";
 import client from "@src/utils/client.ts";
-
-const socket = getSocket();
+import {socket} from "@src/utils/socket.ts";
 
 export default function OrderStatusCount() {
 
@@ -17,6 +15,7 @@ export default function OrderStatusCount() {
       socket.removeAllListeners();
       socket.disconnect();
     }
+    socket.connect();
 
     window.addEventListener('beforeunload', cleanup);
 

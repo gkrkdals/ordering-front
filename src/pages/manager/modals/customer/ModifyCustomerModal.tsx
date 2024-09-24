@@ -6,7 +6,7 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {Column, ColumnLeft, ColumnRight, Wrapper} from "@src/components/atoms/Columns.tsx";
 import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";
 import {DangerButton, PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
-import ModifyCustomerPriceModal from "@src/pages/manager/modals/ModifyCustomerPriceModal.tsx";
+import ModifyCustomerPriceModal from "@src/pages/manager/modals/customer/ModifyCustomerPriceModal.tsx";
 
 interface ModifyCustomerModalProps extends BasicModalProps {
   currentCustomer: Customer | null;
@@ -75,6 +75,17 @@ export function ModifyCustomerModal(
                   className='form-control'
                   value={modifyingCustomer?.address}
                   onChange={(e) => setModifyingCustomer({...modifyingCustomer, address: e.target.value} as Customer)}
+                />
+              </ColumnRight>
+            </Column>
+            <Column>
+              <ColumnLeft>층수</ColumnLeft>
+              <ColumnRight>
+                <input
+                  type="text"
+                  className='form-control'
+                  value={modifyingCustomer?.floor}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, floor: e.target.value} as Customer)}
                 />
               </ColumnRight>
             </Column>

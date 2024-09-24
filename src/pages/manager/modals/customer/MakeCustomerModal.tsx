@@ -42,13 +42,24 @@ export default function MakeCustomerModal(props: MakeCustomerModalProps) {
             </ColumnRight>
           </Column>
           <Column>
-            <ColumnLeft className='col-4'>주소</ColumnLeft>
+            <ColumnLeft>주소</ColumnLeft>
             <ColumnRight>
               <input
                 type="text"
                 className='form-control'
                 value={newCustomer.address}
                 onChange={e => setNewCustomer({...newCustomer, address: e.target.value})}
+              />
+            </ColumnRight>
+          </Column>
+          <Column>
+            <ColumnLeft>층수</ColumnLeft>
+            <ColumnRight>
+              <input
+                type="text"
+                className='form-control'
+                value={newCustomer.floor}
+                onChange={e => setNewCustomer({...newCustomer, floor: e.target.value})}
               />
             </ColumnRight>
           </Column>

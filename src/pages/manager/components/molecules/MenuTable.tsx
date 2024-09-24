@@ -1,6 +1,6 @@
 import Menu from "@src/models/common/Menu.ts";
 import {Cell, Table, TBody, THead, TRow} from "@src/components/tables/Table.tsx";
-import ModifyMenuModal from "@src/pages/manager/modals/ModifyMenuModal.tsx";
+import ModifyMenuModal from "@src/pages/manager/modals/menu/ModifyMenuModal.tsx";
 import {useState} from "react";
 
 interface MenuTableProps {
@@ -36,7 +36,7 @@ export default function MenuTable({menus, page, reload}: MenuTableProps) {
           {menus.map((menu, i) => {
             return (
               <TRow key={i} style={{ cursor: 'pointer' }} onClick={() => handleClickOnMenu(menu)}>
-                <Cell>{(page - 1) * 20 + i + 1}</Cell>
+                <Cell style={{ width: 50 }}>{(page - 1) * 20 + i + 1}</Cell>
                 <Cell style={{ backgroundColor: `#${menu.menuCategory?.hex}` }}>{menu.name}</Cell>
                 <Cell>{menu.soldOut ? '품절' : ''}</Cell>
               </TRow>

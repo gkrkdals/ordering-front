@@ -1,30 +1,53 @@
-interface EnterCustomAmountProps {
-  paidAmount: string;
-  setPaidAmount: (paidAmount: string) => void;
-  menuName: string;
-  setMenuName: (menuName: string) => void;
+import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
+import {Dialog, DialogActions, DialogContent} from "@mui/material";
+import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
+import {useState} from "react";
+import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
+import client from "@src/utils/client.ts";
+
+interface EnterCustomAmountProps extends BasicModalProps {
+  modifyingOrder: OrderStatusWithNumber | null;
+  reload: () => void;
 }
 
-export default function EnterCustomAmount({ paidAmount, setPaidAmount, menuName, setMenuName }: EnterCustomAmountProps) {
+export default function EnterCustomAmount({ open, setOpen, modifyingOrder, reload }: EnterCustomAmountProps) {
+
+  const [paidAmount, setPaidAmount] = useState('');
+
+  async function handleClickOnConfirm() {
+    await client.put('/api/manager/order', {
+      orderId: modifyingOrder?.id,
+      newStatus: (modifyingOrder?.status ?? 0) + 1,
+      paidAmount: parseInt(paidAmount) * 1000,
+      menu: modifyingOrder?.menu,
+    });
+    setOpen(false);
+    setPaidAmount('');
+    reload();
+  }
+
   return (
-    <div>
-      <p>메뉴명</p>
-      <input
-        type="text"
-        className='form-control'
-        placeholder='메뉴명 입력'
-        value={menuName}
-        onChange={e => setMenuName(e.target.value)}
-      />
-      <div className='my-3' />
-      <p>금액</p>
-      <input
-        type="number"
-        className='form-control'
-        placeholder='금액 입력'
-        value={paidAmount}
-        onChange={e => setPaidAmount(e.target.value)}
-      />
-    </div>
+    <Dialog open={open}>
+      <DialogContent>
+        <div>
+          <p>금액 입력(천원)</p>
+          <input
+            type="number"
+            className='form-control'
+            placeholder='금액 입력'
+            value={paidAmount}
+            onChange={e => setPaidAmount(e.target.value)}
+          />
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <SecondaryButton onClick={() => setOpen(false)}>
+          닫기
+        </SecondaryButton>
+        <PrimaryButton onClick={handleClickOnConfirm}>
+          입력
+        </PrimaryButton>
+      </DialogActions>
+    </Dialog>
   )
 }

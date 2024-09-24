@@ -1,16 +1,14 @@
 export function formatDate(rawDate: string | undefined) {
-  const date = new Date(rawDate ?? '').getTime();
-  const now = Date.now();
-  const dateDifference = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+  // const date = new Date(rawDate ?? '').getTime();
+  // const now = Date.now();
+  // const dateDifference = Math.floor((now - date) / (1000 * 60 * 60 * 24));
 
-  if(dateDifference < 1) {
-    const dateObj = new Date(rawDate ?? '');
-    return `${('00' + dateObj.getHours()).slice(-2)}:${('00' + dateObj.getMinutes()).slice(-2)}`;
-  } else if (dateDifference === 1) {
-    return '전일';
-  } else if (dateDifference === 2) {
-    return '전전일'
-  } else {
-    return `${dateDifference}일 전`;
-  }
+  const dateObj = new Date(rawDate ?? '');
+  const year = dateObj.getFullYear();
+  const month = dateObj.getMonth() + 1;
+  const day = dateObj.getDate();
+  const hour = dateObj.getHours();
+  const minute = dateObj.getMinutes();
+
+  return `${year}-${('00' + month).slice(-2)}-${('00' + day).slice(-2)} ${('00' + hour).slice(-2)}:${('00' + minute).slice(-2)}`;
 }

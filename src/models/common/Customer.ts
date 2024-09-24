@@ -11,6 +11,7 @@ export default interface Customer {
   category: number;
   categoryJoin?: CustomerCategory;
   customerPriceJoin: CustomerPrice[];
+  credit: number;
 }
 
 export const defaultCustomer: Customer = {
@@ -20,5 +21,6 @@ export const defaultCustomer: Customer = {
   memo: '',
   floor: '',
   category: CustomerEnum.InstantPayment,
-  customerPriceJoin: []
+  customerPriceJoin: [],
+  credit: 0,
 }

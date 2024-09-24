@@ -21,9 +21,10 @@ const useTable = <T,>(url: string, params?: object) => {
   const [data, setData] = useState<T[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [count, setCount] = useState(0);
 
-  const [searchText, setSearchText] = useState("");
-  const debouncedSearchText = useDebounce(searchText, 500);
+  const [searchData, setSearchData] = useState("");
+  const debouncedSearchText = useDebounce(searchData, 500);
 
   async function reload() {
     const res = await client
@@ -32,8 +33,26 @@ const useTable = <T,>(url: string, params?: object) => {
           page: currentPage,
           query: debouncedSearchText,
       } });
+
+    const totalPage = res.data.totalPage;
+    if (totalPage < currentPage) {
+      setCurrentPage(totalPage);
+
+      const newRes = await client
+        .get(url, { params: {
+            ...params,
+            page: totalPage,
+            query: debouncedSearchText,
+        }});
+      setData(newRes.data.data);
+      setTotalPage(newRes.data.totalPage);
+      setCount(newRes.data.count);
+      return;
+    }
+
     setData(res.data.data);
     setTotalPage(res.data.totalPage);
+    setCount(res.data.count);
   }
 
   function prev() {
@@ -54,16 +73,17 @@ const useTable = <T,>(url: string, params?: object) => {
       .then(() => {});
   }, [debouncedSearchText, currentPage]);
   
-  return [
+  return {
     data,
     currentPage,
     totalPage,
+    count,
     prev,
     next,
     reload,
-    searchText,
-    setSearchText,
-  ] as const;
+    searchData,
+    setSearchData,
+  };
 }
 
 export default useTable;

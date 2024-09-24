@@ -1,10 +1,15 @@
 import React, {ComponentPropsWithoutRef} from "react";
 
+interface ColumnProps {
+  children?: React.ReactNode;
+  align?: 'start' | 'center' | 'end';
+}
+
 interface BasicColumnProps extends ComponentPropsWithoutRef<'div'> {}
 
-export function Column({ children }: { children?: React.ReactNode }) {
+export function Column({ children, align }: ColumnProps) {
   return (
-    <div className='col d-flex align-items-center mb-3'>
+    <div className={`col d-flex mb-3 align-items-${align ?? 'center'}`}>
       {children}
     </div>
   )

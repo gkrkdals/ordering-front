@@ -1,9 +1,12 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import Menu from "@src/models/common/Menu.ts";
 import Customer from "@src/models/common/Customer.ts";
 import client from "@src/utils/client.ts";
+import {MenuContext} from "@src/contexts/manager/MenuContext.tsx";
+import {CustomerContext} from "@src/contexts/manager/CustomerContext.tsx";
+import FormControl from "@src/components/atoms/FormControl.tsx";
 
 interface MakeOrderModal extends BasicModalProps {
   setOpen: (open: boolean) => void;
@@ -11,14 +14,16 @@ interface MakeOrderModal extends BasicModalProps {
 }
 
 export default function MakeOrderModal({open, reload, setOpen}: MakeOrderModal) {
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [menus, setMenus] = useState<Menu[]>([]);
+  const [menus, ] = useContext(MenuContext)!;
+  const [customers, ] = useContext(CustomerContext)!;
 
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
 
   const [searchCustomer, setSearchCustomer] = useState<string>('');
   const [searchMenu, setSearchMenu] = useState<string>('');
+
+  const [request, setRequest] = useState('')
 
   const [confirm, setConfirm] = useState<boolean>(false);
 
@@ -38,21 +43,13 @@ export default function MakeOrderModal({open, reload, setOpen}: MakeOrderModal) 
     await client.post('/api/manager/order', {
       menu: selectedMenu,
       customer: selectedCustomer,
+      request,
     });
     setOpen(false);
     setConfirm(false);
     initialize();
     reload();
   }
-
-  useEffect(() => {
-    client
-      .get('/api/manager/customer/all')
-      .then(res => setCustomers(res.data));
-    client
-      .get('/api/manager/menu/all')
-      .then(res => setMenus(res.data));
-  }, []);
 
   useEffect(() => {
     setSelectedCustomer(customers.find(c => c.name === searchCustomer) ?? null);
@@ -100,8 +97,14 @@ export default function MakeOrderModal({open, reload, setOpen}: MakeOrderModal) 
               ))}
             </datalist>
           </div>
-          <p className='text-secondary'>선택된 고객: {selectedCustomer?.name}</p>
+          <p className='text-secondary mb-1'>선택된 고객: {selectedCustomer?.name}</p>
           <p className='text-secondary'>선택된 메뉴: {selectedMenu?.name}</p>
+          <p className='mb-2'>요청사항 입력</p>
+          <FormControl
+            value={request}
+            onChange={e => setRequest(e.target.value)}
+            placeholder='요청사항 입력'
+          />
         </DialogContent>
         <DialogActions>
           <button className='btn btn-secondary' onClick={handleCancel}>취소</button>

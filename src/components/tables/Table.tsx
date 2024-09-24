@@ -33,7 +33,7 @@ export const Table = forwardRef<HTMLTableElement, TableProps>((props, ref) => {
 });
 
 export function THead({ children, ...props }: ComponentPropsWithoutRef<'thead'>) {
-  return <thead {...props}>{children}</thead>;
+  return <thead style={{ fontWeight: 'bolder' }} {...props}>{children}</thead>;
 }
 
 export function TBody({children, ...props}: TableBodyProps) {

@@ -3,12 +3,10 @@ import {useEffect, useState} from "react";
 import DisposalDialog from "@src/pages/client/components/DisposalDialog.tsx";
 import client from "@src/utils/client.ts";
 import {Disposal} from "@src/models/client/Disposal.ts";
-import {getSocket} from "@src/utils/socket.ts";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
 import {useRecoilValue} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
-
-const socket = getSocket();
+import {socket} from "@src/utils/socket.ts";
 
 export default function DishDisposal() {
   const [dishDisposals, setDishDisposals] = useState<Disposal[]>([]);
@@ -31,6 +29,8 @@ export default function DishDisposal() {
   }, [customer]);
 
   useEffect(() => {
+    socket.connect();
+
     socket.on('refresh_client', () => {
       reload();
     });
