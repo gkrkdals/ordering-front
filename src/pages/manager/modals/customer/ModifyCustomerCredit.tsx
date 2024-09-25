@@ -56,7 +56,7 @@ export default function ModifyCustomerCredit(props: ModifyCustomerCreditProps) {
           type='number'
           value={price}
           onChange={e => setPrice(e.target.value)}
-          placeholder='금액 입력'
+          placeholder='금액 입력(천원)'
         />
       </DialogContent>
       <DialogActions>

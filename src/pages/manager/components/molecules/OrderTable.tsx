@@ -50,17 +50,19 @@ export default function OrderTable({ orderstatus, page, reload, count }: OrderTa
     num: number
   ) {
     e.stopPropagation();
-    setModifyingOrder({ ...orderStatus, num });
+    if (orderStatus.status !== StatusEnum.PickupComplete) {
+      setModifyingOrder({ ...orderStatus, num });
 
-    if (orderStatus.status === StatusEnum.PendingReceipt && orderStatus.menu === 0) {
-      setOpenEnterCustom(true);
-    } else if (orderStatus.status === StatusEnum.InDelivery || orderStatus.status === StatusEnum.InPickingUp) {
-      setOpenStatChangeModal(true);
-    } else {
-      await client.put('/api/manager/order', {
-        orderId: orderStatus.id,
-        newStatus: orderStatus.status + 1,
-      });
+      if (orderStatus.status === StatusEnum.PendingReceipt && orderStatus.menu === 0) {
+        setOpenEnterCustom(true);
+      } else if (orderStatus.status === StatusEnum.InDelivery || orderStatus.status === StatusEnum.InPickingUp) {
+        setOpenStatChangeModal(true);
+      } else {
+        await client.put('/api/manager/order', {
+          orderId: orderStatus.id,
+          newStatus: orderStatus.status + 1,
+        });
+      }
     }
   }
 

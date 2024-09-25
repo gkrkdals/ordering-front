@@ -60,7 +60,7 @@ export default function EnterAmount({ modifyingOrder, ...props }: ClickToGoNextP
           <input
             type="number"
             className='form-control w-100'
-            placeholder='금액 입력'
+            placeholder='금액 입력(천원)'
             disabled={radioValue === 2}
             value={paidAmount ?? ''}
             onChange={e => setPaidAmount(e.target.value)}

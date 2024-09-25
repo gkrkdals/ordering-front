@@ -34,7 +34,7 @@ export default function EnterCustomAmount({ open, setOpen, modifyingOrder, reloa
           <input
             type="number"
             className='form-control'
-            placeholder='금액 입력'
+            placeholder='금액 입력(천원)'
             value={paidAmount}
             onChange={e => setPaidAmount(e.target.value)}
           />
