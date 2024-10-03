@@ -30,7 +30,7 @@ export default function MakeQRModal(props: MakeQrModalProps) {
 
   function handleMakeQRCode() {
     if (selectedCustomer != -1) {
-      setQRData(`${baseUrl}?id=${selectedCustomer}`);
+      setQRData(`${baseUrl}/client?id=${selectedCustomer}`);
     }
   }
 

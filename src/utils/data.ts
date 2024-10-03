@@ -20,7 +20,11 @@ export function formatFloor(floor: string | undefined) {
   }
 }
 
-export function formatCurrency(num: number | undefined) {
+export function formatCurrency(num: number | undefined, noZero?: boolean) {
+  if (noZero && num === 0) {
+    return '';
+  }
+
   return `${num?.toLocaleString('ko-KR')}₩`;
 }
 

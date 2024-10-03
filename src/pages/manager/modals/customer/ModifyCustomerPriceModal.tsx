@@ -1,5 +1,5 @@
-import Customer from "@src/models/common/Customer.ts";
-import {useContext, useEffect, useState} from "react";
+
+import React, {useContext, useEffect, useState} from "react";
 import {MenuCategoryContext} from "@src/contexts/manager/MenuCategoryContext.tsx";
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
@@ -7,35 +7,40 @@ import {Column, ColumnLeft, ColumnRight} from "@src/components/atoms/Columns.tsx
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import client from "@src/utils/client.ts";
 import {CustomerPrice} from "@src/models/manager/CustomerPrice.ts";
+import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
+import FormControl from "@src/components/atoms/FormControl.tsx";
 
 interface ModifyCustomerPriceModalProps extends BasicModalProps {
-  customer: Customer | null;
+  customer: CustomerRaw | null;
+}
+
+interface PriceData {
+  id: number;
+  price: string;
 }
 
 export default function ModifyCustomerPriceModal(props: ModifyCustomerPriceModalProps) {
-  const [transparent, setTransparent] = useState<string>('');
-  const [blue, setBlue] = useState<string>('');
-  const [green, setGreen] = useState<string>('');
-
   const [menuCategories, ] = useContext(MenuCategoryContext)!;
-
-  function initialize() {
-    setTransparent('');
-    setBlue('');
-    setGreen('');
-  }
+  const [customMenuCategories, setCustomMenuCategories] = useState<PriceData[]>([]);
 
   function handleClose() {
-    initialize();
     props.setOpen(false);
+  }
+
+  async function handleChange(e: React.ChangeEvent<HTMLInputElement>, id: number) {
+    setCustomMenuCategories(customMenuCategories.map(category => {
+      if (id === category.id) {
+        category.price = e.target.value;
+      }
+
+      return category;
+    }))
   }
 
   async function handleModifyPrice() {
     await client.put('/api/manager/customer/price', {
-      0: transparent,
-      1: blue,
-      2: green,
-      customer: props.customer?.id
+      customer: props.customer?.id,
+      data: customMenuCategories,
     });
     props.setOpen(false);
   }
@@ -46,9 +51,11 @@ export default function ModifyCustomerPriceModal(props: ModifyCustomerPriceModal
         .get(`/api/manager/customer/price?id=${props.customer?.id}`)
         .then(res => {
           const prices: CustomerPrice[] = res.data;
-          setTransparent(prices.find(price => price.category === 1)?.price.toString() ?? '');
-          setBlue(prices.find(price => price.category === 2)?.price.toString() ?? '');
-          setGreen(prices.find(price => price.category === 3)?.price.toString() ?? '');
+
+          setCustomMenuCategories(menuCategories.map(category => ({
+            id: category.id,
+            price: (prices.find(price => price.category === category.id)?.price ?? '').toString(),
+          })));
         });
     }
   }, [props.customer?.id, props.open]);
@@ -56,45 +63,23 @@ export default function ModifyCustomerPriceModal(props: ModifyCustomerPriceModal
   return (
     <Dialog open={props.open}>
       <DialogContent>
-        <Column>
-          <ColumnLeft>
-            {menuCategories[0].name}
-          </ColumnLeft>
-          <ColumnRight>
-            <input
-              type="number"
-              className='form-control'
-              value={transparent}
-              onChange={(e) => setTransparent(e.target.value)}
-            />
-          </ColumnRight>
-        </Column>
-        <Column>
-          <ColumnLeft>
-            {menuCategories[1].name}
-          </ColumnLeft>
-          <ColumnRight>
-            <input
-              type="number"
-              className='form-control'
-              value={blue}
-              onChange={(e) => setBlue(e.target.value)}
-            />
-          </ColumnRight>
-        </Column>
-        <Column>
-          <ColumnLeft>
-            {menuCategories[2].name}
-          </ColumnLeft>
-          <ColumnRight>
-            <input
-              type="number"
-              className='form-control'
-              value={green}
-              onChange={(e) => setGreen(e.target.value)}
-            />
-          </ColumnRight>
-        </Column>
+        <p className='text-secondary'>단위는 천원입니다.</p>
+        {customMenuCategories.map(category => (
+          <Column key={category.id}>
+            <ColumnLeft>
+              {menuCategories.find(c => c.id === category.id)?.name}
+            </ColumnLeft>
+            <ColumnRight>
+              <FormControl
+                type='number'
+                value={category.price}
+                onChange={e => handleChange(e, category.id)}
+                placeholder='천원'
+              />
+            </ColumnRight>
+          </Column>
+        ))}
+
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={handleClose}>취소</SecondaryButton>

@@ -8,7 +8,6 @@ import {formatCurrency} from "@src/utils/data.ts";
 
 interface ClickToGoNextProps extends BasicModalProps {
   modifyingOrder: OrderStatusWithNumber | null;
-  reload: () => void;
 }
 
 export default function EnterAmount({ modifyingOrder, ...props }: ClickToGoNextProps) {
@@ -16,11 +15,9 @@ export default function EnterAmount({ modifyingOrder, ...props }: ClickToGoNextP
   const [currentStatus, setCurrentStatus] = useState<number>(0);
 
   const [paidAmount, setPaidAmount] = useState<string>('');
-  const [radioValue, setRadioValue] = useState(1);
 
   function initialize() {
     setPaidAmount('');
-    setRadioValue(1);
     props.setOpen(false);
   }
 
@@ -29,11 +26,10 @@ export default function EnterAmount({ modifyingOrder, ...props }: ClickToGoNextP
       orderId: orderStatusId,
       newStatus: currentStatus + 1,
       paidAmount: parseInt(paidAmount) * 1000,
-      postpaid: radioValue === 2,
+      postpaid: isNaN(parseInt(paidAmount)) || parseInt(paidAmount) === 0,
       menu: modifyingOrder?.menu,
     });
     initialize();
-    props.reload();
   }
 
   useEffect(() => {
@@ -44,40 +40,16 @@ export default function EnterAmount({ modifyingOrder, ...props }: ClickToGoNextP
   return (
     <Dialog open={props.open}>
       <DialogContent>
-        <p>잔금: {formatCurrency(modifyingOrder?.credit)}</p>
+        <p className='mb-1 text-secondary'>잔액을 입력하지 않으면 후불 처리됩니다.</p>
+        <p>잔금: {formatCurrency((modifyingOrder?.credit ?? 0) * -1)}</p>
         <div className='mb-4'>
-          <div className='d-flex'>
-            <input
-              id='inputBill'
-              className='me-2'
-              type="radio"
-              value={1}
-              checked={radioValue === 1}
-              onChange={() => setRadioValue(1)}
-            />
-            <label htmlFor="inputBill">금액 입력(천원)</label>
-          </div>
           <input
             type="number"
             className='form-control w-100'
             placeholder='금액 입력(천원)'
-            disabled={radioValue === 2}
             value={paidAmount ?? ''}
             onChange={e => setPaidAmount(e.target.value)}
           />
-        </div>
-        <div>
-          <div className='d-flex'>
-            <input
-              id='postpaid'
-              className='me-2'
-              type="radio"
-              value={2}
-              checked={radioValue === 2}
-              onChange={() => setRadioValue(2)}
-            />
-            <label htmlFor="postpaid">후불 요청</label>
-          </div>
         </div>
       </DialogContent>
       <DialogActions>

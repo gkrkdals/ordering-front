@@ -17,11 +17,13 @@ const useDebounce = (value: string, delay: number) => {
   return debouncedValue;
 };
 
-const useTable = <T,>(url: string, params?: object) => {
+const useTable = <T,>(origin: string, params?: object) => {
   const [data, setData] = useState<T[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [count, setCount] = useState(0);
+
+  const [url, setUrl] = useState(origin);
 
   const [searchData, setSearchData] = useState("");
   const debouncedSearchText = useDebounce(searchData, 500);
@@ -67,11 +69,18 @@ const useTable = <T,>(url: string, params?: object) => {
     }
   }
 
-
   useEffect(() => {
     reload()
       .then(() => {});
-  }, [debouncedSearchText, currentPage]);
+  }, [debouncedSearchText, currentPage, params]);
+
+  useEffect(() => {
+    if (currentPage === 1) {
+      reload().then();
+    } else {
+      setCurrentPage(1);
+    }
+  }, [url]);
   
   return {
     data,
@@ -83,6 +92,8 @@ const useTable = <T,>(url: string, params?: object) => {
     reload,
     searchData,
     setSearchData,
+    url,
+    setUrl,
   };
 }
 

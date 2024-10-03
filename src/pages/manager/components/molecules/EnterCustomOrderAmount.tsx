@@ -7,10 +7,9 @@ import client from "@src/utils/client.ts";
 
 interface EnterCustomAmountProps extends BasicModalProps {
   modifyingOrder: OrderStatusWithNumber | null;
-  reload: () => void;
 }
 
-export default function EnterCustomAmount({ open, setOpen, modifyingOrder, reload }: EnterCustomAmountProps) {
+export default function EnterCustomAmount({ open, setOpen, modifyingOrder }: EnterCustomAmountProps) {
 
   const [paidAmount, setPaidAmount] = useState('');
 
@@ -23,7 +22,6 @@ export default function EnterCustomAmount({ open, setOpen, modifyingOrder, reloa
     });
     setOpen(false);
     setPaidAmount('');
-    reload();
   }
 
   return (

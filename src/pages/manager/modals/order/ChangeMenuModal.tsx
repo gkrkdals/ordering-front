@@ -26,7 +26,7 @@ export default function ChangeMenuModal({ currentOrder, ...props }: ChangeMenuMo
   }
 
   async function handleChangeMenu() {
-    const value = menus.find(menu => menu.id === selectedMenu)?.menuCategory?.name;
+    const value = menus.find(menu => menu.id === selectedMenu)?.name;
     await client.put('/api/manager/order/menu', {
       orderCode: currentOrder?.order_code,
       from: currentOrder?.menu,
@@ -42,13 +42,6 @@ export default function ChangeMenuModal({ currentOrder, ...props }: ChangeMenuMo
     } as OrderStatusWithNumber);
     props.setFlag(true);
   }
-
-  // useEffect(() => {
-  //   const currentMenu = menus.find(menu => menu.id === currentOrder?.menu);
-  //   if (currentMenu) {
-  //     setPrice((currentMenu.menuCategory?.price ?? '').toString())
-  //   }
-  // }, [currentOrder, menus]);
 
   return (
     <Dialog open={props.open}>

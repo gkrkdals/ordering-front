@@ -11,6 +11,7 @@ export interface OrderStatusRaw {
   request: string;
   status: number;
   status_name: string;
+  price: number;
   credit: number
   address: string;
   floor: string;

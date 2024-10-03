@@ -8,12 +8,9 @@ import {MenuContext} from "@src/contexts/manager/MenuContext.tsx";
 import {CustomerContext} from "@src/contexts/manager/CustomerContext.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 
-interface MakeOrderModal extends BasicModalProps {
-  setOpen: (open: boolean) => void;
-  reload: () => void;
-}
+interface MakeOrderModal extends BasicModalProps {}
 
-export default function MakeOrderModal({open, reload, setOpen}: MakeOrderModal) {
+export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
   const [menus, ] = useContext(MenuContext)!;
   const [customers, ] = useContext(CustomerContext)!;
 
@@ -32,6 +29,7 @@ export default function MakeOrderModal({open, reload, setOpen}: MakeOrderModal) 
     setSelectedMenu(null);
     setSearchCustomer('');
     setSearchMenu('');
+    setRequest('');
   }
 
   function handleCancel() {
@@ -48,7 +46,6 @@ export default function MakeOrderModal({open, reload, setOpen}: MakeOrderModal) 
     setOpen(false);
     setConfirm(false);
     initialize();
-    reload();
   }
 
   useEffect(() => {

@@ -36,7 +36,6 @@ export function MakeUserModal(props: MakeUserModalProps) {
 
   useEffect(() => {
     if (props.open) {
-      console.log('asdf');
       initialize();
     }
   }, [props.open]);

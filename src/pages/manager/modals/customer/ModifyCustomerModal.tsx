@@ -1,5 +1,4 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
-import Customer from "@src/models/common/Customer.ts";
 import {useContext, useEffect, useState} from "react";
 import client from "@src/utils/client.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
@@ -7,9 +6,10 @@ import {Column, ColumnLeft, ColumnRight, Wrapper} from "@src/components/atoms/Co
 import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";
 import {DangerButton, PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import ModifyCustomerPriceModal from "@src/pages/manager/modals/customer/ModifyCustomerPriceModal.tsx";
+import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
 
 interface ModifyCustomerModalProps extends BasicModalProps {
-  currentCustomer: Customer | null;
+  currentCustomer: CustomerRaw | null;
   reload: () => void;
 }
 
@@ -21,7 +21,7 @@ export function ModifyCustomerModal(
     reload,
   }: ModifyCustomerModalProps
 ) {
-  const [modifyingCustomer, setModifyingCustomer] = useState<Customer | null>(null);
+  const [modifyingCustomer, setModifyingCustomer] = useState<CustomerRaw | null>(null);
   const [openModifyCustomPrice, setOpenModifyCustomPrice] = useState<boolean>(false);
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -63,7 +63,7 @@ export function ModifyCustomerModal(
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.name}
-                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, name: e.target.value} as Customer)}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, name: e.target.value} as CustomerRaw)}
                 />
               </ColumnRight>
             </Column>
@@ -74,7 +74,7 @@ export function ModifyCustomerModal(
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.address}
-                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, address: e.target.value} as Customer)}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, address: e.target.value} as CustomerRaw)}
                 />
               </ColumnRight>
             </Column>
@@ -85,7 +85,7 @@ export function ModifyCustomerModal(
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.floor}
-                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, floor: e.target.value} as Customer)}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, floor: e.target.value} as CustomerRaw)}
                 />
               </ColumnRight>
             </Column>
@@ -96,7 +96,7 @@ export function ModifyCustomerModal(
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.memo}
-                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, memo: e.target.value} as Customer)}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, memo: e.target.value} as CustomerRaw)}
                 />
               </ColumnRight>
             </Column>
@@ -106,7 +106,7 @@ export function ModifyCustomerModal(
                 <select
                   className='form-select'
                   value={modifyingCustomer?.category}
-                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, category: parseInt(e.target.value)} as Customer)}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, category: parseInt(e.target.value)} as CustomerRaw)}
                 >
                   {customerCategories.map((category, i) => {
                     return (

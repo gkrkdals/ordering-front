@@ -14,6 +14,17 @@ interface TableCellProps extends ComponentPropsWithoutRef<'td'> {
   hex?: string;
 }
 
+export interface Sort {
+  order: '' | 'asc' | 'desc';
+  currentIndex: number;
+}
+
+interface TableHeadCellProps extends ComponentPropsWithoutRef<'td'> {
+  sort: Sort;
+  setSort: (data: Sort) => void;
+  focusIndex: number;
+}
+
 export const Table = forwardRef<HTMLTableElement, TableProps>((props, ref) => {
   return (
     <table
@@ -48,8 +59,48 @@ export function Cell(
   { hex, children, ...props }
     : TableCellProps) {
   return (
-    <td {...props} className="text-center" style={{ backgroundColor: `#${hex}`, ...props.style, }} >
+    <td {...props} className="text-center" style={{backgroundColor: `#${hex}`, ...props.style,}}>
       {children}
+
     </td>
   );
+}
+
+export function HeadCell({ children, sort, focusIndex, setSort, ...props }: TableHeadCellProps) {
+  function isAscending() {
+    return focusIndex === sort.currentIndex && sort.order === 'asc';
+  }
+
+  function isDescending() {
+    return focusIndex === sort.currentIndex && sort.order === 'desc';
+  }
+
+  function handleClickOnCell() {
+    if (focusIndex !== 0) {
+      if (focusIndex === sort.currentIndex) {
+        if (sort.order === "") {
+          setSort({ currentIndex: focusIndex, order: 'asc' });
+        } else if (sort.order === "asc") {
+          setSort({ currentIndex: focusIndex, order: "desc" })
+        } else if (sort.order === "desc") {
+          setSort({ currentIndex: focusIndex, order: '' });
+        }
+      } else {
+        setSort({ currentIndex: focusIndex, order: 'asc' });
+      }
+    }
+  }
+
+  return (
+    <td
+      {...props}
+      onClick={handleClickOnCell}
+      className="text-center"
+      style={{fontWeight: 'bolder', cursor: 'pointer', ...props.style,}}
+    >
+      {children}
+      {isAscending() && <i className="bi bi-arrow-up-short position-absolute"></i>}
+      {isDescending() && <i className="bi bi-arrow-down-short position-absolute"></i>}
+    </td>
+  )
 }

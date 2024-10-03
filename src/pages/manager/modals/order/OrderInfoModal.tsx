@@ -21,6 +21,7 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
   const [orderHistory, setOrderHistory] = useState<OrderHistory[]>([]);
 
   const [openChangeMenuModal, setOpenChangeMenuModal] = useState<boolean>(false);
+  const [openConfirmCancelModal, setOpenConfirmCancelModal] = useState<boolean>(false);
 
   const [flag, setFlag] = useState(false);
 
@@ -34,8 +35,8 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
 
   async function handleDelete() {
     await client.delete(`/api/manager/order/${props.modifyingOrder?.id}`);
+    setOpenConfirmCancelModal(false);
     props.setOpen(false);
-    props.reload();
   }
 
   function handleClickOnMenu() {
@@ -63,7 +64,7 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
 
   return (
     <>
-      <Dialog open={props.open} onClose={() => console.log("hello")}>
+      <Dialog open={props.open}>
         <DialogTitle>
           주문정보
         </DialogTitle>
@@ -128,7 +129,7 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
                 잔금
               </ColumnLeft>
               <ColumnRight>
-                {formatCurrency(currentOrder?.credit)}
+                {formatCurrency((currentOrder?.credit ?? 0) * -1)}
               </ColumnRight>
             </Column>
             <Column align='start'>
@@ -151,7 +152,7 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
           <SecondaryButton onClick={handleClose}>
             닫기
           </SecondaryButton>
-          <DangerButton onClick={handleDelete}>
+          <DangerButton onClick={() => setOpenConfirmCancelModal(true)}>
             주문취소
           </DangerButton>
         </DialogActions>
@@ -164,6 +165,20 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
         setCurrentOrder={setCurrentOrder}
         setFlag={setFlag}
       />
+
+      <Dialog open={openConfirmCancelModal}>
+        <DialogContent>
+          주문을 삭제하시겠습니까?
+        </DialogContent>
+        <DialogActions>
+          <SecondaryButton onClick={() => setOpenConfirmCancelModal(false)}>
+            취소
+          </SecondaryButton>
+          <DangerButton onClick={handleDelete}>
+            삭제
+          </DangerButton>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }

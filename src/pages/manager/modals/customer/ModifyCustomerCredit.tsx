@@ -38,7 +38,7 @@ export default function ModifyCustomerCredit(props: ModifyCustomerCreditProps) {
               checked={radioValue === 0}
               onClick={() => setRadioValue(0)}
             />
-            <label htmlFor="credit1">더하기</label>
+            <label htmlFor="credit1">입금액</label>
           </div>
           <div>
             <input
@@ -48,7 +48,7 @@ export default function ModifyCustomerCredit(props: ModifyCustomerCreditProps) {
               checked={radioValue === 1}
               onClick={() => setRadioValue(1)}
             />
-            <label htmlFor="credit2">빼기</label>
+            <label htmlFor="credit2">주문액</label>
           </div>
         </div>
         <p className='mb-2'>금액 입력(천원)</p>

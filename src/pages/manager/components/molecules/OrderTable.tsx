@@ -1,4 +1,4 @@
-import {Cell, Table, TBody, THead, TRow} from "@src/components/tables/Table.tsx";
+import {Cell, Sort, HeadCell, Table, TBody, THead, TRow} from "@src/components/tables/Table.tsx";
 import OrderInfoModal from "@src/pages/manager/modals/order/OrderInfoModal.tsx";
 import React, {useContext, useState} from "react";
 import {OrderStatusRaw} from "@src/models/manager/OrderStatusRaw.ts";
@@ -8,27 +8,28 @@ import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryCon
 import client from "@src/utils/client.ts";
 import EnterCustomAmount from "@src/pages/manager/components/molecules/EnterCustomOrderAmount.tsx";
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
-
-const columns = [
-  '순번',
-  '고객명',
-  '메뉴',
-  '요청사항',
-  '상태',
-];
+import {Column} from "@src/models/manager/Column.ts";
+import {useRecoilValue} from "recoil";
+import userState from "@src/recoil/atoms/UserState.ts";
+import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 
 export interface OrderStatusWithNumber extends OrderStatusRaw {
   num: number;
 }
 
 interface OrderTableProps {
+  columns: Column[];
   orderstatus: OrderStatusRaw[];
   page: number;
   count: number;
   reload: () => void;
+  sort: Sort;
+  setSort: (focusInfo: Sort) => void;
+  isRemaining: boolean;
+  setIsRemaining: (isRemaining: boolean) => void;
 }
 
-export default function OrderTable({ orderstatus, page, reload, count }: OrderTableProps) {
+export default function OrderTable({ columns, orderstatus, page, reload, count, sort, setSort, isRemaining, setIsRemaining }: OrderTableProps) {
   const [modifyingOrder, setModifyingOrder] = useState<OrderStatusWithNumber | null>(null);
   const [orderCategories ] = useContext(OrderCategoryContext)!;
 
@@ -38,6 +39,8 @@ export default function OrderTable({ orderstatus, page, reload, count }: OrderTa
   const [customerCategories, ] = useContext(CustomerCategoryContext)!;
 
   const [openEnterCustom, setOpenEnterCustom] = useState(false);
+
+  const user = useRecoilValue(userState)!;
 
   function handleClickOnRow(orderStatus: OrderStatusRaw, num: number) {
     setModifyingOrder({ ...orderStatus, num });
@@ -57,7 +60,7 @@ export default function OrderTable({ orderstatus, page, reload, count }: OrderTa
         setOpenEnterCustom(true);
       } else if (orderStatus.status === StatusEnum.InDelivery || orderStatus.status === StatusEnum.InPickingUp) {
         setOpenStatChangeModal(true);
-      } else {
+      } else if (!(user?.permission === PermissionEnum.Cook && orderStatus.status > StatusEnum.WaitingForDelivery)) {
         await client.put('/api/manager/order', {
           orderId: orderStatus.id,
           newStatus: orderStatus.status + 1,
@@ -70,7 +73,19 @@ export default function OrderTable({ orderstatus, page, reload, count }: OrderTa
     if(orderStatus.menu === 0 && orderStatus.status === StatusEnum.PendingReceipt) {
       return `${orderStatus.status_name}(금액입력)`;
     } else {
-      return orderStatus.status_name;
+      if (user?.permission === PermissionEnum.Cook && orderStatus.status > StatusEnum.InPreparation) {
+        return '조리완료';
+      } else {
+        return orderStatus.status_name;
+      }
+    }
+  }
+
+  function getBackgroundColor(orderStatus: OrderStatusRaw) {
+    if (user?.permission === PermissionEnum.Cook && orderStatus.status > StatusEnum.InPreparation) {
+      return `#${orderCategories.find(category => category.status === StatusEnum.WaitingForDelivery)?.hex}`;
+    } else {
+      return `#${orderCategories.find(category => category.status === orderStatus.status)?.hex}`;
     }
   }
 
@@ -79,14 +94,27 @@ export default function OrderTable({ orderstatus, page, reload, count }: OrderTa
       <Table tablesize='small' style={{ fontSize: '12pt' }}>
         <THead>
           <TRow>
-            {columns.map((column, i) => <Cell key={i}>{column}</Cell>)}
+            {
+              columns
+                .filter((_, i) => isRemaining ? i !== 0 : true)
+                .map((column, i) =>
+                  <HeadCell
+                    focusIndex={isRemaining ? i + 1 : i}
+                    sort={sort}
+                    setSort={setSort}
+                    key={i}
+                  >
+                    {column.name}
+                  </HeadCell>
+                )
+            }
           </TRow>
         </THead>
         <TBody>
           {orderstatus.map(((status, i) => {
             return (
               <TRow key={`1-${i}`} style={{ cursor: 'pointer' }} onClick={() => handleClickOnRow(status, (page - 1) * 20 + i + 1)}>
-                <Cell style={{ width: 80 }}>{count - ((page - 1) * 20 + i)}</Cell>
+                {!isRemaining && <Cell style={{width: 50}}>{count - ((page - 1) * 20 + i)}</Cell>}
                 <Cell
                   style={{
                     backgroundColor: `#${customerCategories.find(c => c.id === status.customer_category)?.hex}`,
@@ -97,9 +125,7 @@ export default function OrderTable({ orderstatus, page, reload, count }: OrderTa
                 <Cell
                   className='btn-secondary'
                   onClick={(e) => handleClickOnStatus(e, status, (page - 1) * 20 + i + 1)}
-                  style={{
-                    backgroundColor: `#${orderCategories.find(c => c.id === status.status)?.hex}`
-                  }}
+                  style={{ backgroundColor: getBackgroundColor(status) }}
                 >
                   {getStatusName(status)}
                 </Cell>
@@ -108,6 +134,18 @@ export default function OrderTable({ orderstatus, page, reload, count }: OrderTa
           }))}
         </TBody>
       </Table>
+      {user?.permission !== PermissionEnum.Cook && (
+        <div className='form-check mt-1'>
+          <input
+            id='remaining'
+            type="checkbox"
+            className='form-check-input'
+            checked={isRemaining}
+            onChange={() => setIsRemaining(!isRemaining)}
+          />
+          <label htmlFor="remaining" className='form-check-label'>그릇수거</label>
+        </div>
+      )}
 
       <OrderInfoModal
         modifyingOrder={modifyingOrder}
@@ -118,7 +156,6 @@ export default function OrderTable({ orderstatus, page, reload, count }: OrderTa
 
       <EnterAmount
         modifyingOrder={modifyingOrder}
-        reload={reload}
         open={openStatChangeModal}
         setOpen={setOpenStatChangeModal}
       />
@@ -127,7 +164,6 @@ export default function OrderTable({ orderstatus, page, reload, count }: OrderTa
         modifyingOrder={modifyingOrder}
         open={openEnterCustom}
         setOpen={setOpenEnterCustom}
-        reload={reload}
       />
     </>
   )

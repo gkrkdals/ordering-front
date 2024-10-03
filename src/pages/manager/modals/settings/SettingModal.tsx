@@ -5,6 +5,7 @@ import {useState} from "react";
 import {MakeUserModal} from "@src/pages/manager/modals/settings/MakeUserModal.tsx";
 import {MakeCalculationModal} from "@src/pages/manager/modals/settings/MakeCalculationModal.tsx";
 import MakeQRModal from "@src/pages/manager/modals/settings/MakeQRModal.tsx";
+import ModifyExceedTime from "@src/pages/manager/modals/settings/ModifyExceedTime.tsx";
 
 interface SettingModalProps extends BasicModalProps {}
 
@@ -12,6 +13,7 @@ export default function SettingModal(props: SettingModalProps) {
   const [makeQR, setMakeQR] = useState(false);
   const [makeUser, setMakeUser] = useState(false);
   const [openCalculation, setOpenCalculation] = useState(false);
+  const [openModifyExceedTimes, setOpenModifyExceedTimes] = useState(false);
 
   function handleOpenMakeQR() {
     props.setOpen(false);
@@ -26,6 +28,11 @@ export default function SettingModal(props: SettingModalProps) {
   function handleOpenCalculation() {
     props.setOpen(false);
     setOpenCalculation(true);
+  }
+
+  function handleOpenModifyExccedTimes() {
+    props.setOpen(false);
+    setOpenModifyExceedTimes(true);
   }
 
   return (
@@ -43,6 +50,10 @@ export default function SettingModal(props: SettingModalProps) {
           <div className='d-flex py-3 px-2' onClick={handleOpenCalculation}>
             <i className="bi bi-receipt-cutoff me-2"></i>
             정산
+          </div>
+          <div className='d-flex py-3 px-2' onClick={handleOpenModifyExccedTimes}>
+            <i className="bi bi-clock me-2"></i>
+            초과시간 설정
           </div>
         </DialogContent>
         <DialogActions>
@@ -64,7 +75,10 @@ export default function SettingModal(props: SettingModalProps) {
         open={openCalculation}
         setOpen={setOpenCalculation}
       />
-
+      <ModifyExceedTime
+        open={openModifyExceedTimes}
+        setOpen={setOpenModifyExceedTimes}
+      />
     </>
   )
 }
