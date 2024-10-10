@@ -12,6 +12,7 @@ import {Column} from "@src/models/manager/Column.ts";
 import {useRecoilValue} from "recoil";
 import userState from "@src/recoil/atoms/UserState.ts";
 import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
+import {formatCurrency} from "@src/utils/data.ts";
 
 export interface OrderStatusWithNumber extends OrderStatusRaw {
   num: number;
@@ -96,7 +97,7 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
           <TRow>
             {
               columns
-                .filter((_, i) => isRemaining ? i !== 0 : true)
+                .filter((_, i) => isRemaining ? i !== 0 : i !== columns.length - 1)
                 .map((column, i) =>
                   <HeadCell
                     focusIndex={isRemaining ? i + 1 : i}
@@ -120,7 +121,13 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
                     backgroundColor: `#${customerCategories.find(c => c.id === status.customer_category)?.hex}`,
                   }}
                 >{status.customer_name}</Cell>
-                <Cell>{status.menu_name}</Cell>
+                <Cell
+                  style={{
+                    fontWeight: status.menu === 0 ? 'bolder' : 'normal',
+                  }}
+                >
+                  {status.menu_name}
+                </Cell>
                 <Cell>{status.request}</Cell>
                 <Cell
                   className='btn-secondary'
@@ -129,6 +136,7 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
                 >
                   {getStatusName(status)}
                 </Cell>
+                {isRemaining && <Cell>{formatCurrency(status.credit)}</Cell>}
               </TRow>
             )
           }))}

@@ -94,6 +94,7 @@ const useTable = <T,>(origin: string, params?: object) => {
     setSearchData,
     url,
     setUrl,
+    debouncedSearchText,
   };
 }
 

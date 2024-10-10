@@ -6,6 +6,7 @@ import {MakeUserModal} from "@src/pages/manager/modals/settings/MakeUserModal.ts
 import {MakeCalculationModal} from "@src/pages/manager/modals/settings/MakeCalculationModal.tsx";
 import MakeQRModal from "@src/pages/manager/modals/settings/MakeQRModal.tsx";
 import ModifyExceedTime from "@src/pages/manager/modals/settings/ModifyExceedTime.tsx";
+import StandardInfoModal from "@src/pages/manager/modals/settings/StandardInfoModal.tsx";
 
 interface SettingModalProps extends BasicModalProps {}
 
@@ -14,6 +15,7 @@ export default function SettingModal(props: SettingModalProps) {
   const [makeUser, setMakeUser] = useState(false);
   const [openCalculation, setOpenCalculation] = useState(false);
   const [openModifyExceedTimes, setOpenModifyExceedTimes] = useState(false);
+  const [openStandardInfo, setOpenStandardInfo] = useState(false);
 
   function handleOpenMakeQR() {
     props.setOpen(false);
@@ -33,6 +35,11 @@ export default function SettingModal(props: SettingModalProps) {
   function handleOpenModifyExccedTimes() {
     props.setOpen(false);
     setOpenModifyExceedTimes(true);
+  }
+
+  function handleOpenStandardInfo() {
+    props.setOpen(false);
+    setOpenStandardInfo(true);
   }
 
   return (
@@ -55,6 +62,10 @@ export default function SettingModal(props: SettingModalProps) {
             <i className="bi bi-clock me-2"></i>
             초과시간 설정
           </div>
+          <div className='d-flex py-3 px-2' onClick={handleOpenStandardInfo}>
+            <i className="bi bi-info-circle me-2"></i>
+            기본정보 설정
+          </div>
         </DialogContent>
         <DialogActions>
           <SecondaryButton onClick={() => props.setOpen(false)}>
@@ -63,22 +74,11 @@ export default function SettingModal(props: SettingModalProps) {
         </DialogActions>
       </Dialog>
 
-      <MakeQRModal
-        open={makeQR}
-        setOpen={setMakeQR}
-      />
-      <MakeUserModal
-        open={makeUser}
-        setOpen={setMakeUser}
-      />
-      <MakeCalculationModal
-        open={openCalculation}
-        setOpen={setOpenCalculation}
-      />
-      <ModifyExceedTime
-        open={openModifyExceedTimes}
-        setOpen={setOpenModifyExceedTimes}
-      />
+      <MakeQRModal open={makeQR} setOpen={setMakeQR}/>
+      <MakeUserModal open={makeUser} setOpen={setMakeUser}/>
+      <MakeCalculationModal open={openCalculation} setOpen={setOpenCalculation}/>
+      <ModifyExceedTime open={openModifyExceedTimes} setOpen={setOpenModifyExceedTimes}/>
+      <StandardInfoModal open={openStandardInfo} setOpen={setOpenStandardInfo} />
     </>
   )
 }

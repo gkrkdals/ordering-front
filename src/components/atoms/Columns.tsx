@@ -15,11 +15,11 @@ export function Column({ children, align }: ColumnProps) {
   )
 }
 
-export function ColumnLeft(props: BasicColumnProps) {
+export function SmallColumn(props: BasicColumnProps) {
   return <div className='col-3 col-sm-5' {...props} />
 }
 
-export function ColumnRight(props: BasicColumnProps) {
+export function BigColumn(props: BasicColumnProps) {
   return <div className='col-9 col-sm-7' {...props} />
 }
 

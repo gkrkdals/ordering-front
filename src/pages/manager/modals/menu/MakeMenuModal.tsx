@@ -4,7 +4,7 @@ import Menu, {defaultMenu} from "@src/models/common/Menu.ts";
 import {useContext, useState} from "react";
 import {MenuCategoryContext} from "@src/contexts/manager/MenuCategoryContext.tsx";
 import client from "@src/utils/client.ts";
-import {Column, ColumnLeft, ColumnRight} from "@src/components/atoms/Columns.tsx";
+import {Column, SmallColumn, BigColumn} from "@src/components/atoms/Columns.tsx";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 
 interface MakeMenuModalProps extends BasicModalProps {
@@ -33,23 +33,23 @@ export default function MakeMenuModal(props: MakeMenuModalProps) {
       <DialogContent>
         <div className='py-2'>
           <Column>
-            <ColumnLeft>
+            <SmallColumn>
               메뉴명
-            </ColumnLeft>
-            <ColumnRight>
+            </SmallColumn>
+            <BigColumn>
               <input
                 type="text"
                 className='form-control'
                 value={newMenu?.name}
                 onChange={(e) => setNewMenu({...newMenu, name: e.target.value} as Menu)}
               />
-            </ColumnRight>
+            </BigColumn>
           </Column>
           <Column>
-            <ColumnLeft>
+            <SmallColumn>
               분류
-            </ColumnLeft>
-            <ColumnRight>
+            </SmallColumn>
+            <BigColumn>
               <select
                 className='form-select'
                 value={newMenu?.category}
@@ -66,7 +66,7 @@ export default function MakeMenuModal(props: MakeMenuModalProps) {
                   );
                 })}
               </select>
-            </ColumnRight>
+            </BigColumn>
           </Column>
         </div>
       </DialogContent>

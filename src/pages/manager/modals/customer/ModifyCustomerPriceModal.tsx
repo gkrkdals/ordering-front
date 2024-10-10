@@ -3,7 +3,7 @@ import React, {useContext, useEffect, useState} from "react";
 import {MenuCategoryContext} from "@src/contexts/manager/MenuCategoryContext.tsx";
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
-import {Column, ColumnLeft, ColumnRight} from "@src/components/atoms/Columns.tsx";
+import {Column, SmallColumn, BigColumn} from "@src/components/atoms/Columns.tsx";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import client from "@src/utils/client.ts";
 import {CustomerPrice} from "@src/models/manager/CustomerPrice.ts";
@@ -66,17 +66,17 @@ export default function ModifyCustomerPriceModal(props: ModifyCustomerPriceModal
         <p className='text-secondary'>단위는 천원입니다.</p>
         {customMenuCategories.map(category => (
           <Column key={category.id}>
-            <ColumnLeft>
+            <SmallColumn>
               {menuCategories.find(c => c.id === category.id)?.name}
-            </ColumnLeft>
-            <ColumnRight>
+            </SmallColumn>
+            <BigColumn>
               <FormControl
                 type='number'
                 value={category.price}
                 onChange={e => handleChange(e, category.id)}
                 placeholder='천원'
               />
-            </ColumnRight>
+            </BigColumn>
           </Column>
         ))}
 

@@ -2,7 +2,7 @@ import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {useContext, useEffect, useState} from "react";
 import client from "@src/utils/client.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
-import {Column, ColumnLeft, ColumnRight, Wrapper} from "@src/components/atoms/Columns.tsx";
+import {Column, SmallColumn, BigColumn, Wrapper} from "@src/components/atoms/Columns.tsx";
 import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";
 import {DangerButton, PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import ModifyCustomerPriceModal from "@src/pages/manager/modals/customer/ModifyCustomerPriceModal.tsx";
@@ -57,52 +57,52 @@ export function ModifyCustomerModal(
         <DialogContent>
           <Wrapper>
             <Column>
-              <ColumnLeft>고객명</ColumnLeft>
-              <ColumnRight>
+              <SmallColumn>고객명</SmallColumn>
+              <BigColumn>
                 <input
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.name}
                   onChange={(e) => setModifyingCustomer({...modifyingCustomer, name: e.target.value} as CustomerRaw)}
                 />
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>주소</ColumnLeft>
-              <ColumnRight>
+              <SmallColumn>주소</SmallColumn>
+              <BigColumn>
                 <input
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.address}
                   onChange={(e) => setModifyingCustomer({...modifyingCustomer, address: e.target.value} as CustomerRaw)}
                 />
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>층수</ColumnLeft>
-              <ColumnRight>
+              <SmallColumn>층수</SmallColumn>
+              <BigColumn>
                 <input
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.floor}
                   onChange={(e) => setModifyingCustomer({...modifyingCustomer, floor: e.target.value} as CustomerRaw)}
                 />
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>비고</ColumnLeft>
-              <ColumnRight>
+              <SmallColumn>비고</SmallColumn>
+              <BigColumn>
                 <input
                   type="text"
                   className='form-control'
                   value={modifyingCustomer?.memo}
                   onChange={(e) => setModifyingCustomer({...modifyingCustomer, memo: e.target.value} as CustomerRaw)}
                 />
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>고객분류</ColumnLeft>
-              <ColumnRight>
+              <SmallColumn>고객분류</SmallColumn>
+              <BigColumn>
                 <select
                   className='form-select'
                   value={modifyingCustomer?.category}
@@ -114,7 +114,7 @@ export function ModifyCustomerModal(
                     );
                   })}
                 </select>
-              </ColumnRight>
+              </BigColumn>
             </Column>
           </Wrapper>
         </DialogContent>

@@ -15,14 +15,15 @@ import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 import {Column} from "@src/models/manager/Column.ts";
 import {useTableSort} from "@src/hooks/UseTableSort.tsx";
 
-let intervalId = 0;
+let intervalId: undefined | ReturnType<typeof setTimeout>;
 
 const columns: Column[] = [
   {key: '', name: '순번'},
   {key: 'customer_name', name: '고객명'},
   {key: 'menu_name', name: '메뉴'},
   {key: 'request', name: '요청사항'},
-  {key: 'status', name: '상태'}
+  {key: 'status', name: '상태'},
+  {key: 'credit', name: '잔금'}
 ];
 
 export default function OrderDisplay() {
@@ -55,7 +56,8 @@ export default function OrderDisplay() {
     searchData,
     setSearchData,
     url,
-    setUrl
+    setUrl,
+    debouncedSearchText
   } = useTable<OrderStatusRaw>('/api/manager/order', params);
 
   // reload 뮤터블
@@ -148,7 +150,7 @@ export default function OrderDisplay() {
   useEffect(() => {
     socket.removeListener('refresh');
     socket.on('refresh', reload);
-  }, [url, currentPage, params])
+  }, [url, currentPage, params, debouncedSearchText])
 
   return (
     <>

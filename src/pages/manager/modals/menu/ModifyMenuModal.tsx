@@ -4,7 +4,7 @@ import {useContext, useEffect, useState} from "react";
 import {MenuCategoryContext} from "@src/contexts/manager/MenuCategoryContext.tsx";
 import client from "@src/utils/client.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
-import {Column, ColumnLeft, ColumnRight} from "@src/components/atoms/Columns.tsx";
+import {Column, SmallColumn, BigColumn} from "@src/components/atoms/Columns.tsx";
 import {DangerButton, PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 
 interface ModifyMenuModal extends BasicModalProps {
@@ -48,23 +48,23 @@ export default function ModifyMenuModal(props: ModifyMenuModal) {
         <DialogContent>
           <div className='py-2'>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 메뉴명
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 <input
                   type="text"
                   className='form-control'
                   value={modifyingMenu?.name}
                   onChange={(e) => setModifyingMenu({...modifyingMenu, name: e.target.value} as Menu)}
                 />
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 분류
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 <select
                   className='form-select'
                   value={modifyingMenu?.category}
@@ -81,13 +81,13 @@ export default function ModifyMenuModal(props: ModifyMenuModal) {
                     );
                   })}
                 </select>
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 품절여부
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 <div className='d-flex justify-content-between'>
                   <div>
                     <input
@@ -110,7 +110,7 @@ export default function ModifyMenuModal(props: ModifyMenuModal) {
                     <label htmlFor="soldout">품절</label>
                   </div>
                 </div>
-              </ColumnRight>
+              </BigColumn>
             </Column>
           </div>
         </DialogContent>

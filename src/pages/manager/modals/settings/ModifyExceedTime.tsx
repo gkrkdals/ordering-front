@@ -15,7 +15,7 @@ export default function ModifyExceedTime(props: ModifyExceedTimeProps) {
   useEffect(() => {
     if (props.open) {
       client
-        .get('/api/manager/settings')
+        .get('/api/manager/settings/exceed')
         .then(res => {
           setCookExceed(res.data[0].value)
           setDeliverDelay(res.data[1].value)
@@ -24,7 +24,7 @@ export default function ModifyExceedTime(props: ModifyExceedTimeProps) {
   }, [props.open]);
 
   async function handleSave() {
-    await client.put('/api/manager/settings', {
+    await client.put('/api/manager/settings/exceed', {
       1: parseInt(cookExceed),
       2: parseInt(deliverDelay),
     });

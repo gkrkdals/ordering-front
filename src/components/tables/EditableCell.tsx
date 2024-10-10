@@ -5,9 +5,11 @@ interface EditableCellProps {
   isEditing: boolean;
   onClick: () => void;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
+  suggestions?: string[];
+  id?: string;
 }
 
-export default function EditableCell({ value, isEditing, onClick, onChange }: EditableCellProps) {
+export default function EditableCell({ value, isEditing, onClick, onChange, suggestions, id }: EditableCellProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -17,16 +19,26 @@ export default function EditableCell({ value, isEditing, onClick, onChange }: Ed
   }, [isEditing]);
 
   return isEditing ? (
-    <input
-      ref={inputRef}
-      type="text"
-      value={value}
-      onChange={onChange}
-      onBlur={onClick}
-    />
+    <>
+      <input
+        ref={inputRef}
+        type="text"
+        value={value}
+        onChange={onChange}
+        onBlur={onClick}
+        list={id}
+      />
+      {suggestions && (
+        <datalist id={id}>
+          {suggestions?.map((item, i) => (
+            <option key={i} value={item}>{item}</option>
+          ))}
+        </datalist>
+      )}
+    </>
   ) : (
     <div
-      style={{ width: '100%' }}
+      style={{width: '100%'}}
       onClick={onClick}
       className={value.length === 0 ? 'text-secondary' : ''}
     >

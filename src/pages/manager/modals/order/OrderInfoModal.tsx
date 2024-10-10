@@ -2,7 +2,7 @@ import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {useEffect, useState} from "react";
 import {Dialog, DialogContent, DialogActions, DialogTitle} from "@mui/material";
 import {DangerButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
-import {Column, ColumnLeft, ColumnRight} from "@src/components/atoms/Columns.tsx";
+import {Column, SmallColumn, BigColumn} from "@src/components/atoms/Columns.tsx";
 import client from "@src/utils/client.ts";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import {formatCurrency, formatFloor} from "@src/utils/data.ts";
@@ -71,26 +71,26 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
         <DialogContent sx={{ width: '310px' }}>
           <div className='py-2'>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 순번
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 {currentOrder?.num}
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 고객명
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 {currentOrder?.customer_name}
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 메뉴
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 <input
                   type="text"
                   className='form-control form-control-sm'
@@ -98,45 +98,45 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
                   onClick={handleClickOnMenu}
                   readOnly
                 />
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 주소
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 {currentOrder?.address} {formatFloor(currentOrder?.floor)}
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 상세<br/>요청사항
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 {currentOrder?.request}
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 고객비고
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 {currentOrder?.customer_memo}
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column>
-              <ColumnLeft>
+              <SmallColumn>
                 잔금
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 {formatCurrency((currentOrder?.credit ?? 0) * -1)}
-              </ColumnRight>
+              </BigColumn>
             </Column>
             <Column align='start'>
-              <ColumnLeft>
+              <SmallColumn>
                 주문기록
-              </ColumnLeft>
-              <ColumnRight>
+              </SmallColumn>
+              <BigColumn>
                 {orderHistory.map((history, i) =>
                   <p key={i}>
                     {history.status}
@@ -144,7 +144,7 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
                     {formatDate(history.time)}
                   </p>
                 )}
-              </ColumnRight>
+              </BigColumn>
             </Column>
           </div>
         </DialogContent>

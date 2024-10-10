@@ -10,10 +10,14 @@ export default function OrderDetail() {
     <Table tablesize='small' style={{ fontSize: '11pt', tableLayout: 'fixed' }}>
       <TBody>
         {orderSummary.map((order, i) => {
+          const category = orderCategories.find((category) => category.status === order.status);
+
           return (
             <TRow key={i}>
               <Cell>{order.menuName}</Cell>
-              <Cell>{orderCategories.find((category) => category.status === order.status)?.name}</Cell>
+              <Cell style={{ backgroundColor: `#${category?.hex}` }}>
+                {category?.name}
+              </Cell>
             </TRow>
           )
         })}

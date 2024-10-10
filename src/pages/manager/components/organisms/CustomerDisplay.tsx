@@ -1,5 +1,5 @@
 import CustomerTable from "@src/pages/manager/components/molecules/CustomerTable.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import MakeCustomerModal from "@src/pages/manager/modals/customer/MakeCustomerModal.tsx";
 import useTable from "@src/hooks/UseTable.tsx";
 import BottomBar from "@src/pages/manager/components/molecules/BottomBar.tsx";
@@ -28,8 +28,16 @@ export default function CustomerDisplay() {
     next,
     reload,
     searchData,
-    setSearchData
+    setSearchData,
   } = useTable<CustomerRaw>('/api/manager/customer', params);
+
+  useEffect(() => {
+    window.addEventListener('reload', reload);
+
+    return () => {
+      window.removeEventListener('reload', reload);
+    }
+  }, []);
 
   return (
     <>

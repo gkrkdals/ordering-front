@@ -23,7 +23,7 @@ export default function ManagerPage() {
 
   useLayoutEffect(() => {
     client
-      .get('/api/auth/profile', { params: { permission: getUser() } })
+      .get('/api/auth/manager/profile', { params: { permission: getUser() } })
       .then((res) => setUser(res.data))
       .catch((e: AxiosError) => {
         if (e.response && e.response.status === 401) {

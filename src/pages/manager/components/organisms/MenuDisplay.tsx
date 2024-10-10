@@ -1,6 +1,6 @@
 import MenuTable from "@src/pages/manager/components/molecules/MenuTable.tsx";
 import Menu from "@src/models/common/Menu.ts";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import MakeMenuModal from "@src/pages/manager/modals/menu/MakeMenuModal.tsx";
 import useTable from "@src/hooks/UseTable.tsx";
 import BottomBar from "@src/pages/manager/components/molecules/BottomBar.tsx";
@@ -28,6 +28,14 @@ export default function MenuDisplay() {
     searchData,
     setSearchData,
   } = useTable<Menu>('/api/manager/menu', params);
+
+  useEffect(() => {
+    window.addEventListener('reload', reload);
+
+    return () => {
+      window.removeEventListener('reload', reload);
+    }
+  }, []);
 
   return (
     <>

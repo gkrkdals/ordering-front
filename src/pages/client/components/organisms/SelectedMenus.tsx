@@ -3,6 +3,7 @@ import {Table, Cell, TBody, TRow} from "@src/components/tables/Table.tsx";
 import SelectedMenu from "@src/models/client/SelectedMenu.ts";
 import React, {ChangeEvent, useEffect, useRef, useState} from "react";
 import EditableCell from "@src/components/tables/EditableCell.tsx";
+import client from "@src/utils/client.ts";
 
 interface SelectedMenusProps {
   selectedmenus: SelectedMenu[];
@@ -10,7 +11,7 @@ interface SelectedMenusProps {
 }
 
 export default function SelectedMenus({ selectedmenus, setselectedmenus }: SelectedMenusProps) {
-
+  const [recentRequests, setRecentRequests] = useState<string[]>([]);
   const [editingCellRow, setEditingCellRow] = useState<number | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -46,6 +47,12 @@ export default function SelectedMenus({ selectedmenus, setselectedmenus }: Selec
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    client
+      .get('/api/order/recent-request')
+      .then(res => setRecentRequests(res.data));
+  }, []);
+
   return (
       selectedmenus.length !== 0 && (<Card>
         <Table ref={tableRef} className='table table-sm table-bordered m-0' style={{ fontSize: "10pt", tableLayout: 'fixed' }}>
@@ -62,6 +69,8 @@ export default function SelectedMenus({ selectedmenus, setselectedmenus }: Selec
                       isEditing={editingCellRow === rowIndex}
                       onClick={() => handleCellClick(rowIndex)}
                       onChange={handleInputChange}
+                      suggestions={recentRequests}
+                      id={`requestSuggestion${rowIndex}`}
                     />
                   </Cell>
                 </TRow>

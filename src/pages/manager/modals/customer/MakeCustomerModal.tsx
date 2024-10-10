@@ -3,7 +3,7 @@ import Customer, {defaultCustomer} from "@src/models/common/Customer.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import BasicDialogProps from "@src/interfaces/BasicModalProps.ts";
 import client from "@src/utils/client.ts";
-import {Column, ColumnLeft, ColumnRight, Wrapper} from "@src/components/atoms/Columns.tsx";
+import {Column, SmallColumn, BigColumn, Wrapper} from "@src/components/atoms/Columns.tsx";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 
 interface MakeCustomerModalProps extends BasicDialogProps {
@@ -31,48 +31,48 @@ export default function MakeCustomerModal(props: MakeCustomerModalProps) {
       <DialogContent sx={{ width: '350px' }}>
         <Wrapper>
           <Column>
-            <ColumnLeft>고객명</ColumnLeft>
-            <ColumnRight>
+            <SmallColumn>고객명</SmallColumn>
+            <BigColumn>
               <input
                 type="text"
                 className='form-control'
                 value={newCustomer.name}
                 onChange={e => setNewCustomer({...newCustomer, name: e.target.value})}
               />
-            </ColumnRight>
+            </BigColumn>
           </Column>
           <Column>
-            <ColumnLeft>주소</ColumnLeft>
-            <ColumnRight>
+            <SmallColumn>주소</SmallColumn>
+            <BigColumn>
               <input
                 type="text"
                 className='form-control'
                 value={newCustomer.address}
                 onChange={e => setNewCustomer({...newCustomer, address: e.target.value})}
               />
-            </ColumnRight>
+            </BigColumn>
           </Column>
           <Column>
-            <ColumnLeft>층수</ColumnLeft>
-            <ColumnRight>
+            <SmallColumn>층수</SmallColumn>
+            <BigColumn>
               <input
                 type="text"
                 className='form-control'
                 value={newCustomer.floor}
                 onChange={e => setNewCustomer({...newCustomer, floor: e.target.value})}
               />
-            </ColumnRight>
+            </BigColumn>
           </Column>
           <Column>
-            <ColumnLeft>비고</ColumnLeft>
-            <ColumnRight>
+            <SmallColumn>비고</SmallColumn>
+            <BigColumn>
               <input
                 type="text"
                 className='form-control'
                 value={newCustomer.memo}
                 onChange={e => setNewCustomer({...newCustomer, memo: e.target.value})}
               />
-            </ColumnRight>
+            </BigColumn>
           </Column>
         </Wrapper>
       </DialogContent>

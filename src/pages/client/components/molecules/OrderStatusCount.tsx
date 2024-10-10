@@ -1,14 +1,16 @@
 import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
-import {useContext, useEffect} from "react";
+import {useContext, useEffect, useState} from "react";
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
 import {OrderSummaryContext} from "@src/contexts/client/OrderSummaryContext.tsx";
 import client from "@src/utils/client.ts";
 import {socket} from "@src/utils/socket.ts";
+import {StatusEnum} from "@src/models/common/StatusEnum.ts";
 
 export default function OrderStatusCount() {
 
   const [orderCategories] = useContext(OrderCategoryContext)!;
-  const [orderSummaries, setOrderSummaries] = useContext(OrderSummaryContext)!;
+  const [, setOrderSummaries] = useContext(OrderSummaryContext)!;
+  const [orderSummaryCount, setOrderSummaryCount] = useState<{ status: number, count: number }[]>([])
 
   useEffect(() => {
     function cleanup() {
@@ -28,7 +30,14 @@ export default function OrderStatusCount() {
           menuName: summary['menu_name']
         });
       })));
-    })
+
+      const res2 = await client.get('/api/order/summary/count');
+      setOrderSummaryCount(res2.data);
+    });
+
+    client
+      .get('/api/order/summary/count')
+      .then(res => setOrderSummaryCount(res.data))
 
     return () => {
       cleanup();
@@ -40,18 +49,26 @@ export default function OrderStatusCount() {
     <Table tablesize='small' style={{ tableLayout: 'fixed', fontSize: '11pt' }}>
       <TBody>
         <TRow>
-          {orderCategories.filter(category => category.status <= 4).map((category) => {
-            return <Cell key={category.name}>{category.name}</Cell>
-          })}
+          {
+            orderCategories
+              .filter(category => category.status <= StatusEnum.InDelivery)
+              .map((category) =>
+                <Cell key={category.name} style={{ backgroundColor: `#${category.hex}`}}>{category.name}</Cell>
+              )
+          }
         </TRow>
         <TRow>
-          {orderCategories.filter(category => category.status <= 4).map((category, i) => {
-            return (
-              <Cell key={i}>
-                {orderSummaries.filter((order) => order.status === category.status).length}건
-              </Cell>
-            );
-          })}
+          {
+            orderCategories
+              .filter(category => category.status <= StatusEnum.InDelivery)
+              .map((category, i) => {
+                return (
+                  <Cell key={i}>
+                    {orderSummaryCount.find((order) => order.status === category.status)?.count ?? 0}건
+                  </Cell>
+                );
+              })
+          }
         </TRow>
       </TBody>
     </Table>
