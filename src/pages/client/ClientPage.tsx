@@ -21,7 +21,11 @@ export default function ClientPage() {
   const [searchParams] = useSearchParams();
   const [selectedMenus, setSelectedMenus] = useState<SelectedMenu[]>([]);
   const [, setUserState] = useRecoilState(customerState);
-  const handleMenuClick = (menu: Menu) => setSelectedMenus((prev) => prev.concat({ menu, request: '' }));
+  const handleMenuClick = (menu: Menu) => {
+    if (menu.soldOut !== 1) {
+      setSelectedMenus((prev) => prev.concat({ menu, request: '' }));
+    }
+  };
 
   useLayoutEffect(() => {
     const id = searchParams.get('id');
@@ -38,7 +42,7 @@ export default function ClientPage() {
         <UpperBar/>
         <Container>
           <MenuTable onMenuClick={handleMenuClick}/>
-          <SelectedMenus selectedmenus={selectedMenus} setselectedmenus={setSelectedMenus} />
+          <SelectedMenus selectedMenus={selectedMenus} setSelectedMenus={setSelectedMenus} />
           <OrderCategoryProvider>
             <OrderSummaryProvider>
               <OrderButton selectedmenus={selectedMenus} setselectedmenus={setSelectedMenus} />

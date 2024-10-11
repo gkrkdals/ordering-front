@@ -1,5 +1,7 @@
 import User from "@src/models/manager/User.ts";
 
+export const LAST_SEQ = 10000;
+
 export function makePair<T>(data: T[]) {
   return data.reduce((prev, cur, index) => {
     if(index % 2 === 0) {
@@ -20,12 +22,18 @@ export function formatFloor(floor: string | undefined) {
   }
 }
 
-export function formatCurrency(num: number | undefined, noZero?: boolean) {
+export function formatCurrency(num: number | string | undefined, noZero?: boolean) {
   if (noZero && num === 0) {
     return '';
   }
 
-  return `${num?.toLocaleString('ko-KR')}₩`;
+  const n = typeof num === "string" ? parseInt(num) : num;
+
+  if (n === undefined) {
+    return '';
+  }
+
+  return `${n.toLocaleString('ko-KR')}₩`;
 }
 
 export function getUrl(user: User) {

@@ -27,6 +27,7 @@ export default function EditableCell({ value, isEditing, onClick, onChange, sugg
         onChange={onChange}
         onBlur={onClick}
         list={id}
+        style={{ width: '100%' }}
       />
       {suggestions && (
         <datalist id={id}>
@@ -38,7 +39,6 @@ export default function EditableCell({ value, isEditing, onClick, onChange, sugg
     </>
   ) : (
     <div
-      style={{width: '100%'}}
       onClick={onClick}
       className={value.length === 0 ? 'text-secondary' : ''}
     >

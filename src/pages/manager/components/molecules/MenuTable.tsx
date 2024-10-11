@@ -5,6 +5,7 @@ import React, {useState} from "react";
 import {Column} from "@src/models/manager/Column.ts";
 import client from "@src/utils/client.ts";
 import {PrimaryButton} from "@src/components/atoms/Buttons.tsx";
+import SetMenuShownOrder from "@src/pages/manager/modals/menu/SetMenuShownOrder.tsx";
 
 interface MenuTableProps {
   columns: Column[];
@@ -19,6 +20,7 @@ export default function MenuTable({columns, menus, page, reload, sort, setSort}:
   const [open, setOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
   const [allSoldOut, setAllSoldOut] = useState(false);
+  const [openMenuOrder, setOpenMenuOrder] = useState(false);
 
   function handleClickOnMenu(menu: Menu) {
     setSelectedMenu(menu);
@@ -62,9 +64,14 @@ export default function MenuTable({columns, menus, page, reload, sort, setSort}:
         </TBody>
       </Table>
       <div className='mt-2' />
-      <PrimaryButton onClick={toggleSoldOutAll}>
-        전체 품절 전환
-      </PrimaryButton>
+      <div className='d-flex gap-3'>
+        <PrimaryButton onClick={toggleSoldOutAll}>
+          전체 품절 전환
+        </PrimaryButton>
+        <PrimaryButton onClick={() => setOpenMenuOrder(true)}>
+          메뉴 순서 설정
+        </PrimaryButton>
+      </div>
 
       <ModifyMenuModal
         currentMenu={selectedMenu}
@@ -72,6 +79,8 @@ export default function MenuTable({columns, menus, page, reload, sort, setSort}:
         open={open}
         setOpen={setOpen}
       />
+
+      <SetMenuShownOrder open={openMenuOrder} setOpen={setOpenMenuOrder} />
     </>
   )
 }

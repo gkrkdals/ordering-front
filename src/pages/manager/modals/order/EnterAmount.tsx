@@ -41,7 +41,7 @@ export default function EnterAmount({ modifyingOrder, ...props }: ClickToGoNextP
     <Dialog open={props.open}>
       <DialogContent>
         <p className='mb-1 text-secondary'>잔액을 입력하지 않으면 후불 처리됩니다.</p>
-        <p>잔금: {formatCurrency((modifyingOrder?.credit ?? 0) * -1)}</p>
+        <p>잔금: {formatCurrency(modifyingOrder?.credit)}</p>
         <div className='mb-4'>
           <input
             type="number"

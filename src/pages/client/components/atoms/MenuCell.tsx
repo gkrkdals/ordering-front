@@ -14,7 +14,7 @@ export default function MenuCell({ menu, onClick, showPrice }: MenuCellProps) {
     <Cell
       className='text-center'
       style={{ fontSize: '12pt', cursor: 'pointer' }}
-      hex={menu.menuCategory?.hex}
+      hex={menu.soldOut === 1 ? 'AAAAAA' : menu.menuCategory?.hex}
       onClick={onClick}
     >
       {menu.name}
@@ -23,9 +23,11 @@ export default function MenuCell({ menu, onClick, showPrice }: MenuCellProps) {
           <br/>
           <p className='m-0' style={{ fontSize: '0.9em'}}>
             {formatCurrency(menu.menuCategory?.price)}
+
           </p>
         </>
       )}
+      {menu.soldOut === 1 && <p className='m-0 text-danger'>품절</p>}
     </Cell>
   )
 }

@@ -6,11 +6,11 @@ import EditableCell from "@src/components/tables/EditableCell.tsx";
 import client from "@src/utils/client.ts";
 
 interface SelectedMenusProps {
-  selectedmenus: SelectedMenu[];
-  setselectedmenus: React.Dispatch<React.SetStateAction<SelectedMenu[]>>;
+  selectedMenus: SelectedMenu[];
+  setSelectedMenus: React.Dispatch<React.SetStateAction<SelectedMenu[]>>;
 }
 
-export default function SelectedMenus({ selectedmenus, setselectedmenus }: SelectedMenusProps) {
+export default function SelectedMenus({ selectedMenus, setSelectedMenus }: SelectedMenusProps) {
   const [recentRequests, setRecentRequests] = useState<string[]>([]);
   const [editingCellRow, setEditingCellRow] = useState<number | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
@@ -22,7 +22,7 @@ export default function SelectedMenus({ selectedmenus, setselectedmenus }: Selec
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     const { value } = e.target;
 
-    setselectedmenus(prev => {
+    setSelectedMenus(prev => {
       const newData = [...prev];
       if (editingCellRow !== null) {
         newData[editingCellRow].request = value;
@@ -42,6 +42,10 @@ export default function SelectedMenus({ selectedmenus, setselectedmenus }: Selec
     }
   }
 
+  function handleClickOnCancel(i: number) {
+    setSelectedMenus(selectedMenus.filter((_, index) => index !== i));
+  }
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -54,16 +58,16 @@ export default function SelectedMenus({ selectedmenus, setselectedmenus }: Selec
   }, []);
 
   return (
-      selectedmenus.length !== 0 && (<Card>
+      selectedMenus.length !== 0 && (<Card>
         <Table ref={tableRef} className='table table-sm table-bordered m-0' style={{ fontSize: "10pt", tableLayout: 'fixed' }}>
           <TBody>
-            {selectedmenus.map((selectedMenu, rowIndex) => {
+            {selectedMenus.map((selectedMenu, rowIndex) => {
               return (
                 <TRow key={rowIndex}>
                   <Cell style={{ width: '40%' }} hex={selectedMenu.menu.menuCategory?.hex}>
                     {selectedMenu.menu.name}
                   </Cell>
-                  <Cell style={{ width: '60%' }}>
+                  <Cell>
                     <EditableCell
                       value={selectedMenu.request}
                       isEditing={editingCellRow === rowIndex}
@@ -72,6 +76,9 @@ export default function SelectedMenus({ selectedmenus, setselectedmenus }: Selec
                       suggestions={recentRequests}
                       id={`requestSuggestion${rowIndex}`}
                     />
+                  </Cell>
+                  <Cell style={{width: 30}} onClick={() => handleClickOnCancel(rowIndex)}>
+                    <i className="bi bi-x" style={{ fontSize: '1.4em' }}></i>
                   </Cell>
                 </TRow>
               )

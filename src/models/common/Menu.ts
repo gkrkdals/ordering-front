@@ -1,4 +1,5 @@
 import MenuCategory from "@src/models/common/MenuCategory.ts";
+import {LAST_SEQ} from "@src/utils/data.ts";
 
 export default interface Menu {
   id: number;
@@ -6,6 +7,7 @@ export default interface Menu {
   category: number;
   soldOut: number;
   menuCategory?: MenuCategory;
+  seq: number;
 }
 
 export const defaultMenu: Menu = {
@@ -13,4 +15,5 @@ export const defaultMenu: Menu = {
   name: '',
   category: 1,
   soldOut: 0,
+  seq: LAST_SEQ
 }

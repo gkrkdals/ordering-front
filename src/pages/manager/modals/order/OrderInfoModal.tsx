@@ -124,12 +124,23 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
                 {currentOrder?.customer_memo}
               </BigColumn>
             </Column>
+            {
+              currentOrder?.location &&
+              <Column>
+                <SmallColumn>
+                  그릇위치
+                </SmallColumn>
+                <BigColumn>
+                  {currentOrder?.location}
+                </BigColumn>
+              </Column>
+            }
             <Column>
               <SmallColumn>
                 잔금
               </SmallColumn>
               <BigColumn>
-                {formatCurrency((currentOrder?.credit ?? 0) * -1)}
+                {formatCurrency(currentOrder?.credit)}
               </BigColumn>
             </Column>
             <Column align='start'>

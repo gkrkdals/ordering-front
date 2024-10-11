@@ -60,29 +60,31 @@ export default function ModifyMenuModal(props: ModifyMenuModal) {
                 />
               </BigColumn>
             </Column>
-            <Column>
-              <SmallColumn>
-                분류
-              </SmallColumn>
-              <BigColumn>
-                <select
-                  className='form-select'
-                  value={modifyingMenu?.category}
-                  onChange={(e) => setModifyingMenu({
-                    ...modifyingMenu,
-                    category: parseInt(e.target.value),
-                  } as Menu)}
-                >
-                  {menuCategories.map((category, i) => {
-                    return (
-                      <option key={i} value={category.id}>
-                        {category.name}({category.price}원)
-                      </option>
-                    );
-                  })}
-                </select>
-              </BigColumn>
-            </Column>
+            {modifyingMenu?.id !== 0 && (
+              <Column>
+                <SmallColumn>
+                  분류
+                </SmallColumn>
+                <BigColumn>
+                  <select
+                    className='form-select'
+                    value={modifyingMenu?.category}
+                    onChange={(e) => setModifyingMenu({
+                      ...modifyingMenu,
+                      category: parseInt(e.target.value),
+                    } as Menu)}
+                  >
+                    {menuCategories.map((category, i) => {
+                      return (
+                        <option key={i} value={category.id}>
+                          {category.name}({category.price}원)
+                        </option>
+                      );
+                    })}
+                  </select>
+                </BigColumn>
+              </Column>
+            )}
             <Column>
               <SmallColumn>
                 품절여부
@@ -116,9 +118,11 @@ export default function ModifyMenuModal(props: ModifyMenuModal) {
         </DialogContent>
         <DialogActions>
           <SecondaryButton onClick={() => props.setOpen(false)}>닫기</SecondaryButton>
-          <DangerButton onClick={handlePressOnDelete}>
-            삭제
-          </DangerButton>
+          {modifyingMenu?.id !== 0 && (
+            <DangerButton onClick={handlePressOnDelete}>
+              삭제
+            </DangerButton>
+          )}
           <PrimaryButton onClick={handleUpdate}>적용</PrimaryButton>
         </DialogActions>
       </Dialog>

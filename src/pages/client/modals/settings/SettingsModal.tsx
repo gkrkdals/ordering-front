@@ -96,8 +96,8 @@ export default function SettingsModal(props: SettingsModalProps) {
           imgSource={imgSource}
           settings={settings}
         />
-        <RecentOrders recentMenus={recentMenus}/>
-        <p className='mt-5 mb-1' style={{fontSize: '1.4em'}}>
+        <RecentOrders recentMenus={recentMenus} open={props.open} />
+        <p className='mt-5 mb-1' style={{fontSize: '1.4em', fontWeight: 'bold'}}>
           일반설정
         </p>
         <div className='d-flex justify-content-between align-items-center'>
@@ -114,7 +114,7 @@ export default function SettingsModal(props: SettingsModalProps) {
             onChange={toggleHideOrderStatus}
           />
         </div>
-        <div style={{ height: 50 }} />
+        <div style={{height: 50}}/>
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={() => props.setOpen(false)}>
