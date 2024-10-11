@@ -27,18 +27,22 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
       </p>
       {imgSource && <img src="/logo_horizontal.png" alt="넘버원푸드 로고" style={{width: '100%'}}/>}
       <div className='mb-3'/>
-      {settings.map(setting => (
-        // <div className='d-flex justify-content-between' key={setting.sml}>
-        //   <div className='text-secondary'>{setting.name}</div>
-        //   <div>{setting.stringValue}</div>
-        // </div>
-        <Column>
+      {settings.map((setting, i) => (
+        <Column key={i}>
           <SmallColumn>
             <div className='text-secondary'>{setting.name}</div>
           </SmallColumn>
           <BigColumn>
             <div className='w-100 d-flex justify-content-end'>
-              {setting.stringValue}
+              {
+                i === 0 ?
+                  (<div>
+                    {setting.stringValue.split(/[\/ ]/g).map((line, i) => (
+                      <p key={i} className='m-0'>{line}</p>
+                    ))}
+                  </div>) :
+                  setting.stringValue
+              }
             </div>
           </BigColumn>
         </Column>
