@@ -96,7 +96,6 @@ export default function SettingsModal(props: SettingsModalProps) {
           imgSource={imgSource}
           settings={settings}
         />
-        <RecentOrders recentMenus={recentMenus} open={props.open} />
         <p className='mt-5 mb-1' style={{fontSize: '1.4em', fontWeight: 'bold'}}>
           일반설정
         </p>
@@ -114,6 +113,8 @@ export default function SettingsModal(props: SettingsModalProps) {
             onChange={toggleHideOrderStatus}
           />
         </div>
+        <RecentOrders recentMenus={recentMenus} open={props.open}/>
+
         <div style={{height: 50}}/>
       </DialogContent>
       <DialogActions>
