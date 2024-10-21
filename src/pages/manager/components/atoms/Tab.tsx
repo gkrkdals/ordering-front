@@ -1,8 +1,6 @@
 import React, {useState} from "react";
 import {getUser} from "@src/utils/socket.ts";
-import {DangerButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
-import client from "@src/utils/client.ts";
-import {useNavigate} from "react-router-dom";
+import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import SettingModal from "@src/pages/manager/modals/settings/SettingModal.tsx";
 
 interface TabProps {
@@ -13,12 +11,6 @@ interface TabProps {
 export default function Tab({ setmenu, menu }: TabProps) {
 
   const [openSettingModal, setOpenSettingModal] = useState(false);
-  const navigate = useNavigate();
-
-  async function handleLogout() {
-    await client.get('/api/auth/manager/logout');
-    navigate('/login');
-  }
 
   return getUser() === 'manager' && (
     <>
@@ -38,7 +30,6 @@ export default function Tab({ setmenu, menu }: TabProps) {
           <SecondaryButton onClick={() => setOpenSettingModal(true)}>
             <i className="bi bi-gear"/>
           </SecondaryButton>
-          <DangerButton onClick={handleLogout}>로그아웃</DangerButton>
         </div>
       </div>
 

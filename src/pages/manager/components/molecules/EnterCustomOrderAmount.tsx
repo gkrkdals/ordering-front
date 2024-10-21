@@ -6,22 +6,28 @@ import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/Ord
 import client from "@src/utils/client.ts";
 
 interface EnterCustomAmountProps extends BasicModalProps {
+  cannotUpdate: boolean;
+  setCannotUpdate: (cannotUpdate: boolean) => void;
   modifyingOrder: OrderStatusWithNumber | null;
 }
 
-export default function EnterCustomAmount({ open, setOpen, modifyingOrder }: EnterCustomAmountProps) {
+export default function EnterCustomAmount({ open, setOpen, modifyingOrder, cannotUpdate, setCannotUpdate }: EnterCustomAmountProps) {
 
   const [paidAmount, setPaidAmount] = useState('');
 
   async function handleClickOnConfirm() {
-    await client.put('/api/manager/order', {
-      orderId: modifyingOrder?.id,
-      newStatus: (modifyingOrder?.status ?? 0) + 1,
-      paidAmount: parseInt(paidAmount) * 1000,
-      menu: modifyingOrder?.menu,
-    });
-    setOpen(false);
-    setPaidAmount('');
+    if (!cannotUpdate) {
+      setCannotUpdate(true);
+      await client.put('/api/manager/order', {
+        orderId: modifyingOrder?.id,
+        newStatus: (modifyingOrder?.status ?? 0) + 1,
+        paidAmount: parseInt(paidAmount) * 1000,
+        menu: modifyingOrder?.menu,
+      });
+      setCannotUpdate(false);
+      setOpen(false);
+      setPaidAmount('');
+    }
   }
 
   return (

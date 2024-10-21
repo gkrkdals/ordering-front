@@ -1,7 +1,7 @@
 import CenterContainer from "@src/components/CenterContainer.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 import {PrimaryButton} from "@src/components/atoms/Buttons.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import client from "@src/utils/client.ts";
 import {AxiosError} from "axios";
 import {useRecoilState} from "recoil";
@@ -9,6 +9,8 @@ import userState from "@src/recoil/atoms/UserState.ts";
 import User from "@src/models/manager/User.ts";
 import {useNavigate} from "react-router-dom";
 import {getUrl} from "@src/utils/data.ts";
+import {Capacitor} from "@capacitor/core";
+import {ForegroundService} from "@capawesome-team/capacitor-android-foreground-service";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -31,6 +33,19 @@ export default function LoginPage() {
       }
     }
   }
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+      console.log('hey hey')
+      ForegroundService.checkPermissions()
+        .then((res) => {
+          if (res.display !== "granted") {
+            console.log('ey ey')
+            ForegroundService.requestPermissions();
+          }
+        })
+    }
+  }, []);
 
   return (
     <CenterContainer>

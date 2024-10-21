@@ -6,6 +6,7 @@ import BottomBar from "@src/pages/manager/components/molecules/BottomBar.tsx";
 import {Column} from "@src/models/manager/Column.ts";
 import {useTableSort} from "@src/hooks/UseTableSort.tsx";
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
+import Pagination from "@src/pages/manager/components/atoms/Pagination.tsx";
 
 const columns: Column[] = [
   {key: '', name: '순번'},
@@ -41,15 +42,7 @@ export default function CustomerDisplay() {
 
   return (
     <>
-      <div className='mb-2' />
-      <CustomerTable
-        columns={columns}
-        sort={sort}
-        setSort={setSort}
-        customers={data}
-        page={currentPage}
-        reload={reload}
-      />
+      <div className='mb-2'/>
       <BottomBar
         mode={'customer'}
         searchData={searchData}
@@ -60,6 +53,25 @@ export default function CustomerDisplay() {
         next={next}
         setOpen={setOpen}
       />
+      <CustomerTable
+        columns={columns}
+        sort={sort}
+        setSort={setSort}
+        customers={data}
+        page={currentPage}
+        reload={reload}
+      />
+
+      <div className='d-flex justify-content-end'>
+        <div className='d-flex d-sm-block justify-content-end justify-content-sm-start'>
+          <Pagination
+            currentpage={currentPage}
+            totalpage={totalPage}
+            onclickleft={prev}
+            onclickright={next}
+          />
+        </div>
+      </div>
 
       <MakeCustomerModal reload={reload} open={open} setOpen={setOpen}/>
     </>

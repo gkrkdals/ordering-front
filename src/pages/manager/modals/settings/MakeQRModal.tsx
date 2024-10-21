@@ -14,7 +14,7 @@ interface MakeQrModalProps extends BasicModalProps {
 
 export default function MakeQRModal(props: MakeQrModalProps) {
 
-  const [imgSource, setImgSource] = useState<string | null>(null);
+  // const [imgSource, setImgSource] = useState<string | null>(null);
   const [customer, ] = useContext(CustomerContext)!;
   const [selectedCustomer, setSelectedCustomer] = useState<number>(-1);
 
@@ -52,7 +52,7 @@ export default function MakeQRModal(props: MakeQrModalProps) {
         const reader = new FileReader();
         reader.readAsDataURL(res.data);
         reader.onload = () => {
-          setImgSource(reader.result as string);
+          // setImgSource(reader.result as string);
         }
       });
   }, []);
@@ -65,9 +65,10 @@ export default function MakeQRModal(props: MakeQrModalProps) {
       <DialogContent>
         <div className={`border border-4 rounded border-danger px-2 py-3 ${customerName === '' ? 'd-none' : ''}`}>
           <div className='d-flex justify-content-center'>
-            {imgSource && <img src={imgSource} alt='넘버원푸드 로고' style={{maxWidth: 50}}/>}
+            {/*{imgSource && <img src={imgSource} alt='넘버원푸드 로고' style={{maxWidth: 50}}/>}*/}
+            <p style={{ fontSize: '14pt' }}>넘버원푸드</p>
           </div>
-          <div className='d-flex justify-content-center mt-2'>
+          <div className='d-flex justify-content-center mt-1'>
             {qrData !== '' && <QRCodeCanvas value={qrData}/>}
           </div>
           <div className='d-flex justify-content-center mt-1'>

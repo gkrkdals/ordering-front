@@ -33,7 +33,7 @@ export function formatCurrency(num: number | string | undefined, noZero?: boolea
     return '';
   }
 
-  return `${n.toLocaleString('ko-KR')}₩`;
+  return `${n.toLocaleString('ko-KR').replace('-0', '0')}₩`;
 }
 
 export function getUrl(user: User) {

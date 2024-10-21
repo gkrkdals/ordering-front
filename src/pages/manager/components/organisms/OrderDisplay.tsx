@@ -1,21 +1,21 @@
 import OrderTable from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import {OrderStatusRaw} from "@src/models/manager/OrderStatusRaw.ts";
 import MakeOrderModal from "@src/pages/manager/modals/order/MakeOrderModal.tsx";
-import React, {useEffect, useRef, useState} from "react";
-import {socket} from "@src/utils/socket.ts";
+import {useEffect, useRef, useState} from "react";
+import {getUser, socket} from "@src/utils/socket.ts";
 import useTable from "@src/hooks/UseTable.tsx";
-import {playAudio} from "@src/utils/music.ts";
+import {AudioRefObject, getAudio, getMedia, playAudio} from "@src/utils/music.ts";
 import BottomBar from "@src/pages/manager/components/molecules/BottomBar.tsx";
 import client from "@src/utils/client.ts";
 import {MuteButton} from "@src/pages/client/components/atoms/MuteButton.tsx";
-import {useNavigate} from "react-router-dom";
 import {useRecoilValue} from "recoil";
 import UserState from "@src/recoil/atoms/UserState.ts";
 import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 import {Column} from "@src/models/manager/Column.ts";
 import {useTableSort} from "@src/hooks/UseTableSort.tsx";
-
-let intervalId: undefined | ReturnType<typeof setTimeout>;
+import {Capacitor} from "@capacitor/core";
+import Pagination from "@src/pages/manager/components/atoms/Pagination.tsx";
+import {startForegroundService, stopForegroundService} from "@src/utils/native.ts";
 
 const columns: Column[] = [
   {key: '', name: '순번'},
@@ -29,15 +29,26 @@ const columns: Column[] = [
 export default function OrderDisplay() {
   const [open, setOpen] = useState(false);
   const [muted, setMuted] = useState(true);
-  const navigate = useNavigate();
   const user = useRecoilValue(UserState);
 
   // 소리 재생을 위한 오디오 레퍼런스
-  const newOrderSoundRef = useRef(new Audio('/alarms/new_order.mp3'));
-  const cookingExceededRef = useRef(new Audio('/alarms/cooking_exceeded.mp3'));
-  const newDeliveryRef = useRef(new Audio('/alarms/new_delivery.mp3'));
-  const deliverDelayedRef = useRef(new Audio('/alarms/deliver_delayed.mp3'));
-  const newDishDisposal = useRef(new Audio('/alarms/new_dish_disposal.mp3'));
+  const newOrderSoundRef = useRef<HTMLAudioElement | null>(null);
+  const cookingStartedRef = useRef<HTMLAudioElement | null>(null);
+  const cookingExceededRef = useRef<HTMLAudioElement | null>(null);
+  const newDeliveryRef = useRef<HTMLAudioElement | null>(null);
+  const deliverDelayedRef = useRef<HTMLAudioElement | null>(null);
+  const newDishDisposalRef = useRef<HTMLAudioElement | null>(null);
+
+  // 앱 오디오 레퍼런스
+  const newOrderSoundAppRef = useRef<Media | null>(null);
+  const cookingStartedAppRef = useRef<Media | null>(null);
+  const cookingExceededAppRef = useRef<Media | null>(null);
+  const newDeliveryAppRef = useRef<Media | null>(null);
+  const deliverDelayedAppRef = useRef<Media | null>(null);
+  const newDishDisposalAppRef = useRef<Media | null>(null);
+
+  // 인터벌 ID 레퍼런스
+  const intervalId = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // 데이터 정렬
   const [sort, setSort, params] = useTableSort(columns);
@@ -63,17 +74,13 @@ export default function OrderDisplay() {
   // reload 뮤터블
   const reloadRef = useRef(reload);
 
-  async function handleLogout() {
-    await client.get('/api/auth/manager/logout');
-    navigate('/login');
+  function clearAlarm() { clearInterval(intervalId.current) }
+  function startAlarm(audioRef: AudioRefObject) {
+    clearAlarm();
+    playAudio(audioRef);
+    intervalId.current = setInterval(() => playAudio(audioRef), 3000);
   }
 
-  function clearAlarm() { clearInterval(intervalId) }
-  function startAlarm(audioRef: React.MutableRefObject<HTMLAudioElement>) {
-    console.log(`playing: ${audioRef.current.src}`)
-    clearAlarm();
-    intervalId = setInterval(() => playAudio(audioRef), 3000);
-  }
   function cleanup() {
     clearAlarm();
     socket.removeAllListeners();
@@ -81,6 +88,39 @@ export default function OrderDisplay() {
   }
 
   useEffect(() => {
+    const attachSoundEffects = async (mode: 'web' | 'app') => {
+      if (mode === 'web') {
+        socket.on('new_order_alarm', () => startAlarm(newOrderSoundRef));
+        socket.on('cooking_started', () => playAudio(cookingStartedRef));
+        if (getUser() === 'cook') {
+          socket.on('cook_exceeded', () => playAudio(cookingExceededRef));
+          socket.on('clear_cook_alarm', clearAlarm);
+        } else {
+          socket.on('new_delivery_alarm', () => playAudio(newDeliveryRef));
+          socket.on('deliver_delayed', () => playAudio(deliverDelayedRef));
+          socket.on('new_dish_disposal', () => playAudio(newDishDisposalRef));
+          socket.on('clear_rider_alarm', clearAlarm)
+        }
+      } else {
+        socket.on('new_order_alarm', () => startAlarm(newOrderSoundAppRef));
+        socket.on('cooking_started', () => playAudio(cookingStartedAppRef));
+        if (getUser() === 'cook') {
+          socket.on('cook_exceeded', () => playAudio(cookingExceededAppRef));
+          socket.on('clear_cook_alarm', clearAlarm);
+        } else {
+          socket.on('new_delivery_alarm', () => playAudio(newDeliveryAppRef));
+          socket.on('deliver_delayed', () => playAudio(deliverDelayedAppRef));
+          socket.on('new_dish_disposal', () => playAudio(newDishDisposalAppRef));
+          socket.on('clear_rider_alarm', clearAlarm)
+        }
+      }
+    };
+
+    const foregroundServiceSetup = async () => {
+      await startForegroundService();
+      await attachSoundEffects("app");
+    };
+
     socket.connect();
 
     socket.on("connect_error", (err) => {
@@ -88,25 +128,36 @@ export default function OrderDisplay() {
     });
     socket.on('refresh', reloadRef.current);
 
-    if (user?.permission === PermissionEnum.Cook) {
-      socket.on('new_order_alarm', () => startAlarm(newOrderSoundRef));
-      socket.on('cook_exceeded', () => playAudio(cookingExceededRef));
-      socket.on('clear_cook_alarm', clearAlarm);
-    } else if (user?.permission === PermissionEnum.Rider) {
-      socket.on('new_order_alarm', () => startAlarm(newOrderSoundRef));
-      socket.on('new_delivery_alarm', () => playAudio(newDeliveryRef));
-      socket.on('deliver_delayed', () => playAudio(deliverDelayedRef));
-      socket.on('new_dish_disposal', () => playAudio(newDishDisposal));
-      socket.on('clear_rider_alarm', clearAlarm)
-    }
+    if (Capacitor.isNativePlatform()) {
+      newOrderSoundAppRef.current = getMedia('file:///android_asset/alarms/new_order.mp3');
+      cookingStartedAppRef.current = getMedia('file:///android_asset/alarms/cooking_started.mp3');
+      cookingExceededAppRef.current = getMedia('file:///android_asset/alarms/cooking_exceeded.mp3');
+      newDeliveryAppRef.current = getMedia('file:///android_asset/alarms/new_delivery.mp3');
+      deliverDelayedAppRef.current = getMedia('file:///android_asset/alarms/deliver_delayed.mp3');
+      newDishDisposalAppRef.current = getMedia('file:///android_asset/alarms/new_dish_disposal.mp3')
 
-    window.addEventListener('beforeunload', cleanup);
+      console.log('running on a native platform.');
+      document.addEventListener('deviceready', foregroundServiceSetup);
+    } else {
+      newOrderSoundRef.current = getAudio('/alarms/new_order.mp3');
+      cookingStartedRef.current = getAudio('/alarms/cooking_started.mp3');
+      cookingExceededRef.current = getAudio('/alarms/cooking_exceeded.mp3');
+      newDeliveryRef.current = getAudio('/alarms/new_delivery.mp3');
+      deliverDelayedRef.current = getAudio('/alarms/deliver_delayed.mp3');
+      newDishDisposalRef.current = getAudio('/alarms/new_dish_disposal.mp3');
+
+      console.log('running on a web platform.');
+      window.addEventListener('beforeunload', cleanup);
+      attachSoundEffects('web').then();
+    }
 
     return () => {
       cleanup();
       window.removeEventListener('beforeunload', cleanup);
+      stopForegroundService().then();
     }
-  }, [user]);
+
+  }, []);
 
   useEffect(() => {
     client
@@ -124,18 +175,19 @@ export default function OrderDisplay() {
           }
 
           if (inPickingUp) {
-            playAudio(newDishDisposal);
+            playAudio(newDishDisposalRef);
           }
         }
       });
   }, [user]);
 
   useEffect(() => {
-    newOrderSoundRef.current.muted = muted;
-    cookingExceededRef.current.muted = muted;
-    newDeliveryRef.current.muted = muted;
-    deliverDelayedRef.current.muted = muted;
-    newDishDisposal.current.muted = muted;
+    newOrderSoundRef.current && (newOrderSoundRef.current.muted = muted);
+    cookingStartedRef.current && (cookingStartedRef.current.muted = muted);
+    cookingExceededRef.current && (cookingExceededRef.current.muted = muted);
+    newDeliveryRef.current && (newDeliveryRef.current.muted = muted);
+    deliverDelayedRef.current && (deliverDelayedRef.current.muted = muted);
+    newDishDisposalRef.current && (newDishDisposalRef.current.muted = muted);
   }, [muted]);
 
   useEffect(() => {
@@ -154,21 +206,11 @@ export default function OrderDisplay() {
 
   return (
     <>
-      <div className='d-flex justify-content-between'>
-        <MuteButton muted={muted} setMuted={setMuted}/>
-        {user?.permission !== 1 && <button className='btn btn-danger mb-2' onClick={handleLogout}>로그아웃</button>}
-      </div>
-      <OrderTable
-        columns={columns}
-        count={count}
-        orderstatus={data}
-        page={currentPage}
-        reload={reload}
-        sort={sort}
-        setSort={setSort}
-        isRemaining={isRemaining}
-        setIsRemaining={setIsRemaining}
-      />
+      {!Capacitor.isNativePlatform() && (
+        <div className='d-flex justify-content-between'>
+          <MuteButton muted={muted} setMuted={setMuted}/>
+        </div>
+      )}
       <BottomBar
         mode={'order'}
         setOpen={setOpen}
@@ -179,6 +221,36 @@ export default function OrderDisplay() {
         prev={prev}
         next={next}
       />
+      <OrderTable
+        columns={columns}
+        count={count}
+        orderstatus={data}
+        page={currentPage}
+        reload={reload}
+        sort={sort}
+        setSort={setSort}
+        isRemaining={isRemaining}
+      />
+      <div className='d-flex justify-content-between'>
+        {user?.permission !== PermissionEnum.Cook && (
+          <div className='form-check mt-1'>
+            <input
+              id='remaining'
+              type="checkbox"
+              className='form-check-input'
+              checked={isRemaining}
+              onChange={() => setIsRemaining(!isRemaining)}
+            />
+            <label htmlFor="remaining" className='form-check-label'>그릇수거</label>
+          </div>
+        )}
+        <Pagination
+          currentpage={currentPage}
+          totalpage={totalPage}
+          onclickleft={prev}
+          onclickright={next}
+        />
+      </div>
 
       <MakeOrderModal
         open={open}

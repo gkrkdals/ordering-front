@@ -1,6 +1,6 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
-import {RecentMenu} from "@src/models/client/RecentMenu.ts";
-import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+// import {RecentMenu} from "@src/models/client/RecentMenu.ts";
+import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import Toggle from "@src/components/atoms/Toggle.tsx";
 import {useEffect, useState} from "react";
@@ -10,13 +10,13 @@ import customerState from "@src/recoil/atoms/CustomerState.ts";
 import Customer from "@src/models/common/Customer.ts";
 import {Setting} from "@src/models/manager/setting.ts";
 import StandardInfo from "@src/pages/client/modals/settings/StandardInfo.tsx";
-import RecentOrders from "@src/pages/client/modals/settings/RecentOrders.tsx";
+// import RecentOrders from "@src/pages/client/modals/settings/RecentOrders.tsx";
 
 interface SettingsModalProps extends BasicModalProps {}
 
 export default function SettingsModal(props: SettingsModalProps) {
   const [customer, setCustomer] = useRecoilState(customerState);
-  const [recentMenus, setRecentMenus] = useState<RecentMenu[]>([]);
+  // const [recentMenus, setRecentMenus] = useState<RecentMenu[]>([]);
   const [settings, setSettings] = useState<Setting[]>([]);
   const [imgSource, setImgSource] = useState<string | null>(null);
 
@@ -76,21 +76,17 @@ export default function SettingsModal(props: SettingsModalProps) {
     }
   }, [customer]);
 
-  useEffect(() => {
-    if(props.open) {
-      client
-        .get('/api/menu/recent')
-        .then(res => setRecentMenus(res.data));
-    }
-  }, [props.open]);
-
+  // useEffect(() => {
+  //   if(props.open) {
+  //     client
+  //       .get('/api/menu/recent')
+  //       .then(res => setRecentMenus(res.data));
+  //   }
+  // }, [props.open]);
 
 
   return (
     <Dialog open={props.open}>
-      <DialogTitle>
-        환경설정
-      </DialogTitle>
       <DialogContent>
         <StandardInfo
           imgSource={imgSource}
@@ -113,7 +109,7 @@ export default function SettingsModal(props: SettingsModalProps) {
             onChange={toggleHideOrderStatus}
           />
         </div>
-        <RecentOrders recentMenus={recentMenus} open={props.open}/>
+        {/*<RecentOrders recentMenus={recentMenus} open={props.open}/>*/}
 
         <div style={{height: 50}}/>
       </DialogContent>

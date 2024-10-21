@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import ClientPage from "@src/pages/client/ClientPage";
 import ManagerPage from "@src/pages/manager/ManagerPage";
 import LoginPage from "@src/pages/login/LogInPage.tsx";
@@ -13,6 +13,8 @@ const Router = () => {
         <Route path="/cook" element={<ManagerPage />} />
 
         <Route path="/login" element={<LoginPage />} />
+
+        <Route path="/" element={<Navigate replace to='/login' />} />
       </Routes>
     </BrowserRouter>
   );

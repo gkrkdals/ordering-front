@@ -1,7 +1,6 @@
 import {Setting} from "@src/models/manager/setting.ts";
 import {useEffect, useMemo, useState} from "react";
 import client from "@src/utils/client.ts";
-import {formatCurrency} from "@src/utils/data.ts";
 import {useRecoilValue} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
 import {BigColumn, Column, SmallColumn} from "@src/components/atoms/Columns.tsx";
@@ -24,7 +23,7 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
     const p = settings.find(setting => setting.sml === 3)?.stringValue;
 
     if (p) {
-      const tmp = p.split('/');
+      const tmp = p.split(' ');
       if (tmp.length > 1) {
         return tmp[1].trim();
       } else {
@@ -37,12 +36,9 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
 
   return (
     <>
-      <p className='mb-1' style={{fontSize: '1.4em', fontWeight: 'bold'}}>
-        기본정보
-      </p>
       {imgSource && <img src="/logo_horizontal.png" alt="넘버원푸드 로고" style={{width: '100%'}}/>}
       <div className='mb-3'/>
-      <div className='d-flex justify-content-between align-items-center' style={{fontSize: '1.3em'}}>
+      <div className='d-flex justify-content-between align-items-center' style={{fontSize: '1.4em'}}>
         <img src="/uri.png" alt="우리은행 로고" style={{width: 50}}/>
         {bankAccount}
       </div>
@@ -52,7 +48,7 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
           <p key={i} className='m-0'>{line.trim()}</p>
         </div>
       ))}
-      <div className='mb-5'/>
+      <div className='mb-2'/>
       <Column style={{fontSize: '1.2em'}}>
         <SmallColumn>
           <div className='text-secondary'>상호</div>
@@ -81,7 +77,7 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
         </SmallColumn>
         <BigColumn>
           <div className='w-100 d-flex justify-content-end'>
-            {formatCurrency(credit * -1)}
+            {'₩' + (credit * -1).toLocaleString('ko-KR').replace('-0', '0')}
           </div>
         </BigColumn>
       </Column>

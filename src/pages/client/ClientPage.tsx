@@ -15,6 +15,7 @@ import client from "@src/utils/client";
 import { useRecoilState } from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
 import OrderSummaryProvider from "@src/contexts/client/OrderSummaryContext.tsx";
+import RecentMenuTable from "@src/pages/client/components/organisms/RecentMenuTable.tsx";
 
 export default function ClientPage() {
 
@@ -41,6 +42,7 @@ export default function ClientPage() {
       <Background>
         <UpperBar/>
         <Container>
+          <RecentMenuTable onMenuClick={handleMenuClick} />
           <MenuTable onMenuClick={handleMenuClick}/>
           <SelectedMenus selectedMenus={selectedMenus} setSelectedMenus={setSelectedMenus} />
           <OrderCategoryProvider>

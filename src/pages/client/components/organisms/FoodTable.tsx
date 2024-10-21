@@ -1,5 +1,5 @@
 import Card from "@src/components/Card.tsx";
-import {Table, TBody, TRow} from "@src/components/tables/Table.tsx";
+import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
 import {useContext} from "react";
 import {MenuContext} from "@src/contexts/client/MenuContext.tsx";
 import {makePair} from "@src/utils/data.ts";
@@ -19,7 +19,7 @@ export default function MenuTable({ onMenuClick }: MenuTableProps) {
   const customer = useRecoilValue(customerState);
 
   return (
-    <Card style={{ height: '418px' }}>
+    <Card style={{ height: '340px' }}>
       <div style={{ height: '100%', overflow: 'auto' }}>
         <Table style={{ tableLayout: 'fixed' }}>
           <TBody>
@@ -27,7 +27,12 @@ export default function MenuTable({ onMenuClick }: MenuTableProps) {
               return (
                 <TRow key={i}>
                   <MenuCell menu={menu[0]} onClick={() => onMenuClick(menu[0])} showPrice={customer?.showPrice} />
-                  {menu[1] && <MenuCell menu={menu[1]} onClick={() => onMenuClick(menu[1])} showPrice={customer?.showPrice} />}
+                  {menu[1]
+                    ?
+                    <MenuCell menu={menu[1]} onClick={() => onMenuClick(menu[1])} showPrice={customer?.showPrice} />
+                    :
+                    <Cell />
+                  }
                 </TRow>
               )
             })}

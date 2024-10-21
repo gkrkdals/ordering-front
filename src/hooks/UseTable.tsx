@@ -36,7 +36,8 @@ const useTable = <T,>(origin: string, params?: object) => {
           query: debouncedSearchText,
       } });
 
-    const totalPage = res.data.totalPage;
+    const totalPageRaw = res.data.totalPage;
+    const totalPage = totalPageRaw < 1 ? 1 : totalPageRaw;
     if (totalPage < currentPage) {
       setCurrentPage(totalPage);
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const baseUrl = 'http://yeonsu.kr';
+export const baseUrl = 'https://yeonsu.kr';
 // export const baseUrl = 'http://localhost:3000';
 
 const client = axios.create({

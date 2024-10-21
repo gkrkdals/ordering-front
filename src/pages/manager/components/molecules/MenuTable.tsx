@@ -4,7 +4,6 @@ import ModifyMenuModal from "@src/pages/manager/modals/menu/ModifyMenuModal.tsx"
 import React, {useState} from "react";
 import {Column} from "@src/models/manager/Column.ts";
 import client from "@src/utils/client.ts";
-import {PrimaryButton} from "@src/components/atoms/Buttons.tsx";
 import SetMenuShownOrder from "@src/pages/manager/modals/menu/SetMenuShownOrder.tsx";
 
 interface MenuTableProps {
@@ -19,7 +18,6 @@ interface MenuTableProps {
 export default function MenuTable({columns, menus, page, reload, sort, setSort}: MenuTableProps) {
   const [open, setOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
-  const [allSoldOut, setAllSoldOut] = useState(false);
   const [openMenuOrder, setOpenMenuOrder] = useState(false);
 
   function handleClickOnMenu(menu: Menu) {
@@ -27,11 +25,6 @@ export default function MenuTable({columns, menus, page, reload, sort, setSort}:
     setOpen(true);
   }
 
-  async function toggleSoldOutAll() {
-    await client.put('/api/manager/menu/sold-out/all', {soldOut: !allSoldOut});
-    setAllSoldOut(!allSoldOut);
-    reload();
-  }
 
   async function toggleSoldOut(e: React.MouseEvent<HTMLTableCellElement, MouseEvent>, menu: Menu) {
     e.stopPropagation();
@@ -64,14 +57,6 @@ export default function MenuTable({columns, menus, page, reload, sort, setSort}:
         </TBody>
       </Table>
       <div className='mt-2' />
-      <div className='d-flex gap-3'>
-        <PrimaryButton onClick={toggleSoldOutAll}>
-          전체 품절 전환
-        </PrimaryButton>
-        <PrimaryButton onClick={() => setOpenMenuOrder(true)}>
-          메뉴 순서 설정
-        </PrimaryButton>
-      </div>
 
       <ModifyMenuModal
         currentMenu={selectedMenu}

@@ -7,10 +7,12 @@ import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/Ord
 import {formatCurrency} from "@src/utils/data.ts";
 
 interface ClickToGoNextProps extends BasicModalProps {
+  cannotUpdate: boolean;
+  setCannotUpdate: (cannotUpdate: boolean) => void;
   modifyingOrder: OrderStatusWithNumber | null;
 }
 
-export default function EnterAmount({ modifyingOrder, ...props }: ClickToGoNextProps) {
+export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOrder, ...props }: ClickToGoNextProps) {
   const [orderStatusId, setOrderStatusId] = useState<number>(0);
   const [currentStatus, setCurrentStatus] = useState<number>(0);
 
@@ -22,14 +24,18 @@ export default function EnterAmount({ modifyingOrder, ...props }: ClickToGoNextP
   }
 
   async function handleChangeStatus() {
-    await client.put('/api/manager/order', {
-      orderId: orderStatusId,
-      newStatus: currentStatus + 1,
-      paidAmount: parseInt(paidAmount) * 1000,
-      postpaid: isNaN(parseInt(paidAmount)) || parseInt(paidAmount) === 0,
-      menu: modifyingOrder?.menu,
-    });
-    initialize();
+    if (!cannotUpdate) {
+      setCannotUpdate(true);
+      await client.put('/api/manager/order', {
+        orderId: orderStatusId,
+        newStatus: currentStatus + 1,
+        paidAmount: parseInt(paidAmount) * 1000,
+        postpaid: isNaN(parseInt(paidAmount)) || parseInt(paidAmount) === 0,
+        menu: modifyingOrder?.menu,
+      });
+      setCannotUpdate(false);
+      initialize();
+    }
   }
 
   useEffect(() => {

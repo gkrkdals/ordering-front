@@ -27,10 +27,9 @@ interface OrderTableProps {
   sort: Sort;
   setSort: (focusInfo: Sort) => void;
   isRemaining: boolean;
-  setIsRemaining: (isRemaining: boolean) => void;
 }
 
-export default function OrderTable({ columns, orderstatus, page, reload, count, sort, setSort, isRemaining, setIsRemaining }: OrderTableProps) {
+export default function OrderTable({ columns, orderstatus, page, reload, count, sort, setSort, isRemaining }: OrderTableProps) {
   const [modifyingOrder, setModifyingOrder] = useState<OrderStatusWithNumber | null>(null);
   const [orderCategories ] = useContext(OrderCategoryContext)!;
 
@@ -40,6 +39,8 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
   const [customerCategories, ] = useContext(CustomerCategoryContext)!;
 
   const [openEnterCustom, setOpenEnterCustom] = useState(false);
+
+  const [cannotUpdate, setCannotUpdate] = useState(false);
 
   const user = useRecoilValue(userState)!;
 
@@ -62,10 +63,14 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
       } else if (orderStatus.status === StatusEnum.InDelivery || orderStatus.status === StatusEnum.InPickingUp) {
         setOpenStatChangeModal(true);
       } else if (!(user?.permission === PermissionEnum.Cook && orderStatus.status > StatusEnum.WaitingForDelivery)) {
-        await client.put('/api/manager/order', {
-          orderId: orderStatus.id,
-          newStatus: orderStatus.status + 1,
-        });
+        if (!cannotUpdate) {
+          setCannotUpdate(true);
+          await client.put('/api/manager/order', {
+            orderId: orderStatus.id,
+            newStatus: orderStatus.status + 1,
+          });
+          setCannotUpdate(false);
+        }
       }
     }
   }
@@ -134,7 +139,7 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
                   onClick={(e) => handleClickOnStatus(e, status, (page - 1) * 20 + i + 1)}
                   style={{ backgroundColor: getBackgroundColor(status) }}
                 >
-                  {getStatusName(status)}
+                  {cannotUpdate ? '(처리 중)' : getStatusName(status)}
                 </Cell>
                 {isRemaining && <Cell>{formatCurrency(status.credit)}</Cell>}
               </TRow>
@@ -142,18 +147,7 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
           }))}
         </TBody>
       </Table>
-      {user?.permission !== PermissionEnum.Cook && (
-        <div className='form-check mt-1'>
-          <input
-            id='remaining'
-            type="checkbox"
-            className='form-check-input'
-            checked={isRemaining}
-            onChange={() => setIsRemaining(!isRemaining)}
-          />
-          <label htmlFor="remaining" className='form-check-label'>그릇수거</label>
-        </div>
-      )}
+
 
       <OrderInfoModal
         modifyingOrder={modifyingOrder}
@@ -163,12 +157,16 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
       />
 
       <EnterAmount
+        cannotUpdate={cannotUpdate}
+        setCannotUpdate={setCannotUpdate}
         modifyingOrder={modifyingOrder}
         open={openStatChangeModal}
         setOpen={setOpenStatChangeModal}
       />
 
       <EnterCustomAmount
+        cannotUpdate={cannotUpdate}
+        setCannotUpdate={setCannotUpdate}
         modifyingOrder={modifyingOrder}
         open={openEnterCustom}
         setOpen={setOpenEnterCustom}

@@ -54,8 +54,12 @@ export default function DishDisposal() {
                     disposal.status === StatusEnum.InPickingUp ?
                       <p className='m-0 text-secondary'>요청완료</p> :
                       <button
-                        className='btn btn-secondary btn-sm px-1 py-0'
-                        style={{fontSize: '11pt'}}
+                        className='btn btn-danger btn-sm px-1 py-0'
+                        style={{
+                          fontSize: '11pt',
+                          backgroundColor: "#FFAA1D",
+                          borderColor: "#FFAA1D"
+                        }}
                         onClick={() => {
                           setSelectedDisposal(disposal);
                           setOpen(true);

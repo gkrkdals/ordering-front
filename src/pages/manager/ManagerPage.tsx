@@ -15,11 +15,18 @@ import {AxiosError} from "axios";
 import {getUser} from "@src/utils/socket.ts";
 import MenuProvider from "@src/contexts/manager/MenuContext.tsx";
 import CustomerProvider from "@src/contexts/manager/CustomerContext.tsx";
+import {DangerButton} from "@src/components/atoms/Buttons.tsx";
 
 export default function ManagerPage() {
   const [whichMenu, setWhichMenu] = useState<string>('order');
   const [, setUser] = useRecoilState(userState);
   const navigate = useNavigate();
+
+  async function handleLogout() {
+    await client.get('/api/auth/manager/logout');
+    navigate('/login');
+  }
+
 
   useLayoutEffect(() => {
     client
@@ -57,6 +64,8 @@ export default function ManagerPage() {
                 <div className="mt-2"/>
                 {/*<p className='text-secondary' style={{fontSize: '10pt'}}>각 항목을 클릭하여 항목을 수정할 수 있습니다.</p>*/}
                 {renderSwitch(whichMenu)}
+                <div className='mb-4' />
+                <DangerButton onClick={handleLogout}>로그아웃</DangerButton>
                 <div className='mb-4'/>
               </Container>
             </CustomerProvider>

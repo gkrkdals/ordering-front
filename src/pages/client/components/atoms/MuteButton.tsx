@@ -1,4 +1,4 @@
-import {getUser} from "@src/utils/socket.ts";
+// import {getUser} from "@src/utils/socket.ts";
 
 interface MuteButtonProps {
   muted: boolean;
@@ -6,7 +6,7 @@ interface MuteButtonProps {
 }
 
 export function MuteButton({ setMuted, muted }: MuteButtonProps) {
-  return getUser() !== 'manager' && (
+  return (
     <button
       className={`btn btn-${muted ? 'secondary' : 'primary'} mb-2`}
       onClick={() => setMuted(!muted)}
