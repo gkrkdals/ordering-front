@@ -2,9 +2,9 @@ import OrderTable from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import {OrderStatusRaw} from "@src/models/manager/OrderStatusRaw.ts";
 import MakeOrderModal from "@src/pages/manager/modals/order/MakeOrderModal.tsx";
 import {useEffect, useRef, useState} from "react";
-import {getUser, socket} from "@src/utils/socket.ts";
+import {getUser, onDisconnected, socket} from "@src/utils/socket.ts";
 import useTable from "@src/hooks/UseTable.tsx";
-import {AudioRefObject, getAudio, getMedia, playAudio} from "@src/utils/music.ts";
+import {AudioRefObject, getAudio, playAudio} from "@src/utils/music.ts";
 import BottomBar from "@src/pages/manager/components/molecules/BottomBar.tsx";
 import client from "@src/utils/client.ts";
 import {MuteButton} from "@src/pages/client/components/atoms/MuteButton.tsx";
@@ -13,9 +13,10 @@ import UserState from "@src/recoil/atoms/UserState.ts";
 import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 import {Column} from "@src/models/manager/Column.ts";
 import {useTableSort} from "@src/hooks/UseTableSort.tsx";
-import {Capacitor} from "@capacitor/core";
+import {Capacitor, PluginListenerHandle} from "@capacitor/core";
 import Pagination from "@src/pages/manager/components/atoms/Pagination.tsx";
-import {startForegroundService, stopForegroundService} from "@src/utils/native.ts";
+import {isNative, startForegroundService, stopForegroundService} from "@src/utils/native.ts";
+import {App, AppState} from "@capacitor/app";
 
 const columns: Column[] = [
   {key: '', name: '순번'},
@@ -38,14 +39,6 @@ export default function OrderDisplay() {
   const newDeliveryRef = useRef<HTMLAudioElement | null>(null);
   const deliverDelayedRef = useRef<HTMLAudioElement | null>(null);
   const newDishDisposalRef = useRef<HTMLAudioElement | null>(null);
-
-  // 앱 오디오 레퍼런스
-  const newOrderSoundAppRef = useRef<Media | null>(null);
-  const cookingStartedAppRef = useRef<Media | null>(null);
-  const cookingExceededAppRef = useRef<Media | null>(null);
-  const newDeliveryAppRef = useRef<Media | null>(null);
-  const deliverDelayedAppRef = useRef<Media | null>(null);
-  const newDishDisposalAppRef = useRef<Media | null>(null);
 
   // 인터벌 ID 레퍼런스
   const intervalId = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -70,9 +63,6 @@ export default function OrderDisplay() {
     setUrl,
     debouncedSearchText
   } = useTable<OrderStatusRaw>('/api/manager/order', params);
-
-  // reload 뮤터블
-  const reloadRef = useRef(reload);
 
   function clearAlarm() { clearInterval(intervalId.current) }
   function startAlarm(audioRef: AudioRefObject) {
@@ -102,40 +92,41 @@ export default function OrderDisplay() {
           socket.on('clear_rider_alarm', clearAlarm)
         }
       } else {
-        socket.on('new_order_alarm', () => startAlarm(newOrderSoundAppRef));
-        socket.on('cooking_started', () => playAudio(cookingStartedAppRef));
+        socket.on('new_order_alarm', () => startAlarm('new_order.mp3'));
+        socket.on('cooking_started', () => playAudio('cooking_started.mp3'));
         if (getUser() === 'cook') {
-          socket.on('cook_exceeded', () => playAudio(cookingExceededAppRef));
+          socket.on('cook_exceeded', () => playAudio('cooking_exceeded.mp3'));
           socket.on('clear_cook_alarm', clearAlarm);
         } else {
-          socket.on('new_delivery_alarm', () => playAudio(newDeliveryAppRef));
-          socket.on('deliver_delayed', () => playAudio(deliverDelayedAppRef));
-          socket.on('new_dish_disposal', () => playAudio(newDishDisposalAppRef));
+          socket.on('new_delivery_alarm', () => playAudio('new_delivery.mp3'));
+          socket.on('deliver_delayed', () => playAudio('deliver_delayed.mp3'));
+          socket.on('new_dish_disposal', () => playAudio('new_dish_disposal.mp3'));
           socket.on('clear_rider_alarm', clearAlarm)
         }
       }
     };
 
+    const setupSocket = () => {
+      socket.connect();
+      socket.on('connect', () => console.log("socket is connected"));
+      socket.on('ping', () => {
+        console.log("received keep-alive");
+        socket.emit('pong');
+      });
+      socket.on('disconnect', () => onDisconnected(socket));
+      socket.on("connect_error", (err) => {
+        console.log(`connect_error due to ${err.message}`);
+      });
+      socket.on('refresh', reload);
+    };
+
     const foregroundServiceSetup = async () => {
       await startForegroundService();
+      setupSocket();
       await attachSoundEffects("app");
     };
 
-    socket.connect();
-
-    socket.on("connect_error", (err) => {
-      console.log(`connect_error due to ${err.message}`);
-    });
-    socket.on('refresh', reloadRef.current);
-
     if (Capacitor.isNativePlatform()) {
-      newOrderSoundAppRef.current = getMedia('file:///android_asset/alarms/new_order.mp3');
-      cookingStartedAppRef.current = getMedia('file:///android_asset/alarms/cooking_started.mp3');
-      cookingExceededAppRef.current = getMedia('file:///android_asset/alarms/cooking_exceeded.mp3');
-      newDeliveryAppRef.current = getMedia('file:///android_asset/alarms/new_delivery.mp3');
-      deliverDelayedAppRef.current = getMedia('file:///android_asset/alarms/deliver_delayed.mp3');
-      newDishDisposalAppRef.current = getMedia('file:///android_asset/alarms/new_dish_disposal.mp3')
-
       console.log('running on a native platform.');
       document.addEventListener('deviceready', foregroundServiceSetup);
     } else {
@@ -145,6 +136,8 @@ export default function OrderDisplay() {
       newDeliveryRef.current = getAudio('/alarms/new_delivery.mp3');
       deliverDelayedRef.current = getAudio('/alarms/deliver_delayed.mp3');
       newDishDisposalRef.current = getAudio('/alarms/new_dish_disposal.mp3');
+
+      setupSocket();
 
       console.log('running on a web platform.');
       window.addEventListener('beforeunload', cleanup);
@@ -166,16 +159,16 @@ export default function OrderDisplay() {
         const { pendingReceipt, waitingForDelivery, inPickingUp } = res.data;
 
         if (pendingReceipt && user?.permission !== PermissionEnum.Manager) {
-          startAlarm(newOrderSoundRef);
+          startAlarm(isNative() ? 'new_order.mp3' : newOrderSoundRef);
         }
 
         if (user?.permission === PermissionEnum.Rider) {
           if (waitingForDelivery) {
-            playAudio(newDeliveryRef);
+            playAudio(isNative() ? 'new_delivery.mp3' : newDeliveryRef);
           }
 
           if (inPickingUp) {
-            playAudio(newDishDisposalRef);
+            playAudio(isNative() ? 'new_dish_disposal.mp3' : newDishDisposalRef);
           }
         }
       });
@@ -202,7 +195,32 @@ export default function OrderDisplay() {
   useEffect(() => {
     socket.removeListener('refresh');
     socket.on('refresh', reload);
+
+    const handleAppStateChange = async (state: AppState) => {
+      if (!state.isActive) {
+        console.log("app is in background mode");
+      } else {
+        console.log("app is in foreground mode");
+        await reload();
+      }
+    };
+
+    let appStateChangeListener: PluginListenerHandle;
+
+    if(Capacitor.isNativePlatform()) {
+      App.addListener('appStateChange', handleAppStateChange)
+        .then((res) => {
+          appStateChangeListener = res;
+        });
+    }
+
+    return () => {
+      if (appStateChangeListener) {
+        appStateChangeListener.remove().then();
+      }
+    }
   }, [url, currentPage, params, debouncedSearchText])
+
 
   return (
     <>
@@ -257,6 +275,7 @@ export default function OrderDisplay() {
         onClose={() => setOpen(false)}
         setOpen={setOpen}
       />
+
     </>
   );
 }

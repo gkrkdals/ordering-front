@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@capacitor-community/media": "^6.0.0",
+    "@capacitor-firebase/messaging": "^6.2.0",
     "@capacitor/android": "^6.1.2",
+    "@capacitor/app": "^6.0.1",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
     "@capawesome-team/capacitor-android-foreground-service": "^6.0.1",
@@ -25,6 +27,7 @@
     "cordova-plugin-device": "^3.0.0",
     "cordova-plugin-file": "^8.1.0",
     "cordova-plugin-media": "^7.0.0",
+    "firebase": "^10.14.1",
     "qrcode.react": "^4.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

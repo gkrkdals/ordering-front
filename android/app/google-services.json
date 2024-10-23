@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "312624703117",
+    "project_id": "no1-food-app-fcm",
+    "storage_bucket": "no1-food-app-fcm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312624703117:android:9d268010ddfa06bb9624c4",
+        "android_client_info": {
+          "package_name": "com.reactivecoding.numberonefood"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqV8ZFdIbfbYyI28iIiY6XI_ER3YHGfVQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

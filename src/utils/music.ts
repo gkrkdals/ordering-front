@@ -1,8 +1,5 @@
 import {MutableRefObject} from "react";
-import {MediaObject} from "@ionic-native/media";
-import {Capacitor} from "@capacitor/core";
-
-export type AudioRefObject = MutableRefObject<HTMLAudioElement | null> | MutableRefObject<Media | null>;
+export type AudioRefObject = MutableRefObject<HTMLAudioElement | null> | string;
 
 export function getAudio(uri: string): HTMLAudioElement {
   const audio = new Audio(uri);
@@ -11,44 +8,30 @@ export function getAudio(uri: string): HTMLAudioElement {
   return audio;
 }
 
-export function getMedia(uri: string): Media {
-  return new Media(uri, () => console.log("Audio played successfully"));
-}
+export function playAudio(audioRefOrPath: AudioRefObject) {
 
-export function playAudio(audioRef: AudioRefObject) {
+  if (typeof audioRefOrPath === 'string') {
+    const audio = new Media(
+      `file:///android_asset/alarms/${audioRefOrPath}`,
+      () => {
+        console.log("Media is succesfully played. Releasing resources...");
+        audio.release();
+      }
+    );
 
-  if (Capacitor.isNativePlatform()) {
-    const audio = audioRef.current as Media | null;
-    if (audio) {
-      console.log('playing audio');
-      console.log(audio);
+    console.log(`playing audio`);
 
-      audio.stop();
-      audio.seekTo(0);
-      audio.play();
-    }
+    audio.stop();
+    audio.seekTo(0);
+    audio.play();
   } else {
-    const audio = audioRef.current as HTMLAudioElement | null;
+    const audio = audioRefOrPath.current as HTMLAudioElement | null;
     if (audio) {
       console.log('playing audio');
-      console.log(audio);
 
       audio.pause();
       audio.currentTime = 0;
-      audio.play().then();
+      audio.play().then(() => console.log('audio is played succesfully'));
     }
-  }
-
-
-}
-
-export function playAppAudio(audioRef: MutableRefObject<MediaObject | null>) {
-  console.log('playing audio');
-  const audio = audioRef.current;
-
-  if (audio) {
-    audio.pause();
-    audio.seekTo(0);
-    audio.play();
   }
 }

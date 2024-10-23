@@ -1,5 +1,5 @@
 import Container from "@src/components/Container.tsx";
-import {useLayoutEffect, useState} from "react";
+import {useEffect, useLayoutEffect, useState} from "react";
 import Tab from "@src/pages/manager/components/atoms/Tab.tsx";
 import MenuCategoryProvider from "@src/contexts/manager/MenuCategoryContext.tsx";
 import OrderDisplay from "@src/pages/manager/components/organisms/OrderDisplay.tsx";
@@ -16,6 +16,10 @@ import {getUser} from "@src/utils/socket.ts";
 import MenuProvider from "@src/contexts/manager/MenuContext.tsx";
 import CustomerProvider from "@src/contexts/manager/CustomerContext.tsx";
 import {DangerButton} from "@src/components/atoms/Buttons.tsx";
+import {App} from "@capacitor/app";
+import {PluginListenerHandle} from "@capacitor/core";
+import {isNative} from "@src/utils/native.ts";
+// import {FirebaseMessaging} from "@capacitor-firebase/messaging";
 
 export default function ManagerPage() {
   const [whichMenu, setWhichMenu] = useState<string>('order');
@@ -26,18 +30,6 @@ export default function ManagerPage() {
     await client.get('/api/auth/manager/logout');
     navigate('/login');
   }
-
-
-  useLayoutEffect(() => {
-    client
-      .get('/api/auth/manager/profile', { params: { permission: getUser() } })
-      .then((res) => setUser(res.data))
-      .catch((e: AxiosError) => {
-        if (e.response && e.response.status === 401) {
-          navigate('/login');
-        }
-      });
-  }, []);
 
   function renderSwitch(whichMenu: string) {
     switch(whichMenu) {
@@ -51,6 +43,46 @@ export default function ManagerPage() {
         return <CustomerDisplay />;
     }
   }
+
+  useLayoutEffect(() => {
+    client
+      .get('/api/auth/manager/profile', { params: { permission: getUser() } })
+      .then((res) => setUser(res.data))
+      .catch((e: AxiosError) => {
+        if (e.response && e.response.status === 401) {
+          navigate('/login');
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    let backButtonListener: PluginListenerHandle;
+
+    if (isNative()) {
+      App
+        .addListener('backButton', () => {})
+        .then(listener => backButtonListener = listener);
+    }
+
+    return () => {
+      if (isNative()) {
+        backButtonListener.remove().then();
+      }
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   const listenForMessages = async () => {
+  //     await FirebaseMessaging.addListener('notificationReceived', (notification) => {
+  //       console.log('푸시 알림 수신:', notification);
+  //       // 여기서 수신된 알림을 처리
+  //     });
+  //
+  //     await FirebaseMessaging.addListener('tokenReceived', () => {
+  //
+  //     })
+  //   };
+  // }, []);
 
   return (
     <MenuCategoryProvider>

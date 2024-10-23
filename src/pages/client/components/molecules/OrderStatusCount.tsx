@@ -3,7 +3,7 @@ import {useContext, useEffect, useState} from "react";
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
 import {OrderSummaryContext} from "@src/contexts/client/OrderSummaryContext.tsx";
 import client from "@src/utils/client.ts";
-import {socket} from "@src/utils/socket.ts";
+import {onDisconnected, socket} from "@src/utils/socket.ts";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
 
 export default function OrderStatusCount() {
@@ -20,6 +20,13 @@ export default function OrderStatusCount() {
     socket.connect();
 
     window.addEventListener('beforeunload', cleanup);
+
+    socket.on('ping', () => {
+      console.log("received keep-alive");
+      socket.emit('pong');
+    });
+
+    socket.on('disconnect', () => onDisconnected(socket));
 
     socket.on('refresh_client', async () => {
       const res = await client.get('/api/order/summary');

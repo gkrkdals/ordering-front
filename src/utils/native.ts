@@ -21,3 +21,7 @@ export const stopForegroundService = async () => {
   }
   await ForegroundService.stopForegroundService();
 };
+
+export function isNative() {
+  return Capacitor.isNativePlatform();
+}

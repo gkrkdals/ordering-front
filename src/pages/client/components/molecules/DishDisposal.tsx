@@ -6,7 +6,7 @@ import {Disposal} from "@src/models/client/Disposal.ts";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
 import {useRecoilValue} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
-import {socket} from "@src/utils/socket.ts";
+import {onDisconnected, socket} from "@src/utils/socket.ts";
 
 export default function DishDisposal() {
   const [dishDisposals, setDishDisposals] = useState<Disposal[]>([]);
@@ -30,6 +30,13 @@ export default function DishDisposal() {
 
   useEffect(() => {
     socket.connect();
+
+    socket.on('ping', () => {
+      console.log("received keep-alive");
+      socket.emit('pong');
+    });
+
+    socket.on('disconnect', () => onDisconnected(socket));
 
     socket.on('refresh_client', () => {
       reload();
