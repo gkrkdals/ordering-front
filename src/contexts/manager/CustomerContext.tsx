@@ -1,6 +1,6 @@
 import Customer from "@src/models/common/Customer.ts";
 import React, {createContext, useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 export type CustomerContextProps = [Customer[], React.Dispatch<React.SetStateAction<Customer[]>>];
 

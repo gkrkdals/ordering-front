@@ -3,7 +3,7 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import Select from "@src/components/atoms/Select.tsx";
 import {useContext, useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import SelectMenu from "@src/components/molecules/SelectMenu.tsx";
 import {MenuContext} from "@src/contexts/manager/MenuContext.tsx";
 import {CustomerContext} from "@src/contexts/manager/CustomerContext.tsx";
@@ -39,6 +39,16 @@ export function MakeCalculationModal(props: MakeCalculationModalProps) {
 
   async function handleClickOnCalculation() {
     if (start !== '' && end !== '') {
+      let name: string;
+      if (type === 1) {
+        name = '정산_전체';
+      } else if (type === 2) {
+        name = `메뉴별_정산_${menus.find(menu => menu.id === selectedMenu)?.name}`;
+      } else {
+        name = `고객별_정산_${customers.find(customer => customer.id === selectedCustomer)?.name}`;
+      }
+      name = name.concat(`_${start}_${end}.xlsx`)
+
       const response = await client.get(`/api/manager/settings/calculation`, {
         params: {
           type,
@@ -48,7 +58,6 @@ export function MakeCalculationModal(props: MakeCalculationModalProps) {
         },
         responseType: "blob",
       });
-      const name = 'calculation.xlsx';
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;

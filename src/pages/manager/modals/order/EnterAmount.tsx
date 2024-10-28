@@ -2,7 +2,7 @@ import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {useEffect, useState} from "react";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import {formatCurrency} from "@src/utils/data.ts";
 
@@ -26,15 +26,20 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
   async function handleChangeStatus() {
     if (!cannotUpdate) {
       setCannotUpdate(true);
-      await client.put('/api/manager/order', {
-        orderId: orderStatusId,
-        newStatus: currentStatus + 1,
-        paidAmount: parseInt(paidAmount) * 1000,
-        postpaid: isNaN(parseInt(paidAmount)) || parseInt(paidAmount) === 0,
-        menu: modifyingOrder?.menu,
-      });
-      setCannotUpdate(false);
-      initialize();
+      try {
+        await client.put('/api/manager/order', {
+          orderId: orderStatusId,
+          newStatus: currentStatus + 1,
+          paidAmount: parseInt(paidAmount) * 1000,
+          postpaid: isNaN(parseInt(paidAmount)) || parseInt(paidAmount) === 0,
+          menu: modifyingOrder?.menu,
+        });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setCannotUpdate(false);
+        initialize();
+      }
     }
   }
 

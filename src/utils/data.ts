@@ -1,5 +1,4 @@
 import User from "@src/models/manager/User.ts";
-
 export const LAST_SEQ = 10000;
 
 export function makePair<T>(data: T[]) {
@@ -33,7 +32,7 @@ export function formatCurrency(num: number | string | undefined, noZero?: boolea
     return '';
   }
 
-  return `${n.toLocaleString('ko-KR').replace('-0', '0')}₩`;
+  return `${n < 0 ? "-" : ""}₩${n.toLocaleString('ko-KR').replace('-', '')}`;
 }
 
 export function getUrl(user: User) {

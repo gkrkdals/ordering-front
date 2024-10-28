@@ -8,7 +8,7 @@ export default function CurrentOrderStatus() {
   const customer = useRecoilValue(customerState);
   return (
     <div className='my-3'>
-      {!customer?.hideOrderStatus && <OrderStatusCount />}
+      {!(customer?.hideOrderStatus === 1) && <OrderStatusCount />}
       <OrderDetail />
       <DishDisposal />
     </div>

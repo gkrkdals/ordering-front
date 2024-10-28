@@ -2,7 +2,7 @@
 import {RecentMenu} from "@src/models/client/RecentMenu.ts";
 import {useEffect, useState} from "react";
 import Order from "@src/models/common/Order.ts";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {dateToString} from "@src/utils/date.ts";
 
 interface RecentOrdersProps {

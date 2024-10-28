@@ -3,7 +3,7 @@ import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {useContext, useEffect, useState} from "react";
 import Menu from "@src/models/common/Menu.ts";
 import Customer from "@src/models/common/Customer.ts";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {MenuContext} from "@src/contexts/manager/MenuContext.tsx";
 import {CustomerContext} from "@src/contexts/manager/CustomerContext.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";

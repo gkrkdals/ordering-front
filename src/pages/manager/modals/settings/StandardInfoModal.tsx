@@ -1,7 +1,7 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {Setting} from "@src/models/manager/setting.ts";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import {BigColumn, Column, SmallColumn} from "@src/components/atoms/Columns.tsx";

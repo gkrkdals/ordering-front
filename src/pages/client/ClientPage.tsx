@@ -11,7 +11,7 @@ import CurrentOrderStatus from "@src/pages/client/components/organisms/CurrentOr
 import OrderCategoryProvider from "@src/contexts/common/OrderCategoryContext.tsx";
 import SelectedMenu from "@src/models/client/SelectedMenu.ts";
 import { useSearchParams } from "react-router-dom";
-import client from "@src/utils/client";
+import client from "@src/utils/network/client.ts";
 import { useRecoilState } from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
 import OrderSummaryProvider from "@src/contexts/client/OrderSummaryContext.tsx";
@@ -45,7 +45,7 @@ export default function ClientPage() {
           <SelectedMenus selectedMenus={selectedMenus} setSelectedMenus={setSelectedMenus} />
           <OrderCategoryProvider>
             <OrderSummaryProvider>
-              <OrderButton selectedmenus={selectedMenus} setselectedmenus={setSelectedMenus} />
+              <OrderButton selectedMenus={selectedMenus} setSelectedMenus={setSelectedMenus} />
               <CurrentOrderStatus />
             </OrderSummaryProvider>
           </OrderCategoryProvider>

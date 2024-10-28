@@ -9,9 +9,10 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
-    implementation project(':capacitor-community-media')
     implementation project(':capacitor-firebase-messaging')
     implementation project(':capacitor-app')
+    implementation project(':capacitor-preferences')
+    implementation project(':capacitor-push-notifications')
     implementation project(':capawesome-team-capacitor-android-foreground-service')
     implementation "androidx.webkit:webkit:1.4.0"
 }

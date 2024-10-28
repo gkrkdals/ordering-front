@@ -7,8 +7,10 @@ export const socket = io(url, {
   autoConnect: false,
 });
 
-export function getUser() {
-  return window.location.href.split('/').at(-1)?.trim();
+type UserType = 'manager' | 'rider' | 'cook';
+
+export function getUser(): UserType {
+  return window.location.href.split('/').at(-1)?.trim() as UserType;
 }
 
 export const onDisconnected = (socket: Socket) => {

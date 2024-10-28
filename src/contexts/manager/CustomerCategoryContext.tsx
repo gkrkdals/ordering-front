@@ -1,6 +1,6 @@
 import React, {createContext, useEffect, useState} from "react";
 import {CustomerCategory} from "@src/models/common/CustomerCategory.ts";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 export type CustomerCategoryContextProps = [CustomerCategory[], React.Dispatch<React.SetStateAction<CustomerCategory[]>>];
 

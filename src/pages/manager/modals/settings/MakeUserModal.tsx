@@ -3,7 +3,7 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import {useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import Select from "@src/components/atoms/Select.tsx";
 import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 
@@ -69,7 +69,7 @@ export function MakeUserModal(props: MakeUserModalProps) {
         <div className='my-3'/>
         <div className='mb-2'>계정구분</div>
         <Select value={permission} onChange={e => setPermission(parseInt(e.target.value))}>
-          <option value={PermissionEnum.Manager}>최고관리자</option>
+          <option value={PermissionEnum.Manager}>마스터</option>
           <option value={PermissionEnum.Rider}>배달자</option>
           <option value={PermissionEnum.Cook}>조리원</option>
         </Select>

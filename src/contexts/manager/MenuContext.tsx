@@ -1,6 +1,6 @@
 import Menu from "@src/models/common/Menu.ts";
 import React, {createContext, ReactNode, useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 export type MenuContextProps = [Menu[], React.Dispatch<React.SetStateAction<Menu[]>>];
 

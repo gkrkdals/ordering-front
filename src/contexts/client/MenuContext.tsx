@@ -1,6 +1,6 @@
 import React, {createContext, useEffect, useState} from "react";
 import Menu from "@src/models/common/Menu.ts";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import { useRecoilValue } from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
 

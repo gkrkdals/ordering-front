@@ -5,7 +5,7 @@ import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {Column, SmallColumn, BigColumn} from "@src/components/atoms/Columns.tsx";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {CustomerPrice} from "@src/models/manager/CustomerPrice.ts";
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
 import FormControl from "@src/components/atoms/FormControl.tsx";

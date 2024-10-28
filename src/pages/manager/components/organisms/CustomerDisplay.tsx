@@ -2,11 +2,10 @@ import CustomerTable from "@src/pages/manager/components/molecules/CustomerTable
 import {useEffect, useState} from "react";
 import MakeCustomerModal from "@src/pages/manager/modals/customer/MakeCustomerModal.tsx";
 import useTable from "@src/hooks/UseTable.tsx";
-import BottomBar from "@src/pages/manager/components/molecules/BottomBar.tsx";
+import TopBar from "@src/pages/manager/components/molecules/TopBar.tsx";
 import {Column} from "@src/models/manager/Column.ts";
 import {useTableSort} from "@src/hooks/UseTableSort.tsx";
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
-import Pagination from "@src/pages/manager/components/atoms/Pagination.tsx";
 
 const columns: Column[] = [
   {key: '', name: '순번'},
@@ -43,7 +42,7 @@ export default function CustomerDisplay() {
   return (
     <>
       <div className='mb-2'/>
-      <BottomBar
+      <TopBar
         mode={'customer'}
         searchData={searchData}
         setSearchData={setSearchData}
@@ -61,17 +60,6 @@ export default function CustomerDisplay() {
         page={currentPage}
         reload={reload}
       />
-
-      <div className='d-flex justify-content-end'>
-        <div className='d-flex d-sm-block justify-content-end justify-content-sm-start'>
-          <Pagination
-            currentpage={currentPage}
-            totalpage={totalPage}
-            onclickleft={prev}
-            onclickright={next}
-          />
-        </div>
-      </div>
 
       <MakeCustomerModal reload={reload} open={open} setOpen={setOpen}/>
     </>

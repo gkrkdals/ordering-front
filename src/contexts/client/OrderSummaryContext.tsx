@@ -1,6 +1,6 @@
 import {OrderSummary} from "@src/models/client/OrderSummary.ts";
 import React, {createContext, useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {useRecoilValue} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
 

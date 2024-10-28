@@ -3,7 +3,7 @@ import {Cell, HeadCell, Sort, Table, TBody, THead, TRow} from "@src/components/t
 import ModifyMenuModal from "@src/pages/manager/modals/menu/ModifyMenuModal.tsx";
 import React, {useState} from "react";
 import {Column} from "@src/models/manager/Column.ts";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import SetMenuShownOrder from "@src/pages/manager/modals/menu/SetMenuShownOrder.tsx";
 
 interface MenuTableProps {

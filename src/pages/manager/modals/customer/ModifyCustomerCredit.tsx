@@ -3,7 +3,7 @@ import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import {useState} from "react";
 import FormControl from "@src/components/atoms/FormControl.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 interface ModifyCustomerCreditProps extends BasicModalProps {
   customer: number | undefined;

@@ -1,6 +1,6 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {useContext, useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {Column, SmallColumn, BigColumn, Wrapper} from "@src/components/atoms/Columns.tsx";
 import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";

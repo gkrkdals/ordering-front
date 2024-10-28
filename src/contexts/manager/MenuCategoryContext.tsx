@@ -1,6 +1,6 @@
 import MenuCategory from "@src/models/common/MenuCategory.ts";
 import React, {createContext, useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 export type MenuCategoryContextProps = [MenuCategory[], React.Dispatch<React.SetStateAction<MenuCategory[]>>];
 

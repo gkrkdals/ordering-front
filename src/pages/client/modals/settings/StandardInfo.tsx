@@ -1,9 +1,10 @@
 import {Setting} from "@src/models/manager/setting.ts";
 import {useEffect, useMemo, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {useRecoilValue} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
 import {BigColumn, Column, SmallColumn} from "@src/components/atoms/Columns.tsx";
+import {formatCurrency} from "@src/utils/data.ts";
 
 interface StandardInfoProps {
   imgSource: string | null;
@@ -77,7 +78,7 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
         </SmallColumn>
         <BigColumn>
           <div className='w-100 d-flex justify-content-end'>
-            {'₩' + (credit * -1).toLocaleString('ko-KR').replace('-0', '0')}
+            {formatCurrency(credit * -1)}
           </div>
         </BigColumn>
       </Column>

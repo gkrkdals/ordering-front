@@ -7,7 +7,7 @@ interface SearchDataProps {
 
 export default function SearchData({ value, onChange }: SearchDataProps) {
   return (
-    <div>
+    <div className='my-auto'>
       <input
         type="text"
         className='form-control'

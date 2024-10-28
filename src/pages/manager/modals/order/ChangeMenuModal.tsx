@@ -3,7 +3,7 @@ import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 import {useContext, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import SelectMenu from "@src/components/molecules/SelectMenu.tsx";
 import {MenuContext} from "@src/contexts/manager/MenuContext.tsx";

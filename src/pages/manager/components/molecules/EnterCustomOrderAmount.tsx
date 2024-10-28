@@ -3,7 +3,7 @@ import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import {useState} from "react";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 interface EnterCustomAmountProps extends BasicModalProps {
   cannotUpdate: boolean;
@@ -18,15 +18,20 @@ export default function EnterCustomAmount({ open, setOpen, modifyingOrder, canno
   async function handleClickOnConfirm() {
     if (!cannotUpdate) {
       setCannotUpdate(true);
-      await client.put('/api/manager/order', {
-        orderId: modifyingOrder?.id,
-        newStatus: (modifyingOrder?.status ?? 0) + 1,
-        paidAmount: parseInt(paidAmount) * 1000,
-        menu: modifyingOrder?.menu,
-      });
-      setCannotUpdate(false);
-      setOpen(false);
-      setPaidAmount('');
+      try {
+        await client.put('/api/manager/order', {
+          orderId: modifyingOrder?.id,
+          newStatus: (modifyingOrder?.status ?? 0) + 1,
+          paidAmount: parseInt(paidAmount) * 1000,
+          menu: modifyingOrder?.menu,
+        });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setCannotUpdate(false);
+        setOpen(false);
+        setPaidAmount('');
+      }
     }
   }
 

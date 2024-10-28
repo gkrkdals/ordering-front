@@ -2,8 +2,8 @@ import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
 import {useContext, useEffect, useState} from "react";
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
 import {OrderSummaryContext} from "@src/contexts/client/OrderSummaryContext.tsx";
-import client from "@src/utils/client.ts";
-import {onDisconnected, socket} from "@src/utils/socket.ts";
+import client from "@src/utils/network/client.ts";
+import {onDisconnected, socket} from "@src/utils/network/socket.ts";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
 
 export default function OrderStatusCount() {

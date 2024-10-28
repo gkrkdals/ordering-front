@@ -1,12 +1,12 @@
 import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
 import {useEffect, useState} from "react";
 import DisposalDialog from "@src/pages/client/components/DisposalDialog.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {Disposal} from "@src/models/client/Disposal.ts";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
 import {useRecoilValue} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
-import {onDisconnected, socket} from "@src/utils/socket.ts";
+import {onDisconnected, socket} from "@src/utils/network/socket.ts";
 
 export default function DishDisposal() {
   const [dishDisposals, setDishDisposals] = useState<Disposal[]>([]);
@@ -50,6 +50,7 @@ export default function DishDisposal() {
 
   return (
     <>
+      <div className='mt-3' />
       <Table tablesize='small' style={{ fontSize: '11pt' }}>
         <TBody>
           {dishDisposals.map((disposal, i) => {

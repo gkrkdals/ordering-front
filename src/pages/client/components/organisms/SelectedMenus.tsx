@@ -3,7 +3,7 @@ import {Table, Cell, TBody, TRow} from "@src/components/tables/Table.tsx";
 import SelectedMenu from "@src/models/client/SelectedMenu.ts";
 import React, {ChangeEvent, useEffect, useRef, useState} from "react";
 import EditableCell from "@src/components/tables/EditableCell.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 interface SelectedMenusProps {
   selectedMenus: SelectedMenu[];

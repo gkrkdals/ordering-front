@@ -1,4 +1,4 @@
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {useEffect, useMemo, useState} from "react";
 import Order from "@src/models/common/Order.ts";
 import Card from "@src/components/Card.tsx";

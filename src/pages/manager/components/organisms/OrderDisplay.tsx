@@ -2,20 +2,19 @@ import OrderTable from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import {OrderStatusRaw} from "@src/models/manager/OrderStatusRaw.ts";
 import MakeOrderModal from "@src/pages/manager/modals/order/MakeOrderModal.tsx";
 import {useEffect, useRef, useState} from "react";
-import {getUser, onDisconnected, socket} from "@src/utils/socket.ts";
+import {getUser, onDisconnected, socket} from "@src/utils/network/socket.ts";
 import useTable from "@src/hooks/UseTable.tsx";
 import {AudioRefObject, getAudio, playAudio} from "@src/utils/music.ts";
-import BottomBar from "@src/pages/manager/components/molecules/BottomBar.tsx";
-import client from "@src/utils/client.ts";
-import {MuteButton} from "@src/pages/client/components/atoms/MuteButton.tsx";
+import TopBar from "@src/pages/manager/components/molecules/TopBar.tsx";
+import client from "@src/utils/network/client.ts";
 import {useRecoilValue} from "recoil";
 import UserState from "@src/recoil/atoms/UserState.ts";
 import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 import {Column} from "@src/models/manager/Column.ts";
 import {useTableSort} from "@src/hooks/UseTableSort.tsx";
-import {Capacitor, PluginListenerHandle} from "@capacitor/core";
-import Pagination from "@src/pages/manager/components/atoms/Pagination.tsx";
-import {isNative, startForegroundService, stopForegroundService} from "@src/utils/native.ts";
+import {PluginListenerHandle} from "@capacitor/core";
+// import Pagination from "@src/pages/manager/components/atoms/Pagination.tsx";
+import {isNative} from "@src/utils/native/native.ts";
 import {App, AppState} from "@capacitor/app";
 
 const columns: Column[] = [
@@ -33,7 +32,7 @@ export default function OrderDisplay() {
   const user = useRecoilValue(UserState);
 
   // 소리 재생을 위한 오디오 레퍼런스
-  const newOrderSoundRef = useRef<HTMLAudioElement | null>(null);
+  const newOrderRef = useRef<HTMLAudioElement | null>(null);
   const cookingStartedRef = useRef<HTMLAudioElement | null>(null);
   const cookingExceededRef = useRef<HTMLAudioElement | null>(null);
   const newDeliveryRef = useRef<HTMLAudioElement | null>(null);
@@ -78,31 +77,54 @@ export default function OrderDisplay() {
   }
 
   useEffect(() => {
-    const attachSoundEffects = async (mode: 'web' | 'app') => {
-      if (mode === 'web') {
-        socket.on('new_order_alarm', () => startAlarm(newOrderSoundRef));
-        socket.on('cooking_started', () => playAudio(cookingStartedRef));
-        if (getUser() === 'cook') {
-          socket.on('cook_exceeded', () => playAudio(cookingExceededRef));
-          socket.on('clear_cook_alarm', clearAlarm);
-        } else {
-          socket.on('new_delivery_alarm', () => playAudio(newDeliveryRef));
-          socket.on('deliver_delayed', () => playAudio(deliverDelayedRef));
-          socket.on('new_dish_disposal', () => playAudio(newDishDisposalRef));
-          socket.on('clear_rider_alarm', clearAlarm)
-        }
+    let appStateChangeListener: PluginListenerHandle;
+
+    const attachWebSounds = async () => {
+      socket.on('new_order', () => startAlarm(newOrderRef));
+      socket.on('cooking_started', () => playAudio(cookingStartedRef));
+      socket.on('clear_alarm', clearAlarm);
+      if (getUser() === 'cook') {
+        socket.on('cooking_exceeded', () => playAudio(cookingExceededRef));
       } else {
-        socket.on('new_order_alarm', () => startAlarm('new_order.mp3'));
-        socket.on('cooking_started', () => playAudio('cooking_started.mp3'));
-        if (getUser() === 'cook') {
-          socket.on('cook_exceeded', () => playAudio('cooking_exceeded.mp3'));
-          socket.on('clear_cook_alarm', clearAlarm);
-        } else {
-          socket.on('new_delivery_alarm', () => playAudio('new_delivery.mp3'));
-          socket.on('deliver_delayed', () => playAudio('deliver_delayed.mp3'));
-          socket.on('new_dish_disposal', () => playAudio('new_dish_disposal.mp3'));
-          socket.on('clear_rider_alarm', clearAlarm)
-        }
+        socket.on('new_delivery', () => playAudio(newDeliveryRef));
+        socket.on('deliver_delayed', () => playAudio(deliverDelayedRef));
+        socket.on('new_dish_disposal', () => playAudio(newDishDisposalRef));
+      }
+    };
+
+    const attachAppSounds = () => {
+      socket.on('new_order', () => startAlarm('new_order.mp3'));
+      socket.on('cooking_started', () => playAudio('cooking_started.mp3'));
+      socket.on('clear_alarm', clearAlarm)
+      if (getUser() === 'cook') {
+        socket.on('cooking_exceeded', () => playAudio('cooking_exceeded.mp3'));
+      } else {
+        socket.on('new_delivery', () => playAudio('new_delivery.mp3'));
+        socket.on('deliver_delayed', () => playAudio('deliver_delayed.mp3'));
+        socket.on('new_dish_disposal', () => playAudio('new_dish_disposal.mp3'));
+      }
+      console.log("sound service attached");
+    }
+
+    const detachAppSounds = () => {
+      socket.removeListener('new_order');
+      socket.removeListener('cooking_started');
+      socket.removeListener('clear_alarm');
+      socket.removeListener('cooking_exceeded');
+      socket.removeListener('new_delivery');
+      socket.removeListener('deliver_delayed');
+      socket.removeListener('new_dish_disposal');
+      console.log("sound service detached");
+    }
+
+    const handleAppStateChange = async (state: AppState) => {
+      if (state.isActive) {
+        console.log("app is in foreground mode");
+        attachAppSounds();
+        await reload();
+      } else {
+        console.log("app is in background mode");
+        detachAppSounds();
       }
     };
 
@@ -120,17 +142,17 @@ export default function OrderDisplay() {
       socket.on('refresh', reload);
     };
 
-    const foregroundServiceSetup = async () => {
-      await startForegroundService();
+    const mobileServiceSetup = async () => {
       setupSocket();
-      await attachSoundEffects("app");
+      attachAppSounds();
+      appStateChangeListener = await App.addListener('appStateChange', handleAppStateChange);
     };
 
-    if (Capacitor.isNativePlatform()) {
+    if (isNative()) {
       console.log('running on a native platform.');
-      document.addEventListener('deviceready', foregroundServiceSetup);
+      document.addEventListener('deviceready', mobileServiceSetup);
     } else {
-      newOrderSoundRef.current = getAudio('/alarms/new_order.mp3');
+      newOrderRef.current = getAudio('/alarms/new_order.mp3');
       cookingStartedRef.current = getAudio('/alarms/cooking_started.mp3');
       cookingExceededRef.current = getAudio('/alarms/cooking_exceeded.mp3');
       newDeliveryRef.current = getAudio('/alarms/new_delivery.mp3');
@@ -141,17 +163,20 @@ export default function OrderDisplay() {
 
       console.log('running on a web platform.');
       window.addEventListener('beforeunload', cleanup);
-      attachSoundEffects('web').then();
+      attachWebSounds().then();
     }
 
     return () => {
       cleanup();
       window.removeEventListener('beforeunload', cleanup);
-      stopForegroundService().then();
+      if (isNative() && appStateChangeListener) {
+        appStateChangeListener.remove().then();
+      }
     }
 
   }, []);
 
+  // 알림 변경
   useEffect(() => {
     client
       .get('/api/manager/order/pending')
@@ -159,7 +184,7 @@ export default function OrderDisplay() {
         const { pendingReceipt, waitingForDelivery, inPickingUp } = res.data;
 
         if (pendingReceipt && user?.permission !== PermissionEnum.Manager) {
-          startAlarm(isNative() ? 'new_order.mp3' : newOrderSoundRef);
+          startAlarm(isNative() ? 'new_order.mp3' : newOrderRef);
         }
 
         if (user?.permission === PermissionEnum.Rider) {
@@ -174,8 +199,9 @@ export default function OrderDisplay() {
       });
   }, [user]);
 
+  // mute 변경
   useEffect(() => {
-    newOrderSoundRef.current && (newOrderSoundRef.current.muted = muted);
+    newOrderRef.current && (newOrderRef.current.muted = muted);
     cookingStartedRef.current && (cookingStartedRef.current.muted = muted);
     cookingExceededRef.current && (cookingExceededRef.current.muted = muted);
     newDeliveryRef.current && (newDeliveryRef.current.muted = muted);
@@ -183,6 +209,7 @@ export default function OrderDisplay() {
     newDishDisposalRef.current && (newDishDisposalRef.current.muted = muted);
   }, [muted]);
 
+  // 그릇수거 체크
   useEffect(() => {
     if (isRemaining) {
       setUrl('/api/manager/order/remaining')
@@ -195,41 +222,11 @@ export default function OrderDisplay() {
   useEffect(() => {
     socket.removeListener('refresh');
     socket.on('refresh', reload);
-
-    const handleAppStateChange = async (state: AppState) => {
-      if (!state.isActive) {
-        console.log("app is in background mode");
-      } else {
-        console.log("app is in foreground mode");
-        await reload();
-      }
-    };
-
-    let appStateChangeListener: PluginListenerHandle;
-
-    if(Capacitor.isNativePlatform()) {
-      App.addListener('appStateChange', handleAppStateChange)
-        .then((res) => {
-          appStateChangeListener = res;
-        });
-    }
-
-    return () => {
-      if (appStateChangeListener) {
-        appStateChangeListener.remove().then();
-      }
-    }
   }, [url, currentPage, params, debouncedSearchText])
-
 
   return (
     <>
-      {!Capacitor.isNativePlatform() && (
-        <div className='d-flex justify-content-between'>
-          <MuteButton muted={muted} setMuted={setMuted}/>
-        </div>
-      )}
-      <BottomBar
+      <TopBar
         mode={'order'}
         setOpen={setOpen}
         searchData={searchData}
@@ -238,6 +235,10 @@ export default function OrderDisplay() {
         total={totalPage}
         prev={prev}
         next={next}
+        muted={muted}
+        setMuted={setMuted}
+        isRemaining={isRemaining}
+        setIsRemaining={setIsRemaining}
       />
       <OrderTable
         columns={columns}
@@ -249,26 +250,6 @@ export default function OrderDisplay() {
         setSort={setSort}
         isRemaining={isRemaining}
       />
-      <div className='d-flex justify-content-between'>
-        {user?.permission !== PermissionEnum.Cook && (
-          <div className='form-check mt-1'>
-            <input
-              id='remaining'
-              type="checkbox"
-              className='form-check-input'
-              checked={isRemaining}
-              onChange={() => setIsRemaining(!isRemaining)}
-            />
-            <label htmlFor="remaining" className='form-check-label'>그릇수거</label>
-          </div>
-        )}
-        <Pagination
-          currentpage={currentPage}
-          totalpage={totalPage}
-          onclickleft={prev}
-          onclickright={next}
-        />
-      </div>
 
       <MakeOrderModal
         open={open}

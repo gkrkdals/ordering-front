@@ -2,7 +2,7 @@ import {useState} from "react";
 import Customer, {defaultCustomer} from "@src/models/common/Customer.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import BasicDialogProps from "@src/interfaces/BasicModalProps.ts";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {Column, SmallColumn, BigColumn, Wrapper} from "@src/components/atoms/Columns.tsx";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 

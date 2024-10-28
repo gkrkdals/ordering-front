@@ -2,7 +2,7 @@ import Menu from "@src/models/common/Menu.ts";
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {useContext, useEffect, useState} from "react";
 import {MenuCategoryContext} from "@src/contexts/manager/MenuCategoryContext.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {Column, SmallColumn, BigColumn} from "@src/components/atoms/Columns.tsx";
 import {DangerButton, PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";

@@ -3,12 +3,14 @@ import {useEffect, useState} from "react";
 import {Dialog, DialogContent, DialogActions, DialogTitle} from "@mui/material";
 import {DangerButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import {Column, SmallColumn, BigColumn} from "@src/components/atoms/Columns.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import {formatCurrency, formatFloor} from "@src/utils/data.ts";
 import {formatDate} from "@src/utils/date.ts";
 import {OrderHistory} from "@src/models/manager/OrderHistory.ts";
 import ChangeMenuModal from "@src/pages/manager/modals/order/ChangeMenuModal.tsx";
+import {StatusEnum} from "@src/models/common/StatusEnum.ts";
+import {getUser} from "@src/utils/network/socket.ts";
 
 interface ModifyOrderModalProps extends BasicModalProps {
   modifyingOrder: OrderStatusWithNumber | null;
@@ -163,9 +165,13 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
           <SecondaryButton onClick={handleClose}>
             닫기
           </SecondaryButton>
-          <DangerButton onClick={() => setOpenConfirmCancelModal(true)}>
-            주문취소
-          </DangerButton>
+          {
+            ((currentOrder?.status ?? 8) < StatusEnum.WaitingForDelivery || getUser() === 'manager') && (
+              <DangerButton onClick={() => setOpenConfirmCancelModal(true)}>
+                주문취소
+              </DangerButton>
+            )
+          }
         </DialogActions>
       </Dialog>
 

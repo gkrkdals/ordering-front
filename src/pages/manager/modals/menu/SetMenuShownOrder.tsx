@@ -7,7 +7,7 @@ import {Cell, Table, TBody, THead, TRow} from "@src/components/tables/Table.tsx"
 import FormControl from "@src/components/atoms/FormControl.tsx";
 import Menu from "@src/models/common/Menu.ts";
 import {useDebounce} from "@src/hooks/UseTable.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {LAST_SEQ} from "@src/utils/data.ts";
 
 interface SetMenuShownOrder extends BasicModalProps {}

@@ -2,19 +2,20 @@ import CenterContainer from "@src/components/CenterContainer.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 import {PrimaryButton} from "@src/components/atoms/Buttons.tsx";
 import {useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {AxiosError} from "axios";
 import {useRecoilState} from "recoil";
 import userState from "@src/recoil/atoms/UserState.ts";
 import User from "@src/models/manager/User.ts";
 import {useNavigate} from "react-router-dom";
 import {getUrl} from "@src/utils/data.ts";
-import {Capacitor, PluginListenerHandle} from "@capacitor/core";
+import {Capacitor} from "@capacitor/core";
 import {ForegroundService} from "@capawesome-team/capacitor-android-foreground-service";
-import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
-import {isNative} from "@src/utils/native.ts";
+import {isNative} from "@src/utils/native/native.ts";
 import {App} from "@capacitor/app";
 import {FirebaseMessaging} from "@capacitor-firebase/messaging";
+import {PushNotifications} from "@capacitor/push-notifications";
+import {getObject, setObject} from "@src/utils/native/preferences.ts";
 
 let lastBackPress = 0; // 마지막 클릭 시간을 저장
 const doublePressDelay = 1000; // 두 번 클릭 사이의 시간 간격 (2000ms = 2초)
@@ -28,12 +29,6 @@ export default function LoginPage() {
 
   const [, setUser] = useRecoilState(userState);
 
-  async function getProfile() {
-    const res = await client.post("/api/auth/manager/profile");
-    setUser(res.data);
-    return res.data as User;
-  }
-
   async function handleLogin() {
     try {
       let token: string | undefined;
@@ -43,9 +38,12 @@ export default function LoginPage() {
       }
 
       const res = await client.post("/api/auth/manager/signin", { username, password, token });
-      const userData: User = res.data;
-      setUser(userData);
-      navigate(`/${getUrl(userData)}`);
+      const userData: { jwt: string, payload: User } = res.data;
+      setUser(userData.payload);
+      if (isNative()) {
+        await setObject("jwt", userData.jwt);
+      }
+      navigate(`/${getUrl(userData.payload)}`);
     } catch (e) {
       if (e instanceof AxiosError && e.response && e.response.status === 400) {
         setFailed(true);
@@ -55,70 +53,58 @@ export default function LoginPage() {
     }
   }
 
-  async function getPermissions() {
-    if (isNative()) {
-      if (Capacitor.getPlatform() === 'android') {
-        const permissionRes = await ForegroundService.checkPermissions();
-        if (permissionRes.display !== "granted") {
-          await ForegroundService.requestPermissions();
-        }
-
-        const overlayPermission = await ForegroundService.checkManageOverlayPermission();
-        if (!overlayPermission.granted) {
-          await ForegroundService.requestManageOverlayPermission();
-        }
-      }
-
-      const firebasePermissionRes = await FirebaseMessaging.checkPermissions();
-      if (firebasePermissionRes.receive !== "granted") {
-        await FirebaseMessaging.requestPermissions();
-      }
+  /**
+   * jwt가 있으면 자동으로 로그인함
+   */
+  async function handleAppLogin() {
+    const jwt = (await getObject("jwt")).value;
+    if (jwt) {
+      const res = await client.post("/api/auth/manager/app/signin", { jwt });
+      const userData: User = res.data;
+      setUser(userData);
+      navigate(`/${getUrl(userData)}`)
     }
   }
 
-  useEffect(() => {
-    getPermissions().then();
-  }, []);
+  async function getPermissions() {
+    if (Capacitor.getPlatform() === 'android') {
+      const permissionRes = await ForegroundService.checkPermissions();
+      if (permissionRes.display !== "granted") {
+        await ForegroundService.requestPermissions();
+      }
 
-  useEffect(() => {
-    getProfile()
-      .then((user) => {
-        let suffix: string;
-        if (user.permission === PermissionEnum.Manager) {
-          suffix = 'manager';
-        } else if (user.permission === PermissionEnum.Rider) {
-          suffix = 'rider';
-        } else {
-          suffix = 'cook';
-        }
-
-        navigate(`/${suffix}`);
-      })
-  }, []);
-
-  useEffect(() => {
-    let backButtonListener: PluginListenerHandle;
-
-    if (isNative()) {
-      App
-        .addListener('backButton', async () => {
-          const currentTime = new Date().getTime(); // 현재 시간
-          if (currentTime - lastBackPress < doublePressDelay) {
-            // 두 번 클릭 시 앱 종료
-            await App.exitApp();
-          } else {
-            // 첫 번째 클릭 시 현재 시간을 저장
-            lastBackPress = currentTime;
-            console.log('Press back again to exit the app.');
-          }
-        })
-        .then(listener => backButtonListener = listener);
+      const overlayPermission = await ForegroundService.checkManageOverlayPermission();
+      if (!overlayPermission.granted) {
+        await ForegroundService.requestManageOverlayPermission();
+      }
     }
 
-    return () => {
-      if (isNative()) {
-        backButtonListener.remove().then();
-      }
+    const pushNotificationsPermission = await PushNotifications.checkPermissions()
+    if (pushNotificationsPermission.receive !== "granted") {
+      await ForegroundService.requestPermissions();
+    }
+  }
+
+  // 알림 허가를 받고 알림 등록 후 로그인
+  useEffect(() => {
+    if (isNative()) {
+      getPermissions()
+        .then(() => {
+          return App.addListener('backButton', async () => {
+            const currentTime = new Date().getTime(); // 현재 시간
+            if (currentTime - lastBackPress < doublePressDelay) {
+              // 토픽 unsubscribe는 앱 종료 네이티브 코드에서 발동
+              await App.exitApp();
+            } else {
+              // 첫 번째 클릭 시 현재 시간을 저장
+              lastBackPress = currentTime;
+              console.log('Press back again to exit the app.');
+            }
+          })
+        })
+        .then(() => {
+          return handleAppLogin();
+        });
     }
   }, []);
 

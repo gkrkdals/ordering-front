@@ -3,7 +3,7 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import React, {useState} from "react";
 import FormControl from "@src/components/atoms/FormControl.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 interface UploadMenusModalProps extends BasicModalProps {
 

@@ -5,7 +5,7 @@ import {QRCodeCanvas} from "qrcode.react";
 import {useContext, useEffect, useState} from "react";
 import {CustomerContext} from "@src/contexts/manager/CustomerContext.tsx";
 import SelectCustomer from "@src/components/molecules/SelectCustomer.tsx";
-import client, {baseUrl} from "@src/utils/client.ts";
+import client, {baseUrl} from "@src/utils/network/client.ts";
 
 interface MakeQrModalProps extends BasicModalProps {
 

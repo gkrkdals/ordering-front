@@ -4,7 +4,7 @@ import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import Toggle from "@src/components/atoms/Toggle.tsx";
 import {useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {useRecoilState} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
 import Customer from "@src/models/common/Customer.ts";

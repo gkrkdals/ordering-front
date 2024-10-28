@@ -5,7 +5,7 @@ import {OrderStatusRaw} from "@src/models/manager/OrderStatusRaw.ts";
 import EnterAmount from "@src/pages/manager/modals/order/EnterAmount.tsx";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
 import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import EnterCustomAmount from "@src/pages/manager/components/molecules/EnterCustomOrderAmount.tsx";
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
 import {Column} from "@src/models/manager/Column.ts";
@@ -13,6 +13,7 @@ import {useRecoilValue} from "recoil";
 import userState from "@src/recoil/atoms/UserState.ts";
 import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 import {formatCurrency} from "@src/utils/data.ts";
+import {getUser} from "@src/utils/network/socket.ts";
 
 export interface OrderStatusWithNumber extends OrderStatusRaw {
   num: number;
@@ -55,6 +56,11 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
     num: number
   ) {
     e.stopPropagation();
+
+    if (getUser() === 'cook' && orderStatus.status > StatusEnum.InPreparation) {
+      return;
+    }
+
     if (orderStatus.status !== StatusEnum.PickupComplete) {
       setModifyingOrder({ ...orderStatus, num });
 
@@ -65,11 +71,16 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
       } else if (!(user?.permission === PermissionEnum.Cook && orderStatus.status > StatusEnum.WaitingForDelivery)) {
         if (!cannotUpdate) {
           setCannotUpdate(true);
-          await client.put('/api/manager/order', {
-            orderId: orderStatus.id,
-            newStatus: orderStatus.status + 1,
-          });
-          setCannotUpdate(false);
+          try {
+            await client.put('/api/manager/order', {
+              orderId: orderStatus.id,
+              newStatus: orderStatus.status + 1,
+            });
+          } catch (e) {
+            console.error(e)
+          } finally {
+            setCannotUpdate(false);
+          }
         }
       }
     }

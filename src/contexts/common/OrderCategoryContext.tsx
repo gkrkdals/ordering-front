@@ -1,6 +1,6 @@
 import OrderCategory from "@src/models/common/OrderCategory.ts";
 import React, {createContext, useEffect, useState} from "react";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 type OrderCategoryContextProps = [OrderCategory[], React.Dispatch<React.SetStateAction<OrderCategory[]>>];
 

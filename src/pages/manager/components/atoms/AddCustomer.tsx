@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {getUser} from "@src/utils/socket.ts";
+import {getUser} from "@src/utils/network/socket.ts";
 import {PrimaryButton} from "@src/components/atoms/Buttons.tsx";
 import UploadCustomersModal from "@src/pages/manager/modals/customer/UploadCustomersModal.tsx";
 

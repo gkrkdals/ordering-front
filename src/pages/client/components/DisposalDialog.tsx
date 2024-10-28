@@ -2,7 +2,7 @@ import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {useEffect, useState} from "react";
 import BasicDialogProps from "@src/interfaces/BasicModalProps.ts";
 import {Disposal} from "@src/models/client/Disposal.ts";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 import {useRecoilValue} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
 

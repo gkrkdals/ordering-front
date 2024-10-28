@@ -7,7 +7,7 @@ import Menu from "@src/models/common/Menu.ts";
 import MenuCell from "@src/pages/client/components/atoms/MenuCell.tsx";
 import {useRecoilValue} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
-import client from "@src/utils/client.ts";
+import client from "@src/utils/network/client.ts";
 
 interface MenuTableProps {
   onMenuClick: (menu: Menu) => void;
@@ -42,10 +42,10 @@ export default function MenuTable({ onMenuClick }: MenuTableProps) {
   }, [open]);
 
   useEffect(() => {
-    window.addEventListener('reload', getLastOrders)
+    window.addEventListener('reloadLast', getLastOrders)
 
     return () => {
-      window.removeEventListener('reload', getLastOrders);
+      window.removeEventListener('reloadLast', getLastOrders);
     }
   }, []);
 
