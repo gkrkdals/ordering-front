@@ -5,14 +5,13 @@ import Menu from "@src/models/common/Menu.ts";
 import Customer from "@src/models/common/Customer.ts";
 import client from "@src/utils/network/client.ts";
 import {MenuContext} from "@src/contexts/manager/MenuContext.tsx";
-import {CustomerContext} from "@src/contexts/manager/CustomerContext.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 
 interface MakeOrderModal extends BasicModalProps {}
 
 export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
   const [menus, ] = useContext(MenuContext)!;
-  const [customers, ] = useContext(CustomerContext)!;
+  const [customers, setCustomers] = useState<Customer[]>([]);
 
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
@@ -55,6 +54,14 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
   useEffect(() => {
     setSelectedMenu(menus.find(m => m.name === searchMenu) ?? null);
   }, [searchMenu]);
+
+  useEffect(() => {
+    if (open) {
+      client
+        .get('/api/manager/customer/all')
+        .then((res) => setCustomers(res.data));
+    }
+  }, [open]);
 
   return (
     <>

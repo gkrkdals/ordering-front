@@ -1,5 +1,6 @@
 import User from "@src/models/manager/User.ts";
 export const LAST_SEQ = 10000;
+export const FRUIT_ID = 1;
 
 export function makePair<T>(data: T[]) {
   return data.reduce((prev, cur, index) => {

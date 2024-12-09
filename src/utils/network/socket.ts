@@ -1,10 +1,26 @@
 import {io, Socket} from "socket.io-client"
 
-const url = 'https://yeonsu.kr:8080';
-// const url = 'http://localhost:8080';
+const url = import.meta.env.VITE_SOCKET_URL;
 
-export const socket = io(url, {
+export const customerSocket = io(url, {
   autoConnect: false,
+  query: {
+    role: "customer"
+  }
+})
+
+export const managerSocket = io(url, {
+  autoConnect: false,
+  query: {
+    role: "manager"
+  }
+});
+
+export const printerSocket = io(url, {
+  autoConnect: false,
+  query: {
+    role: "printer",
+  }
 });
 
 type UserType = 'manager' | 'rider' | 'cook';

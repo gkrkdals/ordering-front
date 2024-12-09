@@ -1,56 +1,15 @@
 import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
-import {useContext, useEffect, useState} from "react";
+import {useContext} from "react";
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
-import {OrderSummaryContext} from "@src/contexts/client/OrderSummaryContext.tsx";
-import client from "@src/utils/network/client.ts";
-import {onDisconnected, socket} from "@src/utils/network/socket.ts";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
 
-export default function OrderStatusCount() {
+interface OrderStatusCountProps {
+  orderSummaryCount: { status: number, count: number }[];
+}
+
+export default function OrderStatusCount({ orderSummaryCount }: OrderStatusCountProps) {
 
   const [orderCategories] = useContext(OrderCategoryContext)!;
-  const [, setOrderSummaries] = useContext(OrderSummaryContext)!;
-  const [orderSummaryCount, setOrderSummaryCount] = useState<{ status: number, count: number }[]>([])
-
-  useEffect(() => {
-    function cleanup() {
-      socket.removeAllListeners();
-      socket.disconnect();
-    }
-    socket.connect();
-
-    window.addEventListener('beforeunload', cleanup);
-
-    socket.on('ping', () => {
-      console.log("received keep-alive");
-      socket.emit('pong');
-    });
-
-    socket.on('disconnect', () => onDisconnected(socket));
-
-    socket.on('refresh_client', async () => {
-      const res = await client.get('/api/order/summary');
-      setOrderSummaries(res.data.map(((summary: any) => {
-        return ({
-          ...summary,
-          statusName: summary['status_name'],
-          menuName: summary['menu_name']
-        });
-      })));
-
-      const res2 = await client.get('/api/order/summary/count');
-      setOrderSummaryCount(res2.data);
-    });
-
-    client
-      .get('/api/order/summary/count')
-      .then(res => setOrderSummaryCount(res.data))
-
-    return () => {
-      cleanup();
-      window.removeEventListener('beforeunload', cleanup);
-    }
-  }, []);
 
   return (
     <Table tablesize='small' style={{ tableLayout: 'fixed', fontSize: '11pt' }}>

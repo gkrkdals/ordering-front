@@ -2,11 +2,11 @@ import OrderTable from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import {OrderStatusRaw} from "@src/models/manager/OrderStatusRaw.ts";
 import MakeOrderModal from "@src/pages/manager/modals/order/MakeOrderModal.tsx";
 import {useEffect, useRef, useState} from "react";
-import {getUser, onDisconnected, socket} from "@src/utils/network/socket.ts";
+import {getUser, onDisconnected, managerSocket} from "@src/utils/network/socket.ts";
 import useTable from "@src/hooks/UseTable.tsx";
 import {AudioRefObject, getAudio, playAudio} from "@src/utils/music.ts";
 import TopBar from "@src/pages/manager/components/molecules/TopBar.tsx";
-import client from "@src/utils/network/client.ts";
+import client, {printerClient} from "@src/utils/network/client.ts";
 import {useRecoilValue} from "recoil";
 import UserState from "@src/recoil/atoms/UserState.ts";
 import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
@@ -25,6 +25,8 @@ const columns: Column[] = [
   {key: 'status', name: '상태'},
   {key: 'credit', name: '잔금'}
 ];
+
+type ReloadFunction = () => Promise<void>;
 
 export default function OrderDisplay() {
   const [open, setOpen] = useState(false);
@@ -62,58 +64,64 @@ export default function OrderDisplay() {
     setUrl,
     debouncedSearchText
   } = useTable<OrderStatusRaw>('/api/manager/order', params);
+  const reloadRef = useRef<ReloadFunction | null>(null);
 
   function clearAlarm() { clearInterval(intervalId.current) }
-  function startAlarm(audioRef: AudioRefObject) {
+  function startAlarm(audioRef: AudioRefObject, data?: boolean) {
+    if (getUser() === 'cook' && data) {
+      return;
+    }
+
     clearAlarm();
-    playAudio(audioRef);
-    intervalId.current = setInterval(() => playAudio(audioRef), 3000);
+    playAudio(audioRef, data);
+    intervalId.current = setInterval(() => playAudio(audioRef, data), 3000);
   }
 
   function cleanup() {
     clearAlarm();
-    socket.removeAllListeners();
-    socket.disconnect();
+    managerSocket.removeAllListeners();
+    managerSocket.disconnect();
   }
 
   useEffect(() => {
     let appStateChangeListener: PluginListenerHandle;
 
     const attachWebSounds = async () => {
-      socket.on('new_order', () => startAlarm(newOrderRef));
-      socket.on('cooking_started', () => playAudio(cookingStartedRef));
-      socket.on('clear_alarm', clearAlarm);
+      managerSocket.on('new_order', (data) => startAlarm(newOrderRef, data));
+      managerSocket.on('cooking_started', (data) => playAudio(cookingStartedRef, data));
+      managerSocket.on('clear_alarm', clearAlarm);
       if (getUser() === 'cook') {
-        socket.on('cooking_exceeded', () => playAudio(cookingExceededRef));
+        managerSocket.on('cooking_exceeded', (data) => playAudio(cookingExceededRef, data));
       } else {
-        socket.on('new_delivery', () => playAudio(newDeliveryRef));
-        socket.on('deliver_delayed', () => playAudio(deliverDelayedRef));
-        socket.on('new_dish_disposal', () => playAudio(newDishDisposalRef));
+        managerSocket.on('new_delivery', () => playAudio(newDeliveryRef));
+        managerSocket.on('deliver_delayed', () => playAudio(deliverDelayedRef));
+        managerSocket.on('new_dish_disposal', () => playAudio(newDishDisposalRef));
       }
     };
 
     const attachAppSounds = () => {
-      socket.on('new_order', () => startAlarm('new_order.mp3'));
-      socket.on('cooking_started', () => playAudio('cooking_started.mp3'));
-      socket.on('clear_alarm', clearAlarm)
+      managerSocket.on('new_order', () => startAlarm('new_order.mp3'));
+      managerSocket.on('cooking_started', () => playAudio('cooking_started.mp3'));
+      managerSocket.on('clear_alarm', clearAlarm)
       if (getUser() === 'cook') {
-        socket.on('cooking_exceeded', () => playAudio('cooking_exceeded.mp3'));
+        managerSocket.on('cooking_exceeded', () => playAudio('cooking_exceeded.mp3'));
       } else {
-        socket.on('new_delivery', () => playAudio('new_delivery.mp3'));
-        socket.on('deliver_delayed', () => playAudio('deliver_delayed.mp3'));
-        socket.on('new_dish_disposal', () => playAudio('new_dish_disposal.mp3'));
+        managerSocket.on('new_delivery', () => playAudio('new_delivery.mp3'));
+        managerSocket.on('deliver_delayed', () => playAudio('deliver_delayed.mp3'));
+        managerSocket.on('new_dish_disposal', () => playAudio('new_dish_disposal.mp3'));
       }
       console.log("sound service attached");
     }
 
     const detachAppSounds = () => {
-      socket.removeListener('new_order');
-      socket.removeListener('cooking_started');
-      socket.removeListener('clear_alarm');
-      socket.removeListener('cooking_exceeded');
-      socket.removeListener('new_delivery');
-      socket.removeListener('deliver_delayed');
-      socket.removeListener('new_dish_disposal');
+      managerSocket.removeListener('new_order');
+      managerSocket.removeListener('cooking_started');
+      managerSocket.removeListener('clear_alarm');
+      managerSocket.removeListener('cooking_exceeded');
+      managerSocket.removeListener('new_delivery');
+      managerSocket.removeListener('deliver_delayed');
+      managerSocket.removeListener('new_dish_disposal');
+      clearAlarm();
       console.log("sound service detached");
     }
 
@@ -121,29 +129,35 @@ export default function OrderDisplay() {
       if (state.isActive) {
         console.log("app is in foreground mode");
         attachAppSounds();
-        await reload();
+        await reloadRef.current?.();
+        const res = await client.get('/api/manager/order/alarm');
+        if (res.data) {
+          clearAlarm();
+        }
+
       } else {
         console.log("app is in background mode");
         detachAppSounds();
       }
     };
 
-    const setupSocket = () => {
-      socket.connect();
-      socket.on('connect', () => console.log("socket is connected"));
-      socket.on('ping', () => {
-        console.log("received keep-alive");
-        socket.emit('pong');
-      });
-      socket.on('disconnect', () => onDisconnected(socket));
-      socket.on("connect_error", (err) => {
+    const setupManagerSocket = () => {
+      managerSocket.connect();
+      managerSocket.on('connect', () => console.log("socket is connected"));
+      managerSocket.on('ping', () => managerSocket.emit('pong'));
+      managerSocket.on('disconnect', () => onDisconnected(managerSocket));
+      managerSocket.on("connect_error", (err) => {
         console.log(`connect_error due to ${err.message}`);
       });
-      socket.on('refresh', reload);
+      managerSocket.on('refresh', reload);
+      if (!isNative() && getUser() === 'manager') {
+        managerSocket.on("print_receipt", (menu) => printerClient.post('/print', menu))
+        console.log("printer service started");
+      }
     };
 
     const mobileServiceSetup = async () => {
-      setupSocket();
+      setupManagerSocket();
       attachAppSounds();
       appStateChangeListener = await App.addListener('appStateChange', handleAppStateChange);
     };
@@ -159,7 +173,7 @@ export default function OrderDisplay() {
       deliverDelayedRef.current = getAudio('/alarms/deliver_delayed.mp3');
       newDishDisposalRef.current = getAudio('/alarms/new_dish_disposal.mp3');
 
-      setupSocket();
+      setupManagerSocket();
 
       console.log('running on a web platform.');
       window.addEventListener('beforeunload', cleanup);
@@ -220,9 +234,14 @@ export default function OrderDisplay() {
 
   // url, 페이지, params 변경 후 socket에 저장되어 있던 refresh 리스너를 새로 장착
   useEffect(() => {
-    socket.removeListener('refresh');
-    socket.on('refresh', reload);
+    managerSocket.removeListener('refresh');
+    managerSocket.on('refresh', reload);
+
   }, [url, currentPage, params, debouncedSearchText])
+
+  useEffect(() => {
+    reloadRef.current = reload;
+  }, [reload]);
 
   return (
     <>
@@ -239,6 +258,7 @@ export default function OrderDisplay() {
         setMuted={setMuted}
         isRemaining={isRemaining}
         setIsRemaining={setIsRemaining}
+        reload={reload}
       />
       <OrderTable
         columns={columns}

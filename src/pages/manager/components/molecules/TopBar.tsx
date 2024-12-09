@@ -16,6 +16,7 @@ interface TopBarProps {
   setMuted?: (muted: boolean) => void;
   isRemaining?: boolean;
   setIsRemaining?: (isRemaining: boolean) => void;
+  reload?: () => void;
 }
 
 export default function TopBar(props: TopBarProps) {
@@ -25,7 +26,16 @@ export default function TopBar(props: TopBarProps) {
   return (
     <div className='d-block d-sm-flex justify-content-between mb-2'>
       <div className='d-flex justify-content-between justify-content-sm-start'>
-        {(props.mode === 'order' && props.setOpen) && <AddOrder onClick={open} muted={props.muted} setMuted={props.setMuted} isRemaining={props.isRemaining} setIsRemaining={props.setIsRemaining} />}
+        {(props.mode === 'order' && props.setOpen) && (
+          <AddOrder
+            onClick={open}
+            muted={props.muted}
+            setMuted={props.setMuted}
+            isRemaining={props.isRemaining}
+            setIsRemaining={props.setIsRemaining}
+            reload={props.reload}
+          />
+        )}
         {props.mode === 'menu' && <AddMenu onClick={open} />}
         {props.mode === 'customer' && <AddCustomer onClick={open} />}
         <SearchData value={props.searchData} onChange={e => props.setSearchData(e.target.value)}/>

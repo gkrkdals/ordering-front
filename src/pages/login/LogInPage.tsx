@@ -24,6 +24,8 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const [failed, setFailed] = useState(false);
   const navigate = useNavigate();
 
@@ -37,6 +39,7 @@ export default function LoginPage() {
         token = result.token;
       }
 
+      setIsLoggingIn(true);
       const res = await client.post("/api/auth/manager/signin", { username, password, token });
       const userData: { jwt: string, payload: User } = res.data;
       setUser(userData.payload);
@@ -50,6 +53,8 @@ export default function LoginPage() {
       } else {
         console.log(e);
       }
+    } finally {
+      setIsLoggingIn(false);
     }
   }
 
@@ -57,12 +62,20 @@ export default function LoginPage() {
    * jwt가 있으면 자동으로 로그인함
    */
   async function handleAppLogin() {
-    const jwt = (await getObject("jwt")).value;
-    if (jwt) {
-      const res = await client.post("/api/auth/manager/app/signin", { jwt });
-      const userData: User = res.data;
-      setUser(userData);
-      navigate(`/${getUrl(userData)}`)
+    try {
+      setIsLoggingIn(true);
+      const jwt = (await getObject("jwt")).value;
+      const tokenResult = await FirebaseMessaging.getToken();
+      if (jwt) {
+        const res = await client.post("/api/auth/manager/app/signin", { jwt, token: tokenResult.token });
+        const userData: User = res.data;
+        setUser(userData);
+        navigate(`/${getUrl(userData)}`)
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoggingIn(false);
     }
   }
 
@@ -129,8 +142,9 @@ export default function LoginPage() {
         <PrimaryButton
           style={{ width: '100%', marginBottom: failed ? '10px' : '' }}
           onClick={handleLogin}
+          disabled={isLoggingIn}
         >
-          로그인
+          {isLoggingIn ? '로그인 중..' : '로그인'}
         </PrimaryButton>
         {failed && <p className='text-danger'>ID 또는 비밀번호가 잘못되었습니다.</p>}
       </div>

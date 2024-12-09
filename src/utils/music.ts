@@ -1,4 +1,5 @@
 import {MutableRefObject} from "react";
+import {getUser} from "@src/utils/network/socket.ts";
 export type AudioRefObject = MutableRefObject<HTMLAudioElement | null> | string;
 
 export function getAudio(uri: string): HTMLAudioElement {
@@ -8,7 +9,11 @@ export function getAudio(uri: string): HTMLAudioElement {
   return audio;
 }
 
-export function playAudio(audioRefOrPath: AudioRefObject) {
+export function playAudio(audioRefOrPath: AudioRefObject, data?: boolean) {
+
+  if (getUser() === 'cook' && data) {
+    return;
+  }
 
   if (typeof audioRefOrPath === 'string') {
     const audio = new Media(

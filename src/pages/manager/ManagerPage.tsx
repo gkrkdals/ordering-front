@@ -7,22 +7,22 @@ import MenuDisplay from "@src/pages/manager/components/organisms/MenuDisplay.tsx
 import CustomerDisplay from "@src/pages/manager/components/organisms/CustomerDisplay.tsx";
 import OrderCategoryProvider from "@src/contexts/common/OrderCategoryContext.tsx";
 import CustomerCategoryProvider from "@src/contexts/manager/CustomerCategoryContext.tsx";
-import client from "@src/utils/network/client.ts";
+import client, {printerClient} from "@src/utils/network/client.ts";
 import {useRecoilState} from "recoil";
 import userState from "@src/recoil/atoms/UserState.ts";
 import {useNavigate} from "react-router-dom";
 import {AxiosError} from "axios";
-import {getUser} from "@src/utils/network/socket.ts";
+import {getUser, onDisconnected, printerSocket} from "@src/utils/network/socket.ts";
 import MenuProvider from "@src/contexts/manager/MenuContext.tsx";
 import CustomerProvider from "@src/contexts/manager/CustomerContext.tsx";
 import {DangerButton} from "@src/components/atoms/Buttons.tsx";
 import {App} from "@capacitor/app";
 import {PluginListenerHandle} from "@capacitor/core";
 import {isNative, startForegroundService, stopForegroundService} from "@src/utils/native/native.ts";
-import {FirebaseMessaging} from "@capacitor-firebase/messaging";
 import {deleteObject} from "@src/utils/native/preferences.ts";
 import {channels} from "@src/utils/native/notifications.ts";
 import {PushNotifications} from "@capacitor/push-notifications";
+import {FirebaseMessaging} from "@capacitor-firebase/messaging";
 
 export default function ManagerPage() {
   const [whichMenu, setWhichMenu] = useState<string>('order');
@@ -30,12 +30,9 @@ export default function ManagerPage() {
   const navigate = useNavigate();
 
   async function handleLogout() {
-    await client.get('/api/auth/manager/logout');
+    await client.get('/api/auth/manager/logout', { params: { isNative: isNative() } });
     if (isNative()) {
-      const topic = getUser() === 'cook' ? 'cook' : 'manager';
       await deleteObject("jwt");
-      await FirebaseMessaging.unsubscribeFromTopic({ topic: "all" });
-      await FirebaseMessaging.unsubscribeFromTopic({ topic });
     }
     navigate('/login');
   }
@@ -54,56 +51,56 @@ export default function ManagerPage() {
   }
 
   async function createNotificationChannels() {
-    try {
-      for (const channel of channels) {
-        await PushNotifications.createChannel(channel);
+    if (isNative()) {
+      try {
+        for (const channel of channels) {
+          await PushNotifications.createChannel(channel);
+        }
+      } catch (e) {
+        console.log("error creating notification channels: ", e);
       }
-    } catch (e) {
-      console.log("error creating notification channels: ", e);
     }
   }
-
-  // jwt가 없으면 메인메뉴 이동
-  useEffect(() => {
-    client
-      .get('/api/auth/manager/profile', { params: { permission: getUser() } })
-      .then((res) => setUser(res.data))
-      .then(() => {
-        return createNotificationChannels();
-      })
-      .catch((e: AxiosError) => {
-        if (e.response && e.response.status === 401) {
-          navigate('/login');
-        }
-      });
-  }, []);
 
   // foregroundService 시작
   useLayoutEffect(() => {
     if (isNative()) {
       startForegroundService()
         .then(() => {
-          const topic = getUser() === 'cook' ? 'cook' : 'manager';
-          console.log(`subscribing to ${topic}`)
-          return Promise.all([
-            FirebaseMessaging.subscribeToTopic({ topic }),
-            FirebaseMessaging.subscribeToTopic({ topic: 'all' }),
-          ])
+          return createNotificationChannels();
         })
-        .then(() => {
-          console.log("successfully subscribed to both topic and all");
-        })
+        .then(() => FirebaseMessaging.addListener("tokenReceived", async (tokenReceivedEvent) => {
+            await client.post("/api/auth/manager/fcm", {
+              token: tokenReceivedEvent.token
+            })
+          })
+        )
         .catch(() => {
-          console.log("failed to subscribe to topic");
-        });
+          console.log("Failed to start foreground service");
+        })
     }
 
     return () => {
       if (isNative()) {
         stopForegroundService()
-          .then()
+          .then(() => FirebaseMessaging.removeAllListeners())
+          .catch(() => {
+            console.log("Failed to stop foreground service")
+          })
       }
     }
+  }, []);
+
+  // jwt가 없으면 메인메뉴 이동
+  useEffect(() => {
+    client
+      .get('/api/auth/manager/profile', { params: { permission: getUser() } })
+      .then((res) => setUser(res.data))
+      .catch((e: AxiosError) => {
+        if (e.response && e.response.status === 401) {
+          navigate('/login');
+        }
+      });
   }, []);
 
   useEffect(() => {
@@ -121,6 +118,35 @@ export default function ManagerPage() {
           .remove()
           .then();
       }
+    }
+  }, []);
+
+  useEffect(() => {
+    const cleanup = () => {
+      printerSocket.removeAllListeners();
+      printerSocket.disconnect();
+    };
+
+    if (!isNative() && getUser() === 'manager') {
+      printerSocket.connect();
+      printerSocket.on('connect', () => console.log("printer socket is connected"));
+      printerSocket.on('ping', () => printerSocket.emit('pong'));
+      printerSocket.on('disconnect', () => onDisconnected(printerSocket));
+      printerSocket.on('print_receipt', async (menu) => {
+        try {
+          await printerClient.post('/print', menu);
+          console.log("receipt successfully printed");
+        } catch (e) {
+          console.error("failed to print receipt: ", e);
+        }
+      });
+    }
+
+    window.addEventListener('beforeunload', cleanup);
+
+    return () => {
+      cleanup();
+      window.removeEventListener('beforeunload', cleanup);
     }
   }, []);
 

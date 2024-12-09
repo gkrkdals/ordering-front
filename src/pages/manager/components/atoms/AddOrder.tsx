@@ -10,14 +10,23 @@ interface AddOrderProps {
   setMuted?: (muted: boolean) => void;
   isRemaining?: boolean;
   setIsRemaining?: (isRemaining: boolean) => void;
+  reload?: () => void;
 }
 
-export default function AddOrder({ onClick, muted, setMuted, isRemaining, setIsRemaining }: AddOrderProps) {
+export default function AddOrder({ reload, onClick, muted, setMuted, isRemaining, setIsRemaining }: AddOrderProps) {
   return (
     <div className='d-flex'>
       {!isNative() && (
         <>
           <MuteButton muted={muted} setMuted={setMuted}/>
+          <div className='me-3'/>
+        </>
+      )}
+      {reload && (
+        <>
+          <PrimaryButton onClick={reload}>
+            <i className="bi bi-arrow-clockwise" />
+          </PrimaryButton>
           <div className='me-3'/>
         </>
       )}

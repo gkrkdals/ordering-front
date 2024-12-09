@@ -11,10 +11,10 @@ export default function SearchData({ value, onChange }: SearchDataProps) {
       <input
         type="text"
         className='form-control'
-        style={{ width: 150 }}
+        style={{ width: 90 }}
         value={value}
         onChange={onChange}
-        placeholder='검색어 입력'
+        placeholder='검색어'
       />
     </div>
   );

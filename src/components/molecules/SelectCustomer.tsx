@@ -5,7 +5,7 @@ import FormControl from "@src/components/atoms/FormControl.tsx";
 interface SelectCustomerProps {
   uniqueId: string;
   customers: Customer[];
-  setSelectedCustomer: (selectedMenu: number) => void;
+  setSelectedCustomer: (selectedCustomer: number) => void;
 }
 
 export default function SelectCustomer(props: SelectCustomerProps) {

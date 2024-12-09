@@ -19,7 +19,6 @@ interface IMenu {
 const menuSummary: IMenu[] = [
   { name: '전체', value: 1 },
   { name: '메뉴별', value: 2 },
-  { name: '거래처별', value: 3 },
 ];
 
 interface MakeCalculationModalProps extends BasicModalProps {}
@@ -37,35 +36,42 @@ export function MakeCalculationModal(props: MakeCalculationModalProps) {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
 
-  async function handleClickOnCalculation() {
-    if (start !== '' && end !== '') {
-      let name: string;
-      if (type === 1) {
-        name = '정산_전체';
-      } else if (type === 2) {
-        name = `메뉴별_정산_${menus.find(menu => menu.id === selectedMenu)?.name}`;
-      } else {
-        name = `고객별_정산_${customers.find(customer => customer.id === selectedCustomer)?.name}`;
-      }
-      name = name.concat(`_${start}_${end}.xlsx`)
+  const [isPerforming, setIsPerforming] = useState(false);
 
-      const response = await client.get(`/api/manager/settings/calculation`, {
-        params: {
-          type,
-          start, end,
-          menu: selectedMenu,
-          customer: selectedCustomer,
-        },
-        responseType: "blob",
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", name);
-      link.style.cssText = "display:none";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+  async function handleClickOnCalculation() {
+    setIsPerforming(true);
+    try {
+      if (start !== '' && end !== '') {
+        let name: string;
+        if (type === 1) {
+          name = '정산_전체';
+        } else if (type === 2) {
+          name = `메뉴별_정산_${menus.find(menu => menu.id === selectedMenu)?.name}`;
+        } else {
+          name = `고객별_정산_${customers.find(customer => customer.id === selectedCustomer)?.name}`;
+        }
+        name = name.concat(`_${start}_${end}.xlsx`)
+
+        const response = await client.get(`/api/manager/settings/calculation`, {
+          params: {
+            type,
+            start, end,
+            menu: selectedMenu,
+            customer: selectedCustomer,
+          },
+          responseType: "blob",
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", name);
+        link.style.cssText = "display:none";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    } finally {
+      setIsPerforming(false);
     }
   }
 
@@ -141,11 +147,11 @@ export function MakeCalculationModal(props: MakeCalculationModalProps) {
         }
       </DialogContent>
       <DialogActions>
-        <SecondaryButton onClick={() => props.setOpen(false)}>
+        <SecondaryButton onClick={() => props.setOpen(false)} disabled={isPerforming}>
           닫기
         </SecondaryButton>
-        <PrimaryButton onClick={handleClickOnCalculation}>
-          정산
+        <PrimaryButton onClick={handleClickOnCalculation} disabled={isPerforming}>
+          {isPerforming ? '정산 중' : '정산'}
         </PrimaryButton>
       </DialogActions>
     </Dialog>

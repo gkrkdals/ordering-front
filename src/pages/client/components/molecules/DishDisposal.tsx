@@ -1,52 +1,18 @@
 import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
-import {useEffect, useState} from "react";
-import DisposalDialog from "@src/pages/client/components/DisposalDialog.tsx";
-import client from "@src/utils/network/client.ts";
+import {useState} from "react";
+import DisposalDialog from "@src/pages/client/modals/DisposalDialog.tsx";
 import {Disposal} from "@src/models/client/Disposal.ts";
 import {StatusEnum} from "@src/models/common/StatusEnum.ts";
-import {useRecoilValue} from "recoil";
-import customerState from "@src/recoil/atoms/CustomerState.ts";
-import {onDisconnected, socket} from "@src/utils/network/socket.ts";
 
-export default function DishDisposal() {
-  const [dishDisposals, setDishDisposals] = useState<Disposal[]>([]);
+interface DishDisposalProps {
+  dishDisposals: Disposal[];
+  reloadDishDisposals: () => void;
+}
+
+export default function DishDisposal({ dishDisposals, reloadDishDisposals }: DishDisposalProps) {
   const [open, setOpen] = useState(false);
 
-  const customer = useRecoilValue(customerState);
-
   const [selectedDisposal, setSelectedDisposal] = useState<Disposal | null>(null);
-
-  function reload() {
-    client
-      .get('/api/order/dish')
-      .then((res) => setDishDisposals(res.data));
-  }
-
-  useEffect(() => {
-    if(customer) {
-      reload();
-    }
-  }, [customer]);
-
-  useEffect(() => {
-    socket.connect();
-
-    socket.on('ping', () => {
-      console.log("received keep-alive");
-      socket.emit('pong');
-    });
-
-    socket.on('disconnect', () => onDisconnected(socket));
-
-    socket.on('refresh_client', () => {
-      reload();
-    });
-
-    return () => {
-      socket.removeAllListeners();
-      socket.disconnect();
-    }
-  }, []);
 
   return (
     <>
@@ -90,7 +56,7 @@ export default function DishDisposal() {
         open={open}
         setOpen={setOpen}
         currentDisposal={selectedDisposal}
-        reload={reload}
+        reload={reloadDishDisposals}
       />
     </>
   );

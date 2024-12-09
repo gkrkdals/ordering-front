@@ -6,7 +6,7 @@ interface SelectMenuProps {
   uniqueId: string;
   menus: Menu[];
   setSelectedMenu: (selectedMenu: number) => void;
-  setPrice: (price: string) => void;
+  setPrice?: (price: string) => void;
 }
 
 export default function SelectMenu(props: SelectMenuProps) {
@@ -18,7 +18,7 @@ export default function SelectMenu(props: SelectMenuProps) {
 
     if (foundMenu) {
       props.setSelectedMenu(foundMenu.id);
-      props.setPrice(((foundMenu.menuCategory!.price / 1000)).toString())
+      props.setPrice?.(((foundMenu.menuCategory!.price / 1000)).toString());
     }
   }
 

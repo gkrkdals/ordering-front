@@ -1,6 +1,6 @@
 import React, {ComponentPropsWithoutRef, useState} from "react";
 import SelectedMenu from "@src/models/client/SelectedMenu.ts";
-import OrderApproveDialog from "@src/pages/client/components/OrderApproveDialog.tsx";
+import OrderApproveDialog from "@src/pages/client/modals/OrderApproveDialog.tsx";
 import client from "@src/utils/network/client.ts";
 import {AxiosError} from "axios";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
