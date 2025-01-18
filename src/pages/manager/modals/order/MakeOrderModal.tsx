@@ -23,6 +23,8 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
 
   const [confirm, setConfirm] = useState<boolean>(false);
 
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
   function initialize() {
     setSelectedCustomer(null);
     setSelectedMenu(null);
@@ -37,14 +39,19 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
   }
 
   async function handleOrderNew() {
-    await client.post('/api/manager/order', {
-      menu: selectedMenu,
-      customer: selectedCustomer,
-      request,
-    });
-    setOpen(false);
-    setConfirm(false);
-    initialize();
+    try {
+      setIsProcessing(true);
+      await client.post('/api/manager/order', {
+        menu: selectedMenu,
+        customer: selectedCustomer,
+        request,
+      });
+      setOpen(false);
+      setConfirm(false);
+      initialize();
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   useEffect(() => {
@@ -120,8 +127,10 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
           주문하시겠습니까?
         </DialogContent>
         <DialogActions>
-          <button className='btn btn-secondary' onClick={() => setConfirm(false)}>아니오</button>
-          <button className='btn btn-primary' onClick={handleOrderNew}>예</button>
+          <button className='btn btn-secondary' onClick={() => setConfirm(false)} disabled={isProcessing}>아니오</button>
+          <button className='btn btn-primary' onClick={handleOrderNew} disabled={isProcessing}>
+            {isProcessing ? '주문 중' : '예'}
+          </button>
         </DialogActions>
       </Dialog>
     </>

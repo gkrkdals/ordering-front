@@ -2,13 +2,14 @@ import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import {useState} from "react";
-import {MakeUserModal} from "@src/pages/manager/modals/settings/MakeUserModal.tsx";
-import {MakeCalculationModal} from "@src/pages/manager/modals/settings/MakeCalculationModal.tsx";
-import MakeQRModal from "@src/pages/manager/modals/settings/MakeQRModal.tsx";
-import ModifyExceedTime from "@src/pages/manager/modals/settings/ModifyExceedTime.tsx";
-import StandardInfoModal from "@src/pages/manager/modals/settings/StandardInfoModal.tsx";
-import ModifyUserModal from "@src/pages/manager/modals/settings/ModifyUserModal.tsx";
-import NoAlarmsModal from "@src/pages/manager/modals/settings/NoAlarmsModal.tsx";
+import {MakeUserModal} from "@src/pages/manager/modals/settings/features/MakeUserModal.tsx";
+import {MakeCalculationModal} from "@src/pages/manager/modals/settings/features/MakeCalculationModal.tsx";
+import MakeQRModal from "@src/pages/manager/modals/settings/features/MakeQRModal.tsx";
+import ModifyExceedTime from "@src/pages/manager/modals/settings/features/ModifyExceedTime.tsx";
+import StandardInfoModal from "@src/pages/manager/modals/settings/features/StandardInfoModal.tsx";
+import ModifyUserModal from "@src/pages/manager/modals/settings/features/ModifyUserModal.tsx";
+import NoAlarmsModal from "@src/pages/manager/modals/settings/features/NoAlarmsModal.tsx";
+import AutoSoldOutModal from "@src/pages/manager/modals/settings/features/AutoSoldOutModal.tsx";
 
 interface SettingModalProps extends BasicModalProps {}
 
@@ -20,6 +21,7 @@ export default function SettingModal(props: SettingModalProps) {
   const [openModifyExceedTimes, setOpenModifyExceedTimes] = useState(false);
   const [openStandardInfo, setOpenStandardInfo] = useState(false);
   const [openNoAlarms, setOpenNoAlarms] = useState(false);
+  const [openAutoSoldOut, setOpenAutoSoldOut] = useState(false);
 
   function handleOpenMakeQR() {
     props.setOpen(false);
@@ -56,6 +58,11 @@ export default function SettingModal(props: SettingModalProps) {
     setOpenNoAlarms(true);
   }
 
+  function handleOpenAutoSoldOut() {
+    props.setOpen(false);
+    setOpenAutoSoldOut(true);
+  }
+
   return (
     <>
       <Dialog open={props.open}>
@@ -88,6 +95,10 @@ export default function SettingModal(props: SettingModalProps) {
             <i className="bi bi-volume-mute me-2"></i>
             조리원 알림 음소거 설정
           </div>
+          <div className='d-flex py-3 px-2' onClick={handleOpenAutoSoldOut}>
+            <i className="bi bi-alarm me-2"></i>
+            자동 품절/해제 시간 설정
+          </div>
 
         </DialogContent>
         <DialogActions>
@@ -104,6 +115,7 @@ export default function SettingModal(props: SettingModalProps) {
       <ModifyExceedTime open={openModifyExceedTimes} setOpen={setOpenModifyExceedTimes}/>
       <StandardInfoModal open={openStandardInfo} setOpen={setOpenStandardInfo} />
       <NoAlarmsModal open={openNoAlarms} setOpen={setOpenNoAlarms} />
+      <AutoSoldOutModal open={openAutoSoldOut} setOpen={setOpenAutoSoldOut} />
     </>
   )
 }

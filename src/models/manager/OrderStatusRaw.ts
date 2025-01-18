@@ -14,6 +14,7 @@ export interface OrderStatusRaw {
   price: number;
   credit: number
   address: string;
+  tel: string;
   floor: string;
   memo: string;
   location: string;

@@ -11,6 +11,7 @@ const columns: Column[] = [
   {key: '', name: '순번'},
   {key: 'name', name: '고객명'},
   {key: 'address', name: '주소'},
+  {key: 'tel', name: '전화번호'},
   {key: 'floor', name: '층수'},
   {key: 'memo', name: '비고'},
   {key: 'credit', name: '잔금'},

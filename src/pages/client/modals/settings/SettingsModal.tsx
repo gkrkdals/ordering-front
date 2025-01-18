@@ -8,7 +8,7 @@ import client from "@src/utils/network/client.ts";
 import {useRecoilState} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
 import Customer from "@src/models/common/Customer.ts";
-import {Setting} from "@src/models/manager/setting.ts";
+import {Settings} from "@src/models/manager/settings.ts";
 import StandardInfo from "@src/pages/client/modals/settings/StandardInfo.tsx";
 // import RecentOrders from "@src/pages/client/modals/settings/RecentOrders.tsx";
 
@@ -17,7 +17,7 @@ interface SettingsModalProps extends BasicModalProps {}
 export default function SettingsModal(props: SettingsModalProps) {
   const [customer, setCustomer] = useRecoilState(customerState);
   // const [recentMenus, setRecentMenus] = useState<RecentMenu[]>([]);
-  const [settings, setSettings] = useState<Setting[]>([]);
+  const [settings, setSettings] = useState<Settings[]>([]);
   const [imgSource, setImgSource] = useState<string | null>(null);
 
   const [showPriceToggle, setShowPriceToggle] = useState(false);

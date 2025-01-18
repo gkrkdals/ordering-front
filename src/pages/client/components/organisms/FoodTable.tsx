@@ -50,7 +50,7 @@ export default function MenuTable({ onMenuClick }: MenuTableProps) {
   }, []);
 
   return (
-    <Card style={{ height: '418px' }}>
+    <Card style={{ height: '55vh' }}>
       <div style={{ height: '100%', overflow: 'auto' }}>
         <Table style={{ tableLayout: 'fixed' }}>
           <TBody>

@@ -1,5 +1,5 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
-import {Dialog, DialogActions, DialogContent} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import {useState} from "react";
 import FormControl from "@src/components/atoms/FormControl.tsx";
@@ -7,6 +7,7 @@ import client from "@src/utils/network/client.ts";
 
 interface ModifyCustomerCreditProps extends BasicModalProps {
   customer: number | undefined;
+  customerName: string | undefined;
   reload: () => void;
 }
 
@@ -28,6 +29,9 @@ export default function ModifyCustomerCredit(props: ModifyCustomerCreditProps) {
 
   return (
     <Dialog open={props.open}>
+      <DialogTitle>
+        {props.customerName}
+      </DialogTitle>
       <DialogContent>
         <div className='d-flex justify-content-between mb-4'>
           <div>

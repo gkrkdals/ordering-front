@@ -79,6 +79,17 @@ export function ModifyCustomerModal(
               </BigColumn>
             </Column>
             <Column>
+              <SmallColumn>전화번호</SmallColumn>
+              <BigColumn>
+                <input
+                  type="text"
+                  className='form-control'
+                  value={modifyingCustomer?.tel}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, tel: e.target.value} as CustomerRaw)}
+                />
+              </BigColumn>
+            </Column>
+            <Column>
               <SmallColumn>층수</SmallColumn>
               <BigColumn>
                 <input

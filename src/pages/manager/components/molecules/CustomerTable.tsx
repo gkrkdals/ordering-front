@@ -57,6 +57,7 @@ export default function CustomerTable(props: CustomerTableProps) {
                   {customer.name}
                 </Cell>
                 <Cell>{customer.address}</Cell>
+                <Cell>{customer.tel}</Cell>
                 <Cell>{customer.floor}</Cell>
                 <Cell>{customer.memo}</Cell>
                 <Cell
@@ -79,6 +80,7 @@ export default function CustomerTable(props: CustomerTableProps) {
 
       <ModifyCustomerCredit
         customer={selectedCustomer?.id}
+        customerName={selectedCustomer?.name}
         open={openCredit}
         setOpen={setOpenCredit}
         reload={props.reload}

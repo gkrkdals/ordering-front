@@ -112,6 +112,14 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
             </Column>
             <Column>
               <SmallColumn>
+                전화번호
+              </SmallColumn>
+              <BigColumn>
+                {currentOrder?.tel}
+              </BigColumn>
+            </Column>
+            <Column>
+              <SmallColumn>
                 상세<br/>요청사항
               </SmallColumn>
               <BigColumn>

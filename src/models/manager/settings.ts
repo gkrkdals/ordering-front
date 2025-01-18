@@ -1,4 +1,4 @@
-export interface Setting {
+export interface Settings {
   id: number;
   big: number;
   sml: number;

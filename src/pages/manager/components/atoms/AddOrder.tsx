@@ -25,21 +25,23 @@ export default function AddOrder({ reload, onClick, muted, setMuted, isRemaining
       {reload && (
         <>
           <PrimaryButton onClick={reload}>
-            <i className="bi bi-arrow-clockwise" />
+            <i className="bi bi-arrow-clockwise"/>
           </PrimaryButton>
           <div className='me-3'/>
         </>
       )}
+
+      <PrimaryButton onClick={onClick}>직접주문</PrimaryButton>
+      <div className='me-3'/>
       {getUser() !== 'cook' && (
         <>
-          <PrimaryButton onClick={onClick}>직접주문</PrimaryButton>
-          <div className='me-3'/>
           <input
             id='remaining'
             type="checkbox"
             className='form-check-input my-auto me-3'
             checked={isRemaining}
-            onChange={() => (setIsRemaining ?? function() {})(!isRemaining)}
+            onChange={() => (setIsRemaining ?? function () {
+            })(!isRemaining)}
           />
         </>
       )}

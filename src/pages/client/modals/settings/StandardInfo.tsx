@@ -1,4 +1,4 @@
-import {Setting} from "@src/models/manager/setting.ts";
+import {Settings} from "@src/models/manager/settings.ts";
 import {useEffect, useMemo, useState} from "react";
 import client from "@src/utils/network/client.ts";
 import {useRecoilValue} from "recoil";
@@ -8,7 +8,7 @@ import {formatCurrency} from "@src/utils/data.ts";
 
 interface StandardInfoProps {
   imgSource: string | null;
-  settings: Setting[];
+  settings: Settings[];
 }
 
 export default function StandardInfo({ imgSource, settings }: StandardInfoProps) {
