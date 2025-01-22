@@ -74,32 +74,10 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
           <div className='py-2'>
             <Column>
               <SmallColumn>
-                순번
-              </SmallColumn>
-              <BigColumn>
-                {currentOrder?.num}
-              </BigColumn>
-            </Column>
-            <Column>
-              <SmallColumn>
                 고객명
               </SmallColumn>
               <BigColumn>
                 {currentOrder?.customer_name}
-              </BigColumn>
-            </Column>
-            <Column>
-              <SmallColumn>
-                메뉴
-              </SmallColumn>
-              <BigColumn>
-                <input
-                  type="text"
-                  className='form-control form-control-sm'
-                  value={currentOrder?.menu_name}
-                  onClick={handleClickOnMenu}
-                  readOnly
-                />
               </BigColumn>
             </Column>
             <Column>
@@ -120,20 +98,35 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
             </Column>
             <Column>
               <SmallColumn>
-                상세<br/>요청사항
-              </SmallColumn>
-              <BigColumn>
-                {currentOrder?.request}
-              </BigColumn>
-            </Column>
-            <Column>
-              <SmallColumn>
                 고객비고
               </SmallColumn>
               <BigColumn>
                 {currentOrder?.customer_memo}
               </BigColumn>
             </Column>
+            <Column>
+              <SmallColumn>
+                잔금
+              </SmallColumn>
+              <BigColumn>
+                {formatCurrency(currentOrder?.credit)}
+              </BigColumn>
+            </Column>
+            <Column>
+              <SmallColumn>
+                메뉴
+              </SmallColumn>
+              <BigColumn>
+                <input
+                  type="text"
+                  className='form-control form-control-sm'
+                  value={currentOrder?.menu_name}
+                  onClick={handleClickOnMenu}
+                  readOnly
+                />
+              </BigColumn>
+            </Column>
+
             {
               currentOrder?.location &&
               <Column>
@@ -145,28 +138,22 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
                 </BigColumn>
               </Column>
             }
-            <Column>
-              <SmallColumn>
-                잔금
-              </SmallColumn>
-              <BigColumn>
-                {formatCurrency(currentOrder?.credit)}
-              </BigColumn>
-            </Column>
+
             <Column align='start'>
               <SmallColumn>
+                <div className='my-3' />
                 주문기록
               </SmallColumn>
               <BigColumn>
-                {orderHistory.map((history, i) =>
-                  <p key={i}>
-                    {history.status}
-                    <br/>
-                    {formatDate(history.time)}
-                  </p>
-                )}
               </BigColumn>
             </Column>
+            {orderHistory.map((history, i) =>
+              <p key={i} className='text-secondary'>
+                {history.status}
+                <br/>
+                {formatDate(history.time)}
+              </p>
+            )}
           </div>
         </DialogContent>
         <DialogActions>
