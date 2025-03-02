@@ -1,7 +1,7 @@
 import Router from "@src/router";
 import { RecoilRoot } from "recoil";
 
-function App() {
+function  App() {
   return (
     <RecoilRoot>
       <Router />
