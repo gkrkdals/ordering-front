@@ -15,6 +15,7 @@ export default interface Customer {
   showPrice: number;
   hideOrderStatus: number;
   showConfirm: number;
+  tel: string;
 }
 
 export const defaultCustomer: Customer = {
@@ -29,4 +30,5 @@ export const defaultCustomer: Customer = {
   showPrice: 0,
   hideOrderStatus: 0,
   showConfirm: 0,
+  tel: ''
 }

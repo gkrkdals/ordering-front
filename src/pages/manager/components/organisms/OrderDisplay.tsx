@@ -1,7 +1,7 @@
 import OrderTable from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import {OrderStatusRaw} from "@src/models/manager/OrderStatusRaw.ts";
 import MakeOrderModal from "@src/pages/manager/modals/order/MakeOrderModal.tsx";
-import {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {getUser, onDisconnected, managerSocket} from "@src/utils/network/socket.ts";
 import useTable from "@src/hooks/UseTable.tsx";
 import {AudioRefObject, getAudio, playAudio} from "@src/utils/music.ts";
@@ -16,6 +16,14 @@ import {PluginListenerHandle} from "@capacitor/core";
 // import Pagination from "@src/pages/manager/components/atoms/Pagination.tsx";
 import {isNative} from "@src/utils/native/native.ts";
 import {App, AppState} from "@capacitor/app";
+import {formatCurrency} from "@src/utils/data.ts";
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
+import type {Value} from "react-calendar/dist/cjs/shared/types.js";
+import {dateToString} from "@src/utils/date.ts";
+import ShowPreviousSalesModal from "@src/pages/manager/modals/order/ShowPreviousSalesModal.tsx";
+
+
 
 const columns: Column[] = [
   {key: '', name: '순번'},
@@ -29,7 +37,8 @@ const columns: Column[] = [
 type ReloadFunction = () => Promise<void>;
 
 export default function OrderDisplay() {
-  const [open, setOpen] = useState(false);
+  const [openMakeOrderModal, setOpenMakeOrderModal] = useState(false);
+  const [openShowPrevSalesModal, setOpenShowPrevSalesModal] = useState(false);
   const [muted, setMuted] = useState(true);
   const user = useRecoilValue(UserState);
 
@@ -49,6 +58,9 @@ export default function OrderDisplay() {
 
   // 그릇수거 확인
   const [isRemaining, setIsRemaining] = useState(false);
+
+  const [sales, setSales] = useState(0);
+  const [date, setDate] = useState(new Date());
 
   const {
     data,
@@ -83,7 +95,17 @@ export default function OrderDisplay() {
     managerSocket.disconnect();
   }
 
+  const reloadData = useCallback(async () => {
+    await reload();
+    const res = await client.get('/api/manager/order/sales');
+    setSales(res.data);
+  }, [reload]);
+
   useEffect(() => {
+    client
+      .get('/api/manager/order/sales')
+      .then((res) => setSales(res.data));
+
     let appStateChangeListener: PluginListenerHandle;
 
     const attachWebSounds = async () => {
@@ -149,7 +171,7 @@ export default function OrderDisplay() {
       managerSocket.on("connect_error", (err) => {
         console.log(`connect_error due to ${err.message}`);
       });
-      managerSocket.on('refresh', reload);
+      managerSocket.on('refresh', reloadData);
       if (!isNative() && getUser() === 'manager') {
         managerSocket.on("print_receipt", (menu) => printerClient.post('/print', menu))
         console.log("printer service started");
@@ -189,6 +211,19 @@ export default function OrderDisplay() {
     }
 
   }, []);
+
+  function handleChangeDate(value: Value, _: React.MouseEvent<HTMLButtonElement>) {
+    setDate(value as Date);
+
+    const today = dateToString(new Date());
+    const targetDay = dateToString(value as Date);
+    const todayToNumber = parseInt(today.split(' ')[0].replaceAll('-', ''));
+    const targetDayToNumber = parseInt(targetDay.split(' ')[0].replaceAll('-', ''));
+
+    if (targetDayToNumber <= todayToNumber) {
+      setOpenShowPrevSalesModal(true);
+    }
+  }
 
   // 알림 변경
   useEffect(() => {
@@ -235,19 +270,19 @@ export default function OrderDisplay() {
   // url, 페이지, params 변경 후 socket에 저장되어 있던 refresh 리스너를 새로 장착
   useEffect(() => {
     managerSocket.removeListener('refresh');
-    managerSocket.on('refresh', reload);
+    managerSocket.on('refresh', reloadData);
 
   }, [url, currentPage, params, debouncedSearchText])
 
   useEffect(() => {
-    reloadRef.current = reload;
-  }, [reload]);
+    reloadRef.current = reloadData;
+  }, [reloadData]);
 
   return (
     <>
       <TopBar
         mode={'order'}
-        setOpen={setOpen}
+        setOpen={setOpenMakeOrderModal}
         searchData={searchData}
         setSearchData={setSearchData}
         current={currentPage}
@@ -258,23 +293,36 @@ export default function OrderDisplay() {
         setMuted={setMuted}
         isRemaining={isRemaining}
         setIsRemaining={setIsRemaining}
-        reload={reload}
+        reload={reloadData}
       />
       <OrderTable
         columns={columns}
         count={count}
         orderstatus={data}
         page={currentPage}
-        reload={reload}
+        reload={reloadData}
         sort={sort}
         setSort={setSort}
         isRemaining={isRemaining}
       />
-
+      금일 매출: {formatCurrency(sales)}
+      <div className='d-flex justify-content-center justify-content-sm-start mt-3'>
+        <Calendar
+          locale={'ko-KR'}
+          calendarType='gregory'
+          value={date}
+          onChange={handleChangeDate}
+        />
+      </div>
       <MakeOrderModal
-        open={open}
-        onClose={() => setOpen(false)}
-        setOpen={setOpen}
+        open={openMakeOrderModal}
+        onClose={() => setOpenMakeOrderModal(false)}
+        setOpen={setOpenMakeOrderModal}
+      />
+      <ShowPreviousSalesModal
+        open={openShowPrevSalesModal}
+        setOpen={setOpenShowPrevSalesModal}
+        date={date}
       />
 
     </>

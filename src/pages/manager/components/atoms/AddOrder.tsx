@@ -19,7 +19,7 @@ export default function AddOrder({ reload, onClick, muted, setMuted, isRemaining
       {!isNative() && (
         <>
           <MuteButton muted={muted} setMuted={setMuted}/>
-          <div className='me-3'/>
+          <div className='me-2'/>
         </>
       )}
       {reload && (
@@ -27,18 +27,18 @@ export default function AddOrder({ reload, onClick, muted, setMuted, isRemaining
           <PrimaryButton onClick={reload}>
             <i className="bi bi-arrow-clockwise"/>
           </PrimaryButton>
-          <div className='me-3'/>
+          <div className='me-2'/>
         </>
       )}
 
       <PrimaryButton onClick={onClick}>직접주문</PrimaryButton>
-      <div className='me-3'/>
+      <div className='me-2'/>
       {getUser() !== 'cook' && (
         <>
           <input
             id='remaining'
             type="checkbox"
-            className='form-check-input my-auto me-3'
+            className='form-check-input my-auto me-2'
             checked={isRemaining}
             onChange={() => (setIsRemaining ?? function () {
             })(!isRemaining)}

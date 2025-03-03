@@ -66,9 +66,9 @@ export default function MakeQRModal(props: MakeQrModalProps) {
         <div className={`border border-4 rounded border-danger px-2 py-3 ${customerName === '' ? 'd-none' : ''}`}>
           <div className='d-flex justify-content-center'>
             {/*{imgSource && <img src={imgSource} alt='넘버원푸드 로고' style={{maxWidth: 50}}/>}*/}
-            <p style={{ fontSize: '14pt' }}>넘버원푸드</p>
+            <p className='m-0' style={{ fontSize: '14pt' }}>넘버원푸드</p>
           </div>
-          <div className='d-flex justify-content-center mt-1'>
+          <div className='d-flex justify-content-center'>
             {qrData !== '' && <QRCodeCanvas value={qrData}/>}
           </div>
           <div className='d-flex justify-content-center mt-1'>

@@ -8,6 +8,9 @@ import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import FindMenuModal from "@src/pages/client/modals/settings/FindMenuModal.tsx";
 import Menu from "@src/models/common/Menu.ts";
 import OrderCompletedDialog from "@src/pages/client/modals/OrderCompletedDialog.tsx";
+import {useRecoilValue} from "recoil";
+import customerState from "@src/recoil/atoms/CustomerState.ts";
+
 interface OrderButtonProps extends ComponentPropsWithoutRef<'button'> {
   selectedMenus: SelectedMenu[];
   setSelectedMenus: React.Dispatch<React.SetStateAction<SelectedMenu[]>>;
@@ -21,6 +24,8 @@ export default function OrderButton({ selectedMenus, setSelectedMenus, addMenuFr
   const [openFindMenuDialog, setOpenFindMenuDialog] = useState(false);
   const [isOrdering, setIsOrdering] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+
+  const customer = useRecoilValue(customerState);
 
   async function addOrder() {
     setIsOrdering(true);
@@ -55,7 +60,15 @@ export default function OrderButton({ selectedMenus, setSelectedMenus, addMenuFr
         <button
           {...props}
           className='btn btn-primary w-100'
-          onClick={() => setOpenDialog(true)}
+          onClick={async () => {
+            if (selectedMenus.length !== 0) {
+              if (customer?.showConfirm === 1) {
+                setOpenDialog(true);
+              } else {
+                await addOrder();
+              }
+            }
+          }}
           disabled={isOrdering}
         >
           {isOrdering ? '주문 중...' : '주문하기'}

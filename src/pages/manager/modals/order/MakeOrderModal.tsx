@@ -89,7 +89,7 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
             />
             <datalist id='customers'>
               {customers.map((item, i) => (
-                <option key={i} value={item.name}>{item.name}</option>
+                <option key={i} value={item.name}>{item.tel}</option>
               ))}
             </datalist>
             <hr/>
@@ -99,7 +99,11 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
               className='form-control'
               list='menus'
               value={searchMenu}
-              onChange={e => setSearchMenu(e.target.value)}
+              onChange={e => {
+                console.log("asdfsadf")
+                setSearchMenu(e.target.value);
+              }}
+              onInput={() => console.log('fdsafdsa')}
               placeholder='메뉴 검색'
             />
             <datalist id='menus'>

@@ -22,8 +22,8 @@ export default function DishDisposal({ dishDisposals, reloadDishDisposals }: Dis
           {dishDisposals.map((disposal, i) => {
             return (
               <TRow key={i} style={{ height: 30 }}>
-                <Cell style={{ width: '25%' }}>{disposal.menu_name}</Cell>
-                <Cell className='p-0' style={{ width: '25%' }}>
+                <Cell style={{ width: '50%' }}>{disposal.menu_name}</Cell>
+                <Cell className='p-0' style={{ width: '50%' }}>
                   {
                     disposal.status === StatusEnum.InPickingUp ?
                       <p className='m-0 text-secondary'>요청완료</p> :
@@ -42,9 +42,6 @@ export default function DishDisposal({ dishDisposals, reloadDishDisposals }: Dis
                         수거요청
                       </button>
                   }
-                </Cell>
-                <Cell style={{width: '50%'}}>
-                  {disposal.location}
                 </Cell>
               </TRow>
             );

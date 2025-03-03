@@ -30,8 +30,10 @@ export default function OrderCompletedDialog(props: OrderCompletedDialogProps) {
           </div>
         ))}
         <div className='my-2' />
-        <div className='mb-1'>총 <strong>{props.selectedMenus.length}</strong>개의 메뉴가 주문되었습니다.</div>
-        <div>주문하기 버튼 아래에서 진행상태를 확인하세요.</div>
+        <div className='mb-2'>총 <strong>{props.selectedMenus.length}</strong>개의 메뉴가 주문되었습니다.</div>
+        <div>
+          <strong><i className="bi bi-exclamation-circle-fill" />&nbsp;주문하기 버튼 아래에서 진행상태를 확인하세요!!!</strong>
+        </div>
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={handleClose}>

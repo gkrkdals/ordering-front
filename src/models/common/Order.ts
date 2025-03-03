@@ -1,5 +1,6 @@
 import Customer from "@src/models/common/Customer.ts";
 import Menu from "@src/models/common/Menu.ts";
+import OrderStatus from "@src/models/common/OrderStatus.ts";
 
 export default interface Order {
   id: number;
@@ -12,4 +13,5 @@ export default interface Order {
   request: string | null;
   memo: string | null;
   price: number;
+  orderStatus: OrderStatus[]
 }

@@ -2,7 +2,7 @@ import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import client from "@src/utils/network/client.ts";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import SelectMenu from "@src/components/molecules/SelectMenu.tsx";
@@ -19,10 +19,20 @@ export default function ChangeMenuModal({ currentOrder, ...props }: ChangeMenuMo
 
   const [selectedMenu, setSelectedMenu] = useState<number>(-1);
   const [price, setPrice] = useState('');
+  const [request, setRequest] = useState('');
+
 
   function initialize() {
-    setSelectedMenu(-1);
-    setPrice('');
+    setTimeout(() => {
+      setSelectedMenu(-1);
+      setPrice('');
+      setRequest('');
+    }, 300);
+  }
+
+  function handleClose() {
+    props.setOpen(false);
+    initialize();
   }
 
   async function handleChangeMenu() {
@@ -31,7 +41,8 @@ export default function ChangeMenuModal({ currentOrder, ...props }: ChangeMenuMo
       orderCode: currentOrder?.order_code,
       from: currentOrder?.menu,
       to: selectedMenu,
-      price: parseInt(price) * 1000
+      price: parseInt(price) * 1000,
+      request: request,
     });
     props.setOpen(false);
     initialize();
@@ -42,6 +53,12 @@ export default function ChangeMenuModal({ currentOrder, ...props }: ChangeMenuMo
     } as OrderStatusWithNumber);
     props.setFlag(true);
   }
+
+  useEffect(() => {
+    if (props.open && currentOrder) {
+      setRequest(currentOrder.request);
+    }
+  }, [currentOrder, props.open]);
 
   return (
     <Dialog open={props.open}>
@@ -62,9 +79,17 @@ export default function ChangeMenuModal({ currentOrder, ...props }: ChangeMenuMo
           onChange={e => setPrice(e.target.value)}
           placeholder='가격 입력'
         />
+        <p/>
+        <p className='mb-1'>요청사항</p>
+        <FormControl
+          type='text'
+          value={request}
+          onChange={e => setRequest(e.target.value)}
+          placeholder='빈 요청사항'
+        />
       </DialogContent>
       <DialogActions>
-        <SecondaryButton onClick={() => props.setOpen(false)}>
+        <SecondaryButton onClick={handleClose}>
           취소
         </SecondaryButton>
         <PrimaryButton onClick={handleChangeMenu}>

@@ -11,10 +11,12 @@ export default function AddMenu({ onClick }: AddMenuProps) {
 
   return (
     <>
-      <PrimaryButton onClick={onClick}>메뉴 추가</PrimaryButton>
-      <div className='me-3'/>
-      <PrimaryButton onClick={() => setOpen(true)}>일괄 추가</PrimaryButton>
-      <div className='me-3'/>
+      <div className='d-flex'>
+        <PrimaryButton onClick={onClick}>메뉴 추가</PrimaryButton>
+        <div className='me-2'/>
+        <PrimaryButton onClick={() => setOpen(true)}>일괄 추가</PrimaryButton>
+        <div className='me-2'/>
+      </div>
 
       <UploadMenusModal open={open} setOpen={setOpen} />
     </>

@@ -12,10 +12,12 @@ export default function AddCustomer({ onClick }: AddCustomerProps) {
 
   return (getUser() === 'manager' || getUser() === 'rider') && (
     <>
-      <PrimaryButton onClick={onClick}>고객 추가</PrimaryButton>
-      <div className='me-3'/>
-      <PrimaryButton onClick={() => setOpen(true)}>일괄 추가</PrimaryButton>
-      <div className='me-3'/>
+      <div className='d-flex'>
+        <PrimaryButton onClick={onClick}>고객 추가</PrimaryButton>
+        <div className='me-2'/>
+        <PrimaryButton onClick={() => setOpen(true)}>일괄 추가</PrimaryButton>
+        <div className='me-2'/>
+      </div>
 
       <UploadCustomersModal open={open} setOpen={setOpen} />
     </>

@@ -87,6 +87,7 @@ export default function SettingsModal(props: SettingsModalProps) {
     if (customer) {
       setShowPriceToggle(customer.showPrice === 1);
       setHideOrderStatus(customer.hideOrderStatus === 1);
+      setShowConfirm(customer.showConfirm === 1);
     }
   }, [customer]);
 
