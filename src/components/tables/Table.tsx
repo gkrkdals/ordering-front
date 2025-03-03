@@ -66,6 +66,17 @@ export function Cell(
   );
 }
 
+export function StartCell(
+  { hex, children, ...props }
+  : TableCellProps) {
+  return (
+    <td {...props} className="text-start" style={{backgroundColor: `#${hex}`, ...props.style,}}>
+      {children}
+
+    </td>
+  );
+}
+
 export function HeadCell({ children, sort, focusIndex, setSort, ...props }: TableHeadCellProps) {
   function isAscending() {
     return focusIndex === sort.currentIndex && sort.order === 'asc';

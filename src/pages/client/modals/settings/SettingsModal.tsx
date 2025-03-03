@@ -22,6 +22,7 @@ export default function SettingsModal(props: SettingsModalProps) {
 
   const [showPriceToggle, setShowPriceToggle] = useState(false);
   const [hideOrderStatus, setHideOrderStatus] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   async function toggleShowPrice() {
     const newValue = !showPriceToggle;
@@ -46,6 +47,19 @@ export default function SettingsModal(props: SettingsModalProps) {
       const newCustomerData: Customer = (await client.get('/api/auth/profile')).data;
       setCustomer(newCustomerData);
       setHideOrderStatus(newCustomerData.hideOrderStatus === 1);
+    }
+  }
+
+  async function toggleShowConfirm() {
+    const newValue = !showConfirm;
+    if (customer) {
+      await client.put('/api/settings/show-confirm', {
+        customerId: customer.id,
+        value: newValue ? 1 : 0
+      });
+      const newCustomerData: Customer = (await client.get('/api/auth/profile')).data;
+      setCustomer(newCustomerData);
+      setShowConfirm(newCustomerData.showConfirm === 1);
     }
   }
 
@@ -76,15 +90,6 @@ export default function SettingsModal(props: SettingsModalProps) {
     }
   }, [customer]);
 
-  // useEffect(() => {
-  //   if(props.open) {
-  //     client
-  //       .get('/api/menu/recent')
-  //       .then(res => setRecentMenus(res.data));
-  //   }
-  // }, [props.open]);
-
-
   return (
     <Dialog open={props.open}>
       <DialogContent>
@@ -109,7 +114,13 @@ export default function SettingsModal(props: SettingsModalProps) {
             onChange={toggleHideOrderStatus}
           />
         </div>
-        {/*<RecentOrders recentMenus={recentMenus} open={props.open}/>*/}
+        <div className='d-flex justify-content-between align-items-center'>
+          <div>주문 완료 전 확인하기</div>
+          <Toggle
+            value={showConfirm}
+            onChange={toggleShowConfirm}
+          />
+        </div>
 
         <div style={{height: 50}}/>
       </DialogContent>

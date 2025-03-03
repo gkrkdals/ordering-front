@@ -45,8 +45,8 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
       </div>
       <div className='mb-3'/>
       {settings[0].stringValue.split(/\//g).map((line, i) => (
-        <div className='d-flex justify-content-center' style={{ fontSize: '1.4em' }}>
-          <p key={i} className='m-0'>{line.trim()}</p>
+        <div key={i} className='d-flex justify-content-center' style={{ fontSize: '1.4em' }}>
+          <p className='m-0'>{line.trim()}</p>
         </div>
       ))}
       <div className='mb-2'/>

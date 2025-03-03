@@ -14,6 +14,7 @@ export default interface Customer {
   withdrawn: number;
   showPrice: number;
   hideOrderStatus: number;
+  showConfirm: number;
 }
 
 export const defaultCustomer: Customer = {
@@ -27,4 +28,5 @@ export const defaultCustomer: Customer = {
   withdrawn: 0,
   showPrice: 0,
   hideOrderStatus: 0,
+  showConfirm: 0,
 }

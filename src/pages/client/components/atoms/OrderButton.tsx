@@ -5,15 +5,20 @@ import client from "@src/utils/network/client.ts";
 import {AxiosError} from "axios";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
+import FindMenuModal from "@src/pages/client/modals/settings/FindMenuModal.tsx";
+import Menu from "@src/models/common/Menu.ts";
+import OrderCompletedDialog from "@src/pages/client/modals/OrderCompletedDialog.tsx";
 interface OrderButtonProps extends ComponentPropsWithoutRef<'button'> {
   selectedMenus: SelectedMenu[];
   setSelectedMenus: React.Dispatch<React.SetStateAction<SelectedMenu[]>>;
+  addMenuFromFind: (menus: Menu[]) => void;
 }
 
-export default function OrderButton({ selectedMenus, setSelectedMenus, ...props }: OrderButtonProps) {
+export default function OrderButton({ selectedMenus, setSelectedMenus, addMenuFromFind, ...props }: OrderButtonProps) {
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [openSoldOutDialog, setOpenSoldOutDialog] = useState(false);
+  const [openFindMenuDialog, setOpenFindMenuDialog] = useState(false);
   const [isOrdering, setIsOrdering] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
 
@@ -33,23 +38,38 @@ export default function OrderButton({ selectedMenus, setSelectedMenus, ...props 
   }
 
   async function handleOrder() {
-    setSelectedMenus([]);
     setOpenDialog(false);
     await addOrder();
   }
 
   return (
     <>
-      <button
-        {...props}
-        className='btn btn-primary w-100'
-        onClick={() => setOpenDialog(true)}
-        disabled={isOrdering}
-      >
-        {isOrdering ? '주문 중...' : '주문하기'}
-      </button>
+      <div className="d-flex gap-2">
+        <button 
+          className="btn btn-secondary w-100"
+          onClick={() => setOpenFindMenuDialog(true)}
+          disabled={isOrdering}
+        >
+          메뉴 검색
+        </button>
+        <button
+          {...props}
+          className='btn btn-primary w-100'
+          onClick={() => setOpenDialog(true)}
+          disabled={isOrdering}
+        >
+          {isOrdering ? '주문 중...' : '주문하기'}
+        </button>
+      </div>
+
+      <FindMenuModal
+        open={openFindMenuDialog}
+        setOpen={setOpenFindMenuDialog}
+        addMenuFromFind={addMenuFromFind}
+      />
 
       <OrderApproveDialog
+        selectedMenus={selectedMenus}
         onClickCancel={() => setOpenDialog(false)}
         onClickProceed={handleOrder}
         open={openDialog}
@@ -70,16 +90,12 @@ export default function OrderButton({ selectedMenus, setSelectedMenus, ...props 
         </DialogActions>
       </Dialog>
 
-      <Dialog open={orderComplete}>
-        <DialogContent>
-          주문이 완료되었습니다.
-        </DialogContent>
-        <DialogActions>
-          <SecondaryButton onClick={() => setOrderComplete(false)}>
-            닫기
-          </SecondaryButton>
-        </DialogActions>
-      </Dialog>
+      <OrderCompletedDialog
+        selectedMenus={selectedMenus}
+        setSelectedMenus={setSelectedMenus}
+        open={orderComplete}
+        setOpen={setOrderComplete}
+      />
     </>
   )
 }

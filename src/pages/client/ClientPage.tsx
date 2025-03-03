@@ -21,10 +21,15 @@ export default function ClientPage() {
   const [searchParams] = useSearchParams();
   const [selectedMenus, setSelectedMenus] = useState<SelectedMenu[]>([]);
   const [, setUserState] = useRecoilState(customerState);
+
   const handleMenuClick = (menu: Menu) => {
     if (menu.soldOut !== 1) {
       setSelectedMenus((prev) => prev.concat({ menu, request: '' }));
     }
+  };
+
+  const addMenuFromFind = (menus: Menu[]) => {
+    setSelectedMenus(selectedMenus.concat(menus.map(menu => ({ menu, request: '' }))));
   };
 
   useLayoutEffect(() => {
@@ -45,7 +50,11 @@ export default function ClientPage() {
           <SelectedMenus selectedMenus={selectedMenus} setSelectedMenus={setSelectedMenus} />
           <OrderCategoryProvider>
             <OrderSummaryProvider>
-              <OrderButton selectedMenus={selectedMenus} setSelectedMenus={setSelectedMenus} />
+              <OrderButton
+                selectedMenus={selectedMenus}
+                setSelectedMenus={setSelectedMenus}
+                addMenuFromFind={addMenuFromFind}
+              />
               <CurrentOrderStatus />
             </OrderSummaryProvider>
           </OrderCategoryProvider>
