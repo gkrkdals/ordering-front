@@ -45,17 +45,17 @@ export default function ShowPreviousSalesModal({ open, date, ...props }: ShowPre
           <Table style={{ fontSize: 12 }}>
             <THead>
               <TRow>
+                <Cell>순번</Cell>
                 <Cell>고객명</Cell>
                 <Cell>메뉴명</Cell>
-                <Cell>가격</Cell>
               </TRow>
             </THead>
             <TBody>
               {orders.map((order, i) => (
                 <TRow key={i}>
+                  <Cell>{orders.length - i}</Cell>
                   <StartCell hex={order.customerJoin.categoryJoin?.hex}>{order.customerJoin.name}</StartCell>
                   <StartCell hex={order.menuJoin.menuCategory?.hex}>{order.menuJoin.name}</StartCell>
-                  <Cell>{order.price}</Cell>
                 </TRow>
               ))}
             </TBody>

@@ -4,6 +4,8 @@ import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx"
 import {useState} from "react";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import client from "@src/utils/network/client.ts";
+import {useRecoilState} from "recoil";
+import recentJobState from "@src/recoil/atoms/RecentJobState.ts";
 
 interface EnterCustomAmountProps extends BasicModalProps {
   cannotUpdate: boolean;
@@ -14,6 +16,7 @@ interface EnterCustomAmountProps extends BasicModalProps {
 export default function EnterCustomAmount({ open, setOpen, modifyingOrder, cannotUpdate, setCannotUpdate }: EnterCustomAmountProps) {
 
   const [paidAmount, setPaidAmount] = useState('');
+  const [, setRecentJob] = useRecoilState(recentJobState);
 
   async function handleClickOnConfirm() {
     if (!cannotUpdate) {
@@ -25,6 +28,11 @@ export default function EnterCustomAmount({ open, setOpen, modifyingOrder, canno
           paidAmount: parseInt(paidAmount) * 1000,
           menu: modifyingOrder?.menu,
         });
+        setRecentJob(prev => prev.concat({
+          orderCode: modifyingOrder!.order_code,
+          oldStatus: modifyingOrder?.status ?? 0,
+          newStatus: (modifyingOrder?.status ?? 0) + 1,
+        }))
       } catch (e) {
         console.error(e);
       } finally {

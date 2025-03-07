@@ -4,6 +4,8 @@ import SettingButton from "@src/pages/manager/components/atoms/SettingButton.tsx
 import SettingModal from "@src/pages/manager/modals/settings/SettingModal.tsx";
 import GoBackButton from "@src/pages/manager/components/atoms/GoBackButton.tsx";
 import client from "@src/utils/network/client.ts";
+import {useRecoilState} from "recoil";
+import recentJobState from "@src/recoil/atoms/RecentJobState.ts";
 
 interface TabProps {
   menu: string;
@@ -15,6 +17,7 @@ export default function Tab({ setMenu, menu }: TabProps) {
   const [openSettingModal, setOpenSettingModal] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const historyRef = useRef<string[]>([]);
+  const [recentJob, setRecentJob] = useRecoilState(recentJobState);
 
   function handleChangeMenu(menuName: string) {
     setHistory(history.concat(menuName));
@@ -23,13 +26,23 @@ export default function Tab({ setMenu, menu }: TabProps) {
   }
 
   async function handleGoBack() {
-    await client.put('/api/manager/order/rollback');
+    const job = recentJob.at(-1);
+    console.log(recentJob);
+
+    if (job) {
+      try {
+        await client.put('/api/manager/order/rollback', job);
+        setRecentJob(recentJob.slice(0, -1));
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 
   return getUser() === 'manager' && (
     <>
       <div className='d-flex mb-2'>
-        <GoBackButton handleGoBack={handleGoBack} />
+        <GoBackButton handleGoBack={handleGoBack} disabled={menu !== 'order'} />
         <div className='me-2'/>
         <SettingButton setOpen={setOpenSettingModal}/>
         <div className='me-2'/>

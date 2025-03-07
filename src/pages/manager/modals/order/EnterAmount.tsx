@@ -5,6 +5,8 @@ import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx"
 import client from "@src/utils/network/client.ts";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import {formatCurrency} from "@src/utils/data.ts";
+import {useRecoilState} from "recoil";
+import recentJobState from "@src/recoil/atoms/RecentJobState.ts";
 
 interface ClickToGoNextProps extends BasicModalProps {
   cannotUpdate: boolean;
@@ -17,6 +19,8 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
   const [currentStatus, setCurrentStatus] = useState<number>(0);
 
   const [paidAmount, setPaidAmount] = useState<string>('');
+
+  const [, setRecentJob] = useRecoilState(recentJobState);
 
   function initialize() {
     setPaidAmount('');
@@ -34,6 +38,11 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
           postpaid: isNaN(parseInt(paidAmount)) || parseInt(paidAmount) === 0,
           menu: modifyingOrder?.menu,
         });
+        setRecentJob(prev => prev.concat({
+          orderCode: modifyingOrder?.order_code ?? 0,
+          oldStatus: currentStatus,
+          newStatus: currentStatus + 1
+        }))
       } catch (e) {
         console.error(e);
       } finally {

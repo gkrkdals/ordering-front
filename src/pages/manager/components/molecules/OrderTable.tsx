@@ -9,11 +9,12 @@ import client from "@src/utils/network/client.ts";
 import EnterCustomAmount from "@src/pages/manager/components/molecules/EnterCustomOrderAmount.tsx";
 import {OrderCategoryContext} from "@src/contexts/common/OrderCategoryContext.tsx";
 import {Column} from "@src/models/manager/Column.ts";
-import {useRecoilValue} from "recoil";
+import {useRecoilState, useRecoilValue} from "recoil";
 import userState from "@src/recoil/atoms/UserState.ts";
 import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 import {formatCurrency} from "@src/utils/data.ts";
 import {getUser} from "@src/utils/network/socket.ts";
+import recentJobState from "@src/recoil/atoms/RecentJobState.ts";
 
 export interface OrderStatusWithNumber extends OrderStatusRaw {
   num: number;
@@ -44,6 +45,8 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
   const [cannotUpdate, setCannotUpdate] = useState(false);
 
   const user = useRecoilValue(userState)!;
+
+  const [, setRecentJob] = useRecoilState(recentJobState);
 
   function handleClickOnRow(orderStatus: OrderStatusRaw, num: number) {
     setModifyingOrder({ ...orderStatus, num });
@@ -76,6 +79,11 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
               orderId: orderStatus.id,
               newStatus: orderStatus.status + 1,
             });
+            setRecentJob(prev => prev.concat({
+              orderCode: orderStatus.order_code,
+              oldStatus: orderStatus.status,
+              newStatus: orderStatus.status + 1
+            }));
           } catch (e) {
             console.error(e)
           } finally {
