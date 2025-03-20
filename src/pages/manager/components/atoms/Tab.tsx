@@ -18,6 +18,7 @@ export default function Tab({ setMenu, menu }: TabProps) {
   const [history, setHistory] = useState<string[]>([]);
   const historyRef = useRef<string[]>([]);
   const [recentJob, setRecentJob] = useRecoilState(recentJobState);
+  const userStateRef = useRef<string>(getUser());
 
   function handleChangeMenu(menuName: string) {
     setHistory(history.concat(menuName));
@@ -39,22 +40,26 @@ export default function Tab({ setMenu, menu }: TabProps) {
     }
   }
 
-  return getUser() === 'manager' && (
+  return (userStateRef.current === 'manager' || userStateRef.current === 'rider') && (
     <>
       <div className='d-flex mb-2'>
         <GoBackButton handleGoBack={handleGoBack} disabled={menu !== 'order'} />
         <div className='me-2'/>
-        <SettingButton setOpen={setOpenSettingModal}/>
-        <div className='me-2'/>
-        <input id="order" type="radio" className='me-2' value="order" checked={menu === 'order'}
-               onChange={() => handleChangeMenu('order')}/>
-        <label htmlFor="order" className='me-4 my-auto'>주문</label>
-        <input id="menu" type="radio" className='me-2' value="menu" checked={menu === 'menu'}
-               onChange={() => handleChangeMenu('menu')}/>
-        <label htmlFor="menu" className='me-4 my-auto'>메뉴</label>
-        <input id="customer" type="radio" className='me-2 ' value="customer" checked={menu === 'customer'}
-               onChange={() => handleChangeMenu('customer')}/>
-        <label htmlFor="customer" className='my-auto'>고객</label>
+        {userStateRef.current === 'manager' && (
+          <>
+            <SettingButton setOpen={setOpenSettingModal}/>
+            <div className='me-2'/>
+            <input id="order" type="radio" className='me-2' value="order" checked={menu === 'order'}
+                   onChange={() => handleChangeMenu('order')}/>
+            <label htmlFor="order" className='me-4 my-auto'>주문</label>
+            <input id="menu" type="radio" className='me-2' value="menu" checked={menu === 'menu'}
+                   onChange={() => handleChangeMenu('menu')}/>
+            <label htmlFor="menu" className='me-4 my-auto'>메뉴</label>
+            <input id="customer" type="radio" className='me-2 ' value="customer" checked={menu === 'customer'}
+                   onChange={() => handleChangeMenu('customer')}/>
+            <label htmlFor="customer" className='my-auto'>고객</label>
+          </>
+        )}
       </div>
 
       <SettingModal open={openSettingModal} setOpen={setOpenSettingModal} />

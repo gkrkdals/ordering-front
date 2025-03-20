@@ -6,6 +6,8 @@ import FormControl from "@src/components/atoms/FormControl.tsx";
 import {Cell, StartCell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
 import {MenuContext} from "@src/contexts/client/MenuContext.tsx";
 import Menu from "@src/models/common/Menu.ts";
+import {useRecoilValue} from "recoil";
+import customerState from "@src/recoil/atoms/CustomerState.ts";
 
 interface FindMenuModal extends BasicModalProps {
   addMenuFromFind: (menu: Menu[]) => void;
@@ -16,6 +18,7 @@ export default function FindMenuModal(props: FindMenuModal) {
   const [menus, ] = useContext(MenuContext)!;
   const filteredMenus = useMemo(() => menus.filter(value => value.name.includes(searchMenu) || searchMenu === ''), [searchMenu, menus]);
   const [selectedMenus, setSelectedMenus] = useState<Menu[]>([]);
+  const customer = useRecoilValue(customerState);
 
   function handleClickOnMenuAdd(menu: Menu) {
     setSelectedMenus(selectedMenus.concat(menu));
@@ -62,9 +65,11 @@ export default function FindMenuModal(props: FindMenuModal) {
                   >
                     {menu.name}&nbsp;{menu.soldOut === 1 && <span className='text-danger'>(품절)</span>}
                   </StartCell>
-                  <Cell style={{ fontSize: 12 }}>
-                    {menu.menuCategory?.price}
-                  </Cell>
+                  {(customer && customer.showPrice) ? (
+                    <Cell style={{ fontSize: 12 }}>
+                      {menu.menuCategory?.price}
+                    </Cell>
+                  ) : null}
                   <Cell>
                     {
                       menu.soldOut !== 1 ?
