@@ -1,10 +1,8 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {useEffect, useState} from "react";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
-import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import client from "@src/utils/network/client.ts";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
-import {formatCurrency} from "@src/utils/data.ts";
 import {useRecoilState} from "recoil";
 import recentJobState from "@src/recoil/atoms/RecentJobState.ts";
 
@@ -61,7 +59,7 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
     <Dialog open={props.open}>
       <DialogContent>
         <p className='mb-1 text-secondary'>잔액을 입력하지 않으면 후불 처리됩니다.</p>
-        <p>잔금: {formatCurrency(modifyingOrder?.credit)}</p>
+        <p>잔금: {(modifyingOrder!.credit / 1000).toLocaleString()}</p>
         <div className='mb-4'>
           <input
             type="number"
@@ -73,8 +71,8 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
         </div>
       </DialogContent>
       <DialogActions>
-        <SecondaryButton onClick={initialize}>취소</SecondaryButton>
-        <PrimaryButton onClick={handleChangeStatus}>확인</PrimaryButton>
+        <button className='btn btn-secondary w-50' style={{fontSize: 19}} onClick={initialize}>취소</button>
+        <button className='btn btn-primary w-50' style={{fontSize: 19}} onClick={handleChangeStatus}>확인</button>
       </DialogActions>
     </Dialog>
   );

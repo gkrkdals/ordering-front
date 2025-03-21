@@ -55,18 +55,18 @@ export default function FindMenuModal(props: FindMenuModal) {
           {selectedMenus.map(selectedMenu => selectedMenu.name).join(', ')}
         </p>
         <div style={{ height: 270, overflowY: 'scroll' }}>
-          <Table tablesize="small">
+          <Table tablesize="small" >
             <TBody>
               {filteredMenus.map((menu, i) => (
                 <TRow key={i}>
                   <StartCell
                     hex={menu.soldOut === 1 ? 'AAAAAA' : menu.menuCategory?.hex}
-                    style={{ fontSize: 12 }}
+                    style={{ fontSize: customer && customer.showPrice ? 15 : 18 }}
                   >
                     {menu.name}&nbsp;{menu.soldOut === 1 && <span className='text-danger'>(품절)</span>}
                   </StartCell>
                   {(customer && customer.showPrice) ? (
-                    <Cell style={{ fontSize: 12 }}>
+                    <Cell style={{ fontSize: customer && customer.showPrice ? 15 : 18 }}>
                       {menu.menuCategory?.price}
                     </Cell>
                   ) : null}
@@ -76,6 +76,7 @@ export default function FindMenuModal(props: FindMenuModal) {
                         <i
                           className="bi bi-cart-plus-fill"
                           onClick={() => handleClickOnMenuAdd(menu)}
+                          style={{ fontSize: customer && customer.showPrice ? 19 : 25 }}
                         /> :
                         <i className="bi bi-ban"></i>
                     }

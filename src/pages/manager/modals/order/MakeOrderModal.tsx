@@ -122,8 +122,8 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
           />
         </DialogContent>
         <DialogActions>
-          <button className='btn btn-secondary' onClick={handleCancel}>취소</button>
-          <button className='btn btn-primary' onClick={() => setConfirm(true)}>주문</button>
+          <button className='btn btn-secondary w-50' style={{ fontSize: 19 }} onClick={handleCancel}>취소</button>
+          <button className='btn btn-primary w-50' style={{ fontSize: 19 }} onClick={() => setConfirm(true)}>주문</button>
         </DialogActions>
       </Dialog>
       <Dialog open={confirm}>

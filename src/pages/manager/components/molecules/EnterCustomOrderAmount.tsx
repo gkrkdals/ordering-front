@@ -1,6 +1,5 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
-import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import {useState} from "react";
 import {OrderStatusWithNumber} from "@src/pages/manager/components/molecules/OrderTable.tsx";
 import client from "@src/utils/network/client.ts";
@@ -58,12 +57,12 @@ export default function EnterCustomAmount({ open, setOpen, modifyingOrder, canno
         </div>
       </DialogContent>
       <DialogActions>
-        <SecondaryButton onClick={() => setOpen(false)}>
+        <button className='btn btn-secondary w-50' style={{ fontSize: 19 }} onClick={() => setOpen(false)}>
           닫기
-        </SecondaryButton>
-        <PrimaryButton onClick={handleClickOnConfirm}>
+        </button>
+        <button className='btn btn-primary w-50' style={{ fontSize: 19 }} onClick={handleClickOnConfirm}>
           입력
-        </PrimaryButton>
+        </button>
       </DialogActions>
     </Dialog>
   )
