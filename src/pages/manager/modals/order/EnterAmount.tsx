@@ -59,7 +59,7 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
     <Dialog open={props.open}>
       <DialogContent>
         <p className='mb-1 text-secondary'>잔액을 입력하지 않으면 후불 처리됩니다.</p>
-        <p>잔금: {(modifyingOrder!.credit / 1000).toLocaleString()}</p>
+        <p>잔금: {modifyingOrder ? (modifyingOrder.credit / 1000).toLocaleString() : 0}</p>
         <div className='mb-4'>
           <input
             type="number"
