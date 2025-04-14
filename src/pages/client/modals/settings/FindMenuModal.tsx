@@ -61,12 +61,12 @@ export default function FindMenuModal(props: FindMenuModal) {
                 <TRow key={i}>
                   <StartCell
                     hex={menu.soldOut === 1 ? 'AAAAAA' : menu.menuCategory?.hex}
-                    style={{ fontSize: customer && customer.showPrice ? 15 : 18 }}
+                    style={{ fontSize: customer && customer.showPrice ? 19 : 23 }}
                   >
                     {menu.name}&nbsp;{menu.soldOut === 1 && <span className='text-danger'>(품절)</span>}
                   </StartCell>
                   {(customer && customer.showPrice) ? (
-                    <Cell style={{ fontSize: customer && customer.showPrice ? 15 : 18 }}>
+                    <Cell style={{ fontSize: 17 }}>
                       {menu.menuCategory?.price}
                     </Cell>
                   ) : null}
@@ -76,7 +76,7 @@ export default function FindMenuModal(props: FindMenuModal) {
                         <i
                           className="bi bi-cart-plus-fill"
                           onClick={() => handleClickOnMenuAdd(menu)}
-                          style={{ fontSize: customer && customer.showPrice ? 19 : 25 }}
+                          style={{ fontSize: 34 }}
                         /> :
                         <i className="bi bi-ban"></i>
                     }

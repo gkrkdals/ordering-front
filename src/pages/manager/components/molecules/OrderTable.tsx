@@ -12,7 +12,6 @@ import {Column} from "@src/models/manager/Column.ts";
 import {useRecoilState, useRecoilValue} from "recoil";
 import userState from "@src/recoil/atoms/UserState.ts";
 import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
-import {formatCurrency} from "@src/utils/data.ts";
 import {getUser} from "@src/utils/network/socket.ts";
 import recentJobState from "@src/recoil/atoms/RecentJobState.ts";
 
@@ -160,7 +159,7 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
                 >
                   {cannotUpdate ? '(처리 중)' : getStatusName(status)}
                 </Cell>
-                {isRemaining && <Cell>{formatCurrency(status.credit)}</Cell>}
+                {isRemaining && <Cell>{status.credit / 1000}</Cell>}
               </TRow>
             )
           }))}

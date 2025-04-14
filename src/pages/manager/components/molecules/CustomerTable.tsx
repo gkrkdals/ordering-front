@@ -5,7 +5,6 @@ import ModifyCustomerCredit from "@src/pages/manager/modals/customer/ModifyCusto
 import {Column} from "@src/models/manager/Column.ts";
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
 import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";
-import {formatCurrency} from "@src/utils/data.ts";
 
 interface CustomerTableProps {
   columns: Column[];
@@ -63,7 +62,7 @@ export default function CustomerTable(props: CustomerTableProps) {
                 <Cell
                   onClick={e => handleClickOnCredit(e, customer)}
                 >
-                  {formatCurrency(customer.credit * -1, true)}
+                  {((customer.credit * -1) / 1000)}
                 </Cell>
               </TRow>
             );
