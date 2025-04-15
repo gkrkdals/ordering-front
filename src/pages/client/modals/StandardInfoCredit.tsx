@@ -118,7 +118,7 @@ export default function StandardInfoCredit(props: StandardInfoCreditProps) {
                   <Cell>{stringToLocaleString(credit.charged)}</Cell>
                   <Cell>{stringToLocaleString(credit.remaining)}</Cell>
                 </TRow>
-                <TRow style={{ fontWeight: 'bold' }}>
+                <TRow style={{ fontWeight: 'bold', borderTop: '5px solid #ddd' }}>
                   <Cell>시간</Cell>
                   <Cell>메뉴</Cell>
                   <Cell>가격</Cell>
