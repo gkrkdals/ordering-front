@@ -10,6 +10,7 @@ import customerState from "@src/recoil/atoms/CustomerState.ts";
 import Customer from "@src/models/common/Customer.ts";
 import {Settings} from "@src/models/manager/settings.ts";
 import StandardInfo from "@src/pages/client/modals/settings/StandardInfo.tsx";
+import StandardInfoCredit from "@src/pages/client/modals/StandardInfoCredit.tsx";
 // import RecentOrders from "@src/pages/client/modals/settings/RecentOrders.tsx";
 
 interface SettingsModalProps extends BasicModalProps {}
@@ -19,6 +20,7 @@ export default function SettingsModal(props: SettingsModalProps) {
   // const [recentMenus, setRecentMenus] = useState<RecentMenu[]>([]);
   const [settings, setSettings] = useState<Settings[]>([]);
   const [imgSource, setImgSource] = useState<string | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
 
   const [showPriceToggle, setShowPriceToggle] = useState(false);
   const [hideOrderStatus, setHideOrderStatus] = useState(false);
@@ -92,44 +94,58 @@ export default function SettingsModal(props: SettingsModalProps) {
   }, [customer]);
 
   return (
-    <Dialog open={props.open}>
-      <DialogContent>
-        <StandardInfo
-          imgSource={imgSource}
-          settings={settings}
-        />
-        <p className='mt-5 mb-1' style={{fontSize: '1.4em', fontWeight: 'bold'}}>
-          일반설정
-        </p>
-        <div className='d-flex justify-content-between align-items-center'>
-          <div>메뉴 금액 보기</div>
-          <Toggle
-            value={showPriceToggle}
-            onChange={toggleShowPrice}
+    <>
+      <Dialog open={props.open}>
+        <DialogContent>
+          <StandardInfo
+            imgSource={imgSource}
+            settings={settings}
           />
-        </div>
-        <div className='d-flex justify-content-between align-items-center'>
-          <div>주문 진행상황 숨기기</div>
-          <Toggle
-            value={hideOrderStatus}
-            onChange={toggleHideOrderStatus}
-          />
-        </div>
-        <div className='d-flex justify-content-between align-items-center'>
-          <div>주문 완료 전 확인하기</div>
-          <Toggle
-            value={showConfirm}
-            onChange={toggleShowConfirm}
-          />
-        </div>
+          <div
+            style={{ fontSize: '1.2em' }}
+            className='text-secondary text-center border rounded py-2'
+            onClick={() => setOpen(true)}
+          >
+            주문내역 및 입출금내역 보기
+          </div>
+          <p className='mt-5 mb-1' style={{fontSize: '1.4em', fontWeight: 'bold'}}>
+            일반설정
+          </p>
+          <div className='d-flex justify-content-between align-items-center'>
+            <div>메뉴 금액 보기</div>
+            <Toggle
+              value={showPriceToggle}
+              onChange={toggleShowPrice}
+            />
+          </div>
+          <div className='d-flex justify-content-between align-items-center'>
+            <div>주문 진행상황 숨기기</div>
+            <Toggle
+              value={hideOrderStatus}
+              onChange={toggleHideOrderStatus}
+            />
+          </div>
+          <div className='d-flex justify-content-between align-items-center'>
+            <div>주문 완료 전 확인하기</div>
+            <Toggle
+              value={showConfirm}
+              onChange={toggleShowConfirm}
+            />
+          </div>
 
-        <div style={{height: 50}}/>
-      </DialogContent>
-      <DialogActions>
-        <SecondaryButton onClick={() => props.setOpen(false)}>
-          닫기
-        </SecondaryButton>
-      </DialogActions>
-    </Dialog>
+          <div style={{height: 50}}/>
+        </DialogContent>
+        <DialogActions>
+          <SecondaryButton onClick={() => props.setOpen(false)}>
+            닫기
+          </SecondaryButton>
+        </DialogActions>
+      </Dialog>
+      <StandardInfoCredit
+        open={open}
+        setOpen={setOpen}
+        customer={customer}
+      />
+    </>
   )
 }

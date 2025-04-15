@@ -14,11 +14,6 @@ interface StandardInfoProps {
 export default function StandardInfo({ imgSource, settings }: StandardInfoProps) {
   const [credit, setCredit] = useState<number>(0);
   const customer = useRecoilValue(customerState);
-  useEffect(() => {
-    client
-      .get('/api/order/credit')
-      .then(res => setCredit(res.data))
-  }, []);
 
   const bankAccount = useMemo(() => {
     const p = settings.find(setting => setting.sml === 3)?.stringValue;
@@ -34,6 +29,12 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
 
     return '';
   }, [settings]);
+
+  useEffect(() => {
+    client
+      .get('/api/order/credit')
+      .then(res => setCredit(res.data))
+  }, []);
 
   return (
     <>
