@@ -12,7 +12,7 @@ interface StandardInfoCalendarProps extends BasicModalProps {
   setOpenHistory: (open: boolean) => void;
 }
 
-export default function StandardInfoCalendar({ selectedDates, setSelectedDates, setOpenHistory, ...props }: StandardInfoCalendarProps) {
+export default function OrderHistoryCalendar({ selectedDates, setSelectedDates, setOpenHistory, ...props }: StandardInfoCalendarProps) {
 
   function handleClose() {
     setSelectedDates([]);

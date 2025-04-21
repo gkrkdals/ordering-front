@@ -10,7 +10,7 @@ import Customer from "@src/models/common/Customer.ts";
 import {Settings} from "@src/models/manager/settings.ts";
 import StandardInfo from "@src/pages/client/modals/settings/StandardInfo.tsx";
 import OrderHistory from "@src/pages/client/modals/OrderHistory.tsx";
-import StandardInfoCalendar from "@src/pages/client/modals/StandardInfoCalendar.tsx";
+import OrderHistoryCalendar from "@src/pages/client/modals/OrderHistoryCalendar.tsx";
 
 interface SettingsModalProps extends BasicModalProps {}
 
@@ -150,7 +150,7 @@ export default function SettingsModal(props: SettingsModalProps) {
           </SecondaryButton>
         </DialogActions>
       </Dialog>
-      <StandardInfoCalendar
+      <OrderHistoryCalendar
         open={openCalendar}
         setOpen={setOpenCalendar}
         selectedDates={selectedDates}

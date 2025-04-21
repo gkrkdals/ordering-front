@@ -15,7 +15,7 @@ import {AxiosError} from "axios";
 import {getUser, onDisconnected, printerSocket} from "@src/utils/network/socket.ts";
 import MenuProvider from "@src/contexts/manager/MenuContext.tsx";
 import CustomerProvider from "@src/contexts/manager/CustomerContext.tsx";
-import {DangerButton} from "@src/components/atoms/Buttons.tsx";
+import {DangerButton, PrimaryButton} from "@src/components/atoms/Buttons.tsx";
 import {App} from "@capacitor/app";
 import {PluginListenerHandle} from "@capacitor/core";
 import {isNative, startForegroundService, stopForegroundService} from "@src/utils/native/native.ts";
@@ -23,10 +23,12 @@ import {deleteObject} from "@src/utils/native/preferences.ts";
 import {channels} from "@src/utils/native/notifications.ts";
 import {PushNotifications} from "@capacitor/push-notifications";
 import {FirebaseMessaging} from "@capacitor-firebase/messaging";
+import OrderHistoryCalendar from "@src/pages/manager/modals/OrderHistoryCalendar.tsx";
 
 export default function ManagerPage() {
   const [whichMenu, setWhichMenu] = useState<string>('order');
   const [, setUser] = useRecoilState(userState);
+  const [openCalendar, setOpenCalendar] = useState(false);
   const navigate = useNavigate();
 
   async function handleLogout() {
@@ -160,12 +162,20 @@ export default function ManagerPage() {
                 <div className="mt-2" />
                 <Tab setMenu={setWhichMenu} menu={whichMenu}/>
                 <div className="mt-2"/>
-                {/*<p className='text-secondary' style={{fontSize: '10pt'}}>각 항목을 클릭하여 항목을 수정할 수 있습니다.</p>*/}
                 {renderSwitch(whichMenu)}
                 <div className='mb-4' />
-                <DangerButton onClick={handleLogout}>로그아웃</DangerButton>
+                <div className='d-flex gap-2'>
+                  <DangerButton onClick={handleLogout}>로그아웃</DangerButton>
+                  <PrimaryButton onClick={() => setOpenCalendar(true)}>
+                    주문내역 검색
+                  </PrimaryButton>
+                </div>
                 <div className='mb-4'/>
               </Container>
+              <OrderHistoryCalendar
+                open={openCalendar}
+                setOpen={setOpenCalendar}
+              />
             </CustomerProvider>
           </CustomerCategoryProvider>
         </OrderCategoryProvider>
