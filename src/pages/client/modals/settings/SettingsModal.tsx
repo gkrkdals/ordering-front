@@ -1,5 +1,4 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
-// import {RecentMenu} from "@src/models/client/RecentMenu.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import Toggle from "@src/components/atoms/Toggle.tsx";
@@ -10,8 +9,8 @@ import customerState from "@src/recoil/atoms/CustomerState.ts";
 import Customer from "@src/models/common/Customer.ts";
 import {Settings} from "@src/models/manager/settings.ts";
 import StandardInfo from "@src/pages/client/modals/settings/StandardInfo.tsx";
-import StandardInfoCredit from "@src/pages/client/modals/StandardInfoCredit.tsx";
-// import RecentOrders from "@src/pages/client/modals/settings/RecentOrders.tsx";
+import OrderHistory from "@src/pages/client/modals/OrderHistory.tsx";
+import StandardInfoCalendar from "@src/pages/client/modals/StandardInfoCalendar.tsx";
 
 interface SettingsModalProps extends BasicModalProps {}
 
@@ -21,10 +20,13 @@ export default function SettingsModal(props: SettingsModalProps) {
   const [settings, setSettings] = useState<Settings[]>([]);
   const [imgSource, setImgSource] = useState<string | null>(null);
   const [open, setOpen] = useState<boolean>(false);
+  const [openCalendar, setOpenCalendar] = useState(false);
 
   const [showPriceToggle, setShowPriceToggle] = useState(false);
   const [hideOrderStatus, setHideOrderStatus] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
 
   async function toggleShowPrice() {
     const newValue = !showPriceToggle;
@@ -101,13 +103,20 @@ export default function SettingsModal(props: SettingsModalProps) {
             imgSource={imgSource}
             settings={settings}
           />
-          <div
+          {/*<button*/}
+          {/*  style={{ fontSize: '1.2em' }}*/}
+          {/*  className='w-100 btn btn-primary'*/}
+          {/*  onClick={() => setOpen(true)}*/}
+          {/*>*/}
+          {/*  주문내역 보기*/}
+          {/*</button>*/}
+          <button
             style={{ fontSize: '1.2em' }}
-            className='text-secondary text-center border rounded py-2'
-            onClick={() => setOpen(true)}
+            className='w-100 btn btn-primary'
+            onClick={() => setOpenCalendar(true)}
           >
-            주문내역 및 입출금내역 보기
-          </div>
+            주문내역 보기
+          </button>
           <p className='mt-5 mb-1' style={{fontSize: '1.4em', fontWeight: 'bold'}}>
             일반설정
           </p>
@@ -141,10 +150,19 @@ export default function SettingsModal(props: SettingsModalProps) {
           </SecondaryButton>
         </DialogActions>
       </Dialog>
-      <StandardInfoCredit
+      <StandardInfoCalendar
+        open={openCalendar}
+        setOpen={setOpenCalendar}
+        selectedDates={selectedDates}
+        setSelectedDates={setSelectedDates}
+        setOpenHistory={setOpen}
+      />
+      <OrderHistory
         open={open}
         setOpen={setOpen}
         customer={customer}
+        selectedDates={selectedDates}
+        setSelectedDates={setSelectedDates}
       />
     </>
   )

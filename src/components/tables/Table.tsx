@@ -59,7 +59,7 @@ export function Cell(
   { hex, children, ...props }
     : TableCellProps) {
   return (
-    <td {...props} className="text-center" style={{backgroundColor: `#${hex}`, ...props.style,}}>
+    <td {...props} className={`text-center ${props.className}`} style={{backgroundColor: `#${hex}`, ...props.style,}}>
       {children}
 
     </td>

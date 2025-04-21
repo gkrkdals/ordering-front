@@ -1,0 +1,8 @@
+.selected-date {
+    background-color: #b0b0c0 !important;
+    color: white;
+}
+
+.in-range {
+    background-color: #d3d3d3 !important;
+}

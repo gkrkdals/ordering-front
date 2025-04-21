@@ -13,7 +13,6 @@ import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 import {Column} from "@src/models/manager/Column.ts";
 import {useTableSort} from "@src/hooks/UseTableSort.tsx";
 import {PluginListenerHandle} from "@capacitor/core";
-// import Pagination from "@src/pages/manager/components/atoms/Pagination.tsx";
 import {isNative} from "@src/utils/native/native.ts";
 import {App, AppState} from "@capacitor/app";
 import {formatCurrency} from "@src/utils/data.ts";
@@ -22,8 +21,6 @@ import 'react-calendar/dist/Calendar.css';
 import type {Value} from "react-calendar/dist/cjs/shared/types.js";
 import {dateToString} from "@src/utils/date.ts";
 import ShowPreviousSalesModal from "@src/pages/manager/modals/order/ShowPreviousSalesModal.tsx";
-
-
 
 const columns: Column[] = [
   {key: '', name: '순번'},

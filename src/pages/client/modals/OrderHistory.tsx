@@ -1,6 +1,6 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
-import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
+import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import {Cell, Table, TBody, TRow} from "@src/components/tables/Table.tsx";
 import Customer from "@src/models/common/Customer.ts";
 import {useEffect, useState} from "react";
@@ -9,31 +9,15 @@ import {dateToString} from "@src/utils/date.ts";
 
 interface StandardInfoCreditProps extends BasicModalProps {
   customer: Customer | null;
+  selectedDates: Date[];
+  setSelectedDates: (dates: Date[]) => void;
 }
 
-export default function StandardInfoCredit(props: StandardInfoCreditProps) {
+export default function OrderHistory({ selectedDates, setSelectedDates, ...props }: StandardInfoCreditProps) {
 
   const [orders, setOrders] = useState<any[]>([]);
   const [credit, setCredit] = useState<any>({});
-  const [searched, setSearched] = useState(false);
 
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-
-  async function handleSearch() {
-    if (props.customer) {
-      const res = await client.get('/api/settings/history', {
-        params: {
-          customerId: props.customer.id,
-          startDate,
-          endDate,
-        }
-      });
-      setSearched(true);
-      setOrders(res.data.orders);
-      setCredit(res.data.credit);
-    }
-  }
 
   function formatDate(d: string) {
     if (d.length === 0) {
@@ -44,15 +28,9 @@ export default function StandardInfoCredit(props: StandardInfoCreditProps) {
     return `${(date.getMonth() + 1).toString().padStart(2, "0")}${date.getDate().toString().padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
   }
 
-  function initialize() {
+  function handleClose() {
     props.setOpen(false);
-    setTimeout(() => {
-      setStartDate('');
-      setEndDate('');
-      setSearched(false);
-      setOrders([]);
-      setCredit({});
-    }, 300)
+    setSelectedDates([]);
   }
 
   function stringToLocaleString(d: string) {
@@ -63,47 +41,36 @@ export default function StandardInfoCredit(props: StandardInfoCreditProps) {
     return parseInt(d).toLocaleString();
   }
 
-  useEffect(() => {
-    if (props.open && props.customer) {
-      const today = new Date();
-      const todayString = dateToString(today).split(' ').at(0)!;
-      setStartDate(todayString);
-      setEndDate(todayString);
+  function ifOrdered(order: any): string {
+    if (order.cancelled) {
+      return 'text-danger'
     }
-  }, [props.open, props.customer]);
+    return '';
+  }
+
+  useEffect(() => {
+    if (props.open && props.customer && selectedDates.length === 2) {
+      const start = dateToString(selectedDates[0]).split(' ').at(0)!;
+      const end = dateToString(selectedDates[1]).split(' ').at(0)!;
+
+      client.get('/api/settings/history', {
+        params: {
+          customerId: props.customer.id,
+          startDate: start,
+          endDate: end,
+        }
+      }).then(res => {
+        setOrders(res.data.orders);
+        setCredit(res.data.credit);
+      });
+    }
+  }, [props.open, props.customer, selectedDates]);
 
   return (
     <Dialog open={props.open}>
       <DialogContent>
         <div className='d-flex flex-column gap-3'>
-          <div className='d-flex'>
-            <div className='d-flex align-items-center'>
-              <label htmlFor="startDate" style={{width: 100}}>시작일</label>
-            </div>
-            <input
-              type="date"
-              id='startDate'
-              className='form-control'
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-          </div>
-          <div className='d-flex'>
-            <div className='d-flex align-items-center'>
-              <label htmlFor="endDate" style={{width: 100}}>종료일</label>
-            </div>
-            <input
-              type="date"
-              id='endDate'
-              className='form-control'
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </div>
-          <PrimaryButton style={{ width: '100%'}} onClick={handleSearch}>
-            검색
-          </PrimaryButton>
-          {searched && (
+          {orders.length > 0 && (
             <Table style={{ fontSize: '0.7rem'}}>
               <TBody>
                 <TRow style={{ fontWeight: 'bold' }}>
@@ -126,10 +93,10 @@ export default function StandardInfoCredit(props: StandardInfoCreditProps) {
                 </TRow>
                 {orders.map((order, i) => (
                   <TRow key={i}>
-                    <Cell>{formatDate(order.order_time)}</Cell>
-                    <Cell hex={order.hex}>{order.menu_name}</Cell>
-                    <Cell>{stringToLocaleString(order.price)}</Cell>
-                    <Cell>{stringToLocaleString(order.credit_in)}</Cell>
+                    <Cell className={ifOrdered(order)}>{formatDate(order.order_time)}</Cell>
+                    <Cell className={ifOrdered(order)} hex={order.hex}>{order.menu_name}</Cell>
+                    <Cell className={ifOrdered(order)}>{stringToLocaleString(order.price)}</Cell>
+                    <Cell className={ifOrdered(order)}>{order.cancelled ? '취소됨' : stringToLocaleString(order.credit_in)}</Cell>
                   </TRow>
                 ))}
               </TBody>
@@ -138,7 +105,7 @@ export default function StandardInfoCredit(props: StandardInfoCreditProps) {
         </div>
       </DialogContent>
       <DialogActions>
-        <SecondaryButton onClick={initialize}>
+        <SecondaryButton onClick={handleClose}>
           닫기
         </SecondaryButton>
       </DialogActions>
