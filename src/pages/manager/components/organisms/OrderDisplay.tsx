@@ -41,9 +41,17 @@ export default function OrderDisplay() {
 
   // 소리 재생을 위한 오디오 레퍼런스
   const newOrderRef = useRef<HTMLAudioElement | null>(null);
+
   const cookingStartedRef = useRef<HTMLAudioElement | null>(null);
+  const checkRequestRef = useRef<HTMLAudioElement | null>(null);
+
   const cookingExceededRef = useRef<HTMLAudioElement | null>(null);
+
   const newDeliveryRef = useRef<HTMLAudioElement | null>(null);
+  const isRequestDoneRef = useRef<HTMLAudioElement | null>(null);
+
+  const duringDeliveryRef = useRef<HTMLAudioElement | null>(null);
+
   const deliverDelayedRef = useRef<HTMLAudioElement | null>(null);
   const newDishDisposalRef = useRef<HTMLAudioElement | null>(null);
 
@@ -108,11 +116,14 @@ export default function OrderDisplay() {
     const attachWebSounds = async () => {
       managerSocket.on('new_order', (data) => startAlarm(newOrderRef, data));
       managerSocket.on('cooking_started', (data) => playAudio(cookingStartedRef, data));
+      managerSocket.on('check_request', (data) => startAlarm(checkRequestRef, data));
       managerSocket.on('clear_alarm', clearAlarm);
       if (getUser() === 'cook') {
         managerSocket.on('cooking_exceeded', (data) => playAudio(cookingExceededRef, data));
       } else {
         managerSocket.on('new_delivery', () => playAudio(newDeliveryRef));
+        managerSocket.on('is_request_done', () => playAudio(isRequestDoneRef));
+        managerSocket.on('during_delivery', () => playAudio(duringDeliveryRef))
         managerSocket.on('deliver_delayed', () => playAudio(deliverDelayedRef));
         managerSocket.on('new_dish_disposal', () => playAudio(newDishDisposalRef));
       }
@@ -121,11 +132,14 @@ export default function OrderDisplay() {
     const attachAppSounds = () => {
       managerSocket.on('new_order', () => startAlarm('new_order.mp3'));
       managerSocket.on('cooking_started', () => playAudio('cooking_started.mp3'));
+      managerSocket.on('check_request', () => startAlarm('check_request.mp3'));
       managerSocket.on('clear_alarm', clearAlarm)
       if (getUser() === 'cook') {
         managerSocket.on('cooking_exceeded', () => playAudio('cooking_exceeded.mp3'));
       } else {
         managerSocket.on('new_delivery', () => playAudio('new_delivery.mp3'));
+        managerSocket.on('is_request_done', () => playAudio('is_request_done.mp3'));
+        managerSocket.on('during_delivery', () => playAudio('during_delivery.mp3'));
         managerSocket.on('deliver_delayed', () => playAudio('deliver_delayed.mp3'));
         managerSocket.on('new_dish_disposal', () => playAudio('new_dish_disposal.mp3'));
       }
@@ -135,9 +149,12 @@ export default function OrderDisplay() {
     const detachAppSounds = () => {
       managerSocket.removeListener('new_order');
       managerSocket.removeListener('cooking_started');
+      managerSocket.removeListener('check_request');
       managerSocket.removeListener('clear_alarm');
       managerSocket.removeListener('cooking_exceeded');
       managerSocket.removeListener('new_delivery');
+      managerSocket.removeListener('is_request_done');
+      managerSocket.removeListener('during_delivery');
       managerSocket.removeListener('deliver_delayed');
       managerSocket.removeListener('new_dish_disposal');
       clearAlarm();
@@ -187,8 +204,11 @@ export default function OrderDisplay() {
     } else {
       newOrderRef.current = getAudio('/alarms/new_order.mp3');
       cookingStartedRef.current = getAudio('/alarms/cooking_started.mp3');
+      checkRequestRef.current = getAudio('/alarms/check_request.mp3');
       cookingExceededRef.current = getAudio('/alarms/cooking_exceeded.mp3');
       newDeliveryRef.current = getAudio('/alarms/new_delivery.mp3');
+      isRequestDoneRef.current = getAudio('/alarms/is_request_done.mp3');
+      duringDeliveryRef.current = getAudio('/alarms/during_delivery.mp3');
       deliverDelayedRef.current = getAudio('/alarms/deliver_delayed.mp3');
       newDishDisposalRef.current = getAudio('/alarms/new_dish_disposal.mp3');
 
