@@ -115,8 +115,8 @@ export default function OrderDisplay() {
 
     const attachWebSounds = async () => {
       managerSocket.on('new_order', (data) => startAlarm(newOrderRef, data));
-      managerSocket.on('cooking_started', (data) => playAudio(cookingStartedRef, data));
       managerSocket.on('check_request', (data) => startAlarm(checkRequestRef, data));
+      managerSocket.on('cooking_started', (data) => playAudio(cookingStartedRef, data));
       managerSocket.on('clear_alarm', clearAlarm);
       if (getUser() === 'cook') {
         managerSocket.on('cooking_exceeded', (data) => playAudio(cookingExceededRef, data));
@@ -131,8 +131,8 @@ export default function OrderDisplay() {
 
     const attachAppSounds = () => {
       managerSocket.on('new_order', () => startAlarm('new_order.mp3'));
-      managerSocket.on('cooking_started', () => playAudio('cooking_started.mp3'));
       managerSocket.on('check_request', () => startAlarm('check_request.mp3'));
+      managerSocket.on('cooking_started', () => playAudio('cooking_started.mp3'));
       managerSocket.on('clear_alarm', clearAlarm)
       if (getUser() === 'cook') {
         managerSocket.on('cooking_exceeded', () => playAudio('cooking_exceeded.mp3'));
@@ -268,9 +268,12 @@ export default function OrderDisplay() {
   // mute 변경
   useEffect(() => {
     newOrderRef.current && (newOrderRef.current.muted = muted);
+    checkRequestRef.current && (checkRequestRef.current.muted = muted);
     cookingStartedRef.current && (cookingStartedRef.current.muted = muted);
     cookingExceededRef.current && (cookingExceededRef.current.muted = muted);
     newDeliveryRef.current && (newDeliveryRef.current.muted = muted);
+    isRequestDoneRef.current && (isRequestDoneRef.current.muted = muted);
+    duringDeliveryRef.current && (duringDeliveryRef.current.muted = muted);
     deliverDelayedRef.current && (deliverDelayedRef.current.muted = muted);
     newDishDisposalRef.current && (newDishDisposalRef.current.muted = muted);
   }, [muted]);

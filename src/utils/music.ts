@@ -36,7 +36,9 @@ export function playAudio(audioRefOrPath: AudioRefObject, data?: boolean) {
 
       audio.pause();
       audio.currentTime = 0;
-      audio.play().then(() => console.log('audio is played succesfully'));
+      audio
+        .play()
+        .then(() => console.log('audio is played succesfully'));
     }
   }
 }

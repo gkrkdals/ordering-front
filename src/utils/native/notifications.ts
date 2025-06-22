@@ -10,6 +10,14 @@ export const channels: Channel[] = [
     vibration: true,
   },
   {
+    id: 'check_request',
+    name: 'Check Request',
+    description: '요청 확인 채널',
+    importance: 5,
+    sound: 'check_request',
+    vibration: true,
+  },
+  {
     id: 'cooking_started',
     name: 'Cooking Started',
     description: '조리 시작 채널',
@@ -31,6 +39,22 @@ export const channels: Channel[] = [
     description: '새로운 배달 채널',
     importance: 5,
     sound: 'new_delivery',
+    vibration: true,
+  },
+  {
+    id: 'is_request_done',
+    name: 'Is Request Done',
+    description: '요청 실행 확인 채널',
+    importance: 5,
+    sound: 'is_request_done',
+    vibration: true,
+  },
+  {
+    id: 'during_delivery',
+    name: 'During Delivery',
+    description: '배달 중 채널',
+    importance: 5,
+    sound: 'during_delivery',
     vibration: true,
   },
   {

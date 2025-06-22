@@ -74,6 +74,8 @@ export default function OrderHistoryCalendar(props: StandardInfoCalendarProps) {
     setSelectedCustomer(customers.find(c => c.name === searchCustomer) ?? null);
   }, [searchCustomer]);
 
+
+
   return (
     <>
       <Dialog open={props.open}>

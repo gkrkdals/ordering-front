@@ -82,14 +82,14 @@ export default function OrderHistory({ selectedDates, setSelectedDates, ...props
             <Table style={{ fontSize: '0.7rem'}}>
               <TBody>
                 <TRow style={{ fontWeight: 'bold' }}>
-                  <Cell>미수금</Cell>
                   <Cell>주문액</Cell>
+                  <Cell>미수금</Cell>
                   <Cell>결제액</Cell>
                   <Cell>잔액</Cell>
                 </TRow>
                 <TRow>
-                  <Cell>{stringToLocaleString(credit.misu)}</Cell>
                   <Cell>{stringToLocaleString(credit.ordered)}</Cell>
+                  <Cell>{stringToLocaleString(credit.misu)}</Cell>
                   <Cell>{stringToLocaleString(credit.charged)}</Cell>
                   <Cell>{stringToLocaleString(credit.remaining)}</Cell>
                 </TRow>
