@@ -76,6 +76,7 @@ export default function MenuDisplay() {
           <PrimaryButton onClick={() => setOpenMenuOrder(true)}>
             메뉴 순서 설정
           </PrimaryButton>
+          
         </div>
       </div>
 

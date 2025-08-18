@@ -10,6 +10,7 @@ import StandardInfoModal from "@src/pages/manager/modals/settings/features/Stand
 import ModifyUserModal from "@src/pages/manager/modals/settings/features/ModifyUserModal.tsx";
 import NoAlarmsModal from "@src/pages/manager/modals/settings/features/NoAlarmsModal.tsx";
 import AutoSoldOutModal from "@src/pages/manager/modals/settings/features/AutoSoldOutModal.tsx";
+import MenuCategoryModal from "./features/MenuCategoryModal";
 
 interface SettingModalProps extends BasicModalProps {}
 
@@ -22,6 +23,7 @@ export default function SettingModal(props: SettingModalProps) {
   const [openStandardInfo, setOpenStandardInfo] = useState(false);
   const [openNoAlarms, setOpenNoAlarms] = useState(false);
   const [openAutoSoldOut, setOpenAutoSoldOut] = useState(false);
+  const [openMenuCategory, setOpenMenuCategory] = useState(false);
 
   function handleOpenMakeQR() {
     props.setOpen(false);
@@ -63,6 +65,11 @@ export default function SettingModal(props: SettingModalProps) {
     setOpenAutoSoldOut(true);
   }
 
+  function handleOpenMenuCategory() {
+    props.setOpen(false);
+    setOpenMenuCategory(true);
+  }
+
   return (
     <>
       <Dialog open={props.open}>
@@ -99,6 +106,10 @@ export default function SettingModal(props: SettingModalProps) {
             <i className="bi bi-alarm me-2"></i>
             자동 품절/해제 시간 설정
           </div>
+          <div className='d-flex py-3 px-2' onClick={handleOpenMenuCategory}>
+            <i className="bi bi-menu-app me-2"></i>
+            메뉴 카테고리 설정
+          </div>
 
         </DialogContent>
         <DialogActions>
@@ -116,6 +127,7 @@ export default function SettingModal(props: SettingModalProps) {
       <StandardInfoModal open={openStandardInfo} setOpen={setOpenStandardInfo} />
       <NoAlarmsModal open={openNoAlarms} setOpen={setOpenNoAlarms} />
       <AutoSoldOutModal open={openAutoSoldOut} setOpen={setOpenAutoSoldOut} />
+      <MenuCategoryModal open={openMenuCategory} setOpen={setOpenMenuCategory} />
     </>
   )
 }
