@@ -24,6 +24,7 @@ import {channels} from "@src/utils/native/notifications.ts";
 import {PushNotifications} from "@capacitor/push-notifications";
 import {FirebaseMessaging} from "@capacitor-firebase/messaging";
 import OrderHistoryCalendar from "@src/pages/manager/modals/OrderHistoryCalendar.tsx";
+import DiscountGroupProvider from "@src/contexts/manager/DiscountGroupContext.tsx";
 
 export default function ManagerPage() {
   const [whichMenu, setWhichMenu] = useState<string>('order');
@@ -158,20 +159,22 @@ export default function ManagerPage() {
         <OrderCategoryProvider>
           <CustomerCategoryProvider>
             <CustomerProvider>
-              <Container>
-                <div className="mt-2" />
-                <Tab setMenu={setWhichMenu} menu={whichMenu}/>
-                <div className="mt-2"/>
-                {renderSwitch(whichMenu)}
-                <div className='mb-4' />
-                <div className='d-flex gap-2'>
-                  <DangerButton onClick={handleLogout}>로그아웃</DangerButton>
-                  <PrimaryButton onClick={() => setOpenCalendar(true)}>
-                    주문내역 검색
-                  </PrimaryButton>
-                </div>
-                <div className='mb-4'/>
-              </Container>
+              <DiscountGroupProvider>
+                <Container>
+                  <div className="mt-2" />
+                  <Tab setMenu={setWhichMenu} menu={whichMenu}/>
+                  <div className="mt-2"/>
+                  {renderSwitch(whichMenu)}
+                  <div className='mb-4' />
+                  <div className='d-flex gap-2'>
+                    <DangerButton onClick={handleLogout}>로그아웃</DangerButton>
+                    <PrimaryButton onClick={() => setOpenCalendar(true)}>
+                      주문내역 검색
+                    </PrimaryButton>
+                  </div>
+                  <div className='mb-4'/>
+                </Container>
+              </DiscountGroupProvider>
               <OrderHistoryCalendar
                 open={openCalendar}
                 setOpen={setOpenCalendar}

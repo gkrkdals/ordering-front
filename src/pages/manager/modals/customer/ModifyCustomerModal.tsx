@@ -7,6 +7,8 @@ import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryCon
 import {DangerButton, PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import ModifyCustomerPriceModal from "@src/pages/manager/modals/customer/ModifyCustomerPriceModal.tsx";
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
+import Select from "@src/components/atoms/Select.tsx";
+import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
 
 interface ModifyCustomerModalProps extends BasicModalProps {
   currentCustomer: CustomerRaw | null;
@@ -26,6 +28,7 @@ export function ModifyCustomerModal(
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const [customerCategories, ] = useContext(CustomerCategoryContext)!;
+  const [discountGroups] = useContext(DiscountGroupContext)!;
 
   async function handleProceedingDeletion() {
     setOpen(false);
@@ -125,6 +128,20 @@ export function ModifyCustomerModal(
                     );
                   })}
                 </select>
+              </BigColumn>
+            </Column>
+            <Column>
+              <SmallColumn>할인그룹</SmallColumn>
+              <BigColumn>
+                <Select
+                  value={modifyingCustomer?.discount_group_id}
+                  onChange={(e) => setModifyingCustomer({ ...modifyingCustomer, discount_group_id: e.target.value } as CustomerRaw)}
+                >
+                  <option value="-1">할인그룹 없음</option>
+                  {discountGroups.map((group, i) => (
+                    <option key={i} value={group.id.toString()}>{group.name}</option>
+                  ))}
+                </Select>
               </BigColumn>
             </Column>
           </Wrapper>

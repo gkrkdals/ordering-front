@@ -64,6 +64,9 @@ export default function CustomerTable(props: CustomerTableProps) {
                 >
                   {((customer.credit * -1) / 1000)}
                 </Cell>
+                <Cell>
+                  {customer.discount_name}
+                </Cell>
               </TRow>
             );
           })}

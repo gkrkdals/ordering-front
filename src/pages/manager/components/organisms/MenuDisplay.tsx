@@ -14,6 +14,7 @@ const columns: Column[] = [
   {key: '', name: '순번'},
   {key: 'name', name: '이름'},
   {key: 'soldOut', name: '비고'},
+  {key: 'isDiscountable', name: '할인여부'}
 ];
 
 export default function MenuDisplay() {

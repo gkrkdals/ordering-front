@@ -17,6 +17,7 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
   const [currentStatus, setCurrentStatus] = useState<number>(0);
 
   const [paidAmount, setPaidAmount] = useState<string>('');
+  const [memo, setMemo] = useState('');
 
   const [, setRecentJob] = useRecoilState(recentJobState);
 
@@ -32,7 +33,8 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
         await client.put('/api/manager/order', {
           orderId: orderStatusId,
           newStatus: currentStatus + 1,
-          paidAmount: parseInt(paidAmount) * 1000,
+          paidAmount: parseFloat(paidAmount) * 1000,
+          memo,
           postpaid: isNaN(parseInt(paidAmount)) || parseInt(paidAmount) === 0,
           menu: modifyingOrder?.menu,
         });
@@ -55,6 +57,14 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
     setCurrentStatus(modifyingOrder?.status ?? 0);
   }, [modifyingOrder?.id, modifyingOrder?.status]);
 
+  useEffect(() => {
+    if(props.open) {
+      client
+        .get('/api/manager/order/memo', { params: { orderCode: modifyingOrder?.order_code } })
+        .then(res => setMemo(res.data));
+    }
+  }, [props.open]);
+
   return (
     <Dialog open={props.open}>
       <DialogContent>
@@ -67,6 +77,14 @@ export default function EnterAmount({ cannotUpdate, setCannotUpdate, modifyingOr
             placeholder='금액 입력(천원)'
             value={paidAmount ?? ''}
             onChange={e => setPaidAmount(e.target.value)}
+          />
+        </div>
+        <div className='mb-4'>
+          <input
+            className='form-control w-100'
+            placeholder='메모 입력'
+            value={memo}
+            onChange={e => setMemo(e.target.value)}
           />
         </div>
       </DialogContent>

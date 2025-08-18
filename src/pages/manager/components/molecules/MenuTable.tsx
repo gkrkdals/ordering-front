@@ -51,6 +51,9 @@ export default function MenuTable({columns, menus, page, reload, sort, setSort}:
                 <Cell onClick={e => toggleSoldOut(e, menu)}>
                   {menu.soldOut ? '품절' : ''}
                 </Cell>
+                <Cell style={{ width: 100}}>
+                  {menu.isDiscountable === 1 ? '가능' : '불가능'}
+                </Cell>
               </TRow>
             );
           })}

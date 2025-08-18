@@ -41,7 +41,17 @@ export default function ModifyMenuModal(props: ModifyMenuModal) {
 
   return (
     <>
-      <Dialog open={props.open}>
+      <Dialog
+        open={props.open}
+        sx={{
+          "& .MuiDialog-container": {
+            "& .MuiPaper-root": {
+              width: "100%",
+              maxWidth: "330px", // Set your desired max-width here
+            },
+          },
+        }}
+      >
         <DialogTitle>
           메뉴 변경
         </DialogTitle>
@@ -110,6 +120,35 @@ export default function ModifyMenuModal(props: ModifyMenuModal) {
                       onChange={() => setModifyingMenu({ ...modifyingMenu, soldOut: 1 } as Menu)}
                     />
                     <label htmlFor="soldout">품절</label>
+                  </div>
+                </div>
+              </BigColumn>
+            </Column>
+            <Column>
+              <SmallColumn>
+                할인가능여부
+              </SmallColumn>
+              <BigColumn>
+                <div className='d-flex justify-content-between'>
+                  <div>
+                    <input
+                      id='discountable'
+                      type="radio"
+                      value={modifyingMenu?.isDiscountable}
+                      checked={modifyingMenu?.isDiscountable === 1}
+                      onChange={() => setModifyingMenu({ ...modifyingMenu, isDiscountable: 1 } as Menu)}
+                    />
+                    <label htmlFor="discountable">가능</label>
+                  </div>
+                  <div>
+                    <input
+                      id='notDiscountable'
+                      type="radio"
+                      value={modifyingMenu?.isDiscountable}
+                      checked={modifyingMenu?.isDiscountable === 0}
+                      onChange={() => setModifyingMenu({ ...modifyingMenu, isDiscountable: 0 } as Menu)}
+                    />
+                    <label htmlFor="notDiscountable">불가능</label>
                   </div>
                 </div>
               </BigColumn>

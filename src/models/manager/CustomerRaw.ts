@@ -8,4 +8,6 @@ export interface CustomerRaw {
   category: number;
   withdrawn: number;
   credit: number;
+  discount_group_id: string;
+  discount_name: string;
 }
