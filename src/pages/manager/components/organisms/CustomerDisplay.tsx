@@ -17,8 +17,8 @@ const columns: Column[] = [
   {key: 'tel', name: '전화번호'},
   {key: 'floor', name: '층수'},
   {key: 'memo', name: '비고'},
+  {key: 'discount_group_id', name: '할인그룹'},
   {key: 'credit', name: '잔금'},
-  {key: 'discount_group_id', name: '할인그룹'}
 ];
 
 export default function CustomerDisplay() {

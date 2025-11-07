@@ -11,6 +11,7 @@ import ModifyUserModal from "@src/pages/manager/modals/settings/features/ModifyU
 import NoAlarmsModal from "@src/pages/manager/modals/settings/features/NoAlarmsModal.tsx";
 import AutoSoldOutModal from "@src/pages/manager/modals/settings/features/AutoSoldOutModal.tsx";
 import MenuCategoryModal from "./features/MenuCategoryModal";
+import WebDiscountModal from "@src/pages/manager/modals/settings/features/WebDiscountModal.tsx";
 
 interface SettingModalProps extends BasicModalProps {}
 
@@ -24,6 +25,7 @@ export default function SettingModal(props: SettingModalProps) {
   const [openNoAlarms, setOpenNoAlarms] = useState(false);
   const [openAutoSoldOut, setOpenAutoSoldOut] = useState(false);
   const [openMenuCategory, setOpenMenuCategory] = useState(false);
+  const [openWebDiscount, setOpenWebDiscount] = useState(false);
 
   function handleOpenMakeQR() {
     props.setOpen(false);
@@ -70,6 +72,11 @@ export default function SettingModal(props: SettingModalProps) {
     setOpenMenuCategory(true);
   }
 
+  function handleOpenWebDiscount() {
+    props.setOpen(false);
+    setOpenWebDiscount(true);
+  }
+
   return (
     <>
       <Dialog open={props.open}>
@@ -110,6 +117,10 @@ export default function SettingModal(props: SettingModalProps) {
             <i className="bi bi-menu-app me-2"></i>
             메뉴 카테고리 설정
           </div>
+          <div className='d-flex py-3 px-2' onClick={handleOpenWebDiscount}>
+            <i className="bi bi-arrow-down-circle-fill me-2"></i>
+            웹할인 가격 설정
+          </div>
 
         </DialogContent>
         <DialogActions>
@@ -128,6 +139,7 @@ export default function SettingModal(props: SettingModalProps) {
       <NoAlarmsModal open={openNoAlarms} setOpen={setOpenNoAlarms} />
       <AutoSoldOutModal open={openAutoSoldOut} setOpen={setOpenAutoSoldOut} />
       <MenuCategoryModal open={openMenuCategory} setOpen={setOpenMenuCategory} />
+      <WebDiscountModal open={openWebDiscount} setOpen={setOpenWebDiscount} />
     </>
   )
 }

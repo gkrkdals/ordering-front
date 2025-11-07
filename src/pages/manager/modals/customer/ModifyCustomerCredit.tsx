@@ -1,7 +1,7 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 import client from "@src/utils/network/client.ts";
 
@@ -14,18 +14,31 @@ interface ModifyCustomerCreditProps extends BasicModalProps {
 export default function ModifyCustomerCredit(props: ModifyCustomerCreditProps) {
   const [radioValue, setRadioValue] = useState(0);
   const [price, setPrice] = useState<string>('');
+  const [memo, setMemo] = useState<string>('');
+
+  function initialize() {
+    setRadioValue(0);
+    setPrice("");
+    setMemo('');
+  }
 
   async function handleClickOnConfirm() {
     await client.post('/api/manager/customer/credit', {
       mode: radioValue,
       customer: props.customer,
-      price: parseInt(price) * 1000
+      price: parseFloat(price) * 1000,
+      memo,
     });
     props.setOpen(false);
-    setRadioValue(0);
-    setPrice('');
+    setTimeout(initialize, 300);
     props.reload();
   }
+
+  useEffect(() => {
+    if(props.open) {
+      initialize();
+    }
+  }, [props.open]);
 
   return (
     <Dialog open={props.open}>
@@ -61,6 +74,12 @@ export default function ModifyCustomerCredit(props: ModifyCustomerCreditProps) {
           value={price}
           onChange={e => setPrice(e.target.value)}
           placeholder='금액 입력(천원)'
+        />
+        <div className='mb-4' />
+        <FormControl
+          value={memo}
+          onChange={e => setMemo(e.target.value)}
+          placeholder="메모 입력"
         />
       </DialogContent>
       <DialogActions>

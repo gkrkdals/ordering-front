@@ -59,13 +59,13 @@ export default function CustomerTable(props: CustomerTableProps) {
                 <Cell>{customer.tel}</Cell>
                 <Cell>{customer.floor}</Cell>
                 <Cell>{customer.memo}</Cell>
+                <Cell>
+                  {customer.discount_name}
+                </Cell>
                 <Cell
                   onClick={e => handleClickOnCredit(e, customer)}
                 >
                   {((customer.credit * -1) / 1000)}
-                </Cell>
-                <Cell>
-                  {customer.discount_name}
                 </Cell>
               </TRow>
             );

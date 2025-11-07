@@ -18,4 +18,5 @@ export interface OrderStatusRaw {
   floor: string;
   memo: string;
   location: string;
+  by_nickname: string;
 }

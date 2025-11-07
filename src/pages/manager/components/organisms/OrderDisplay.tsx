@@ -316,7 +316,17 @@ export default function OrderDisplay() {
         reload={reloadData}
       />
       <OrderTable
-        columns={columns}
+        columns={columns.map((column, i) => {
+          if (i === 3) {
+            if (isRemaining) {
+              column.name = "메모";
+            } else {
+              column.name = "요청사항";
+            }
+          }
+
+          return column;
+        })}
         count={count}
         orderstatus={data}
         page={currentPage}

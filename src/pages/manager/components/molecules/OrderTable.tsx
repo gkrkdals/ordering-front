@@ -96,6 +96,13 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
   function getStatusName(orderStatus: OrderStatusRaw) {
     if(orderStatus.menu === 0 && orderStatus.status === StatusEnum.PendingReceipt) {
       return `${orderStatus.status_name}(금액입력)`;
+    } else if (
+      orderStatus.status === StatusEnum.InDelivery
+      || orderStatus.status === StatusEnum.AwaitingPickup
+      || orderStatus.status === StatusEnum.PickupComplete
+      || (orderStatus.status === StatusEnum.InPickingUp && orderStatus.by_nickname)
+    ) {
+      return orderStatus.by_nickname;
     } else {
       if (user?.permission === PermissionEnum.Cook && orderStatus.status > StatusEnum.InPreparation) {
         return '조리완료';
