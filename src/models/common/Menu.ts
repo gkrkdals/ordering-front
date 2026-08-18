@@ -7,6 +7,7 @@ export default interface Menu {
   category: number;
   soldOut: number;
   isDiscountable: number;
+  isRewardable?: number;
   menuCategory?: MenuCategory;
   seq: number;
 }
@@ -17,5 +18,6 @@ export const defaultMenu: Menu = {
   category: 1,
   soldOut: 0,
   seq: LAST_SEQ,
-  isDiscountable: 1
+  isDiscountable: 1,
+  isRewardable: 1
 }

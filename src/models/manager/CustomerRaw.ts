@@ -10,4 +10,8 @@ export interface CustomerRaw {
   credit: number;
   discount_group_id: string;
   discount_name: string;
+  reward_per_menu: number;
+  reward_per_bowl: number;
+  point_balance: number;
+  is_sold_out: number;
 }

@@ -1,4 +1,4 @@
-import OrderStatusCount from "@src/pages/client/components/molecules/OrderStatusCount.tsx";
+// import OrderStatusCount from "@src/pages/client/components/molecules/OrderStatusCount.tsx";
 import OrderDetail from "@src/pages/client/components/molecules/OrderDetail.tsx";
 import DishDisposal from "@src/pages/client/components/molecules/DishDisposal.tsx";
 import {useRecoilValue} from "recoil";
@@ -11,7 +11,7 @@ import {Disposal} from "@src/models/client/Disposal.ts";
 
 export default function CurrentOrderStatus() {
   
-  const [orderSummaryCount, setOrderSummaryCount] = useState<{ status: number, count: number }[]>([])
+  const [, setOrderSummaryCount] = useState<{ status: number, count: number }[]>([])
   const [, setOrderSummaries] = useContext(OrderSummaryContext)!;
 
   const [dishDisposals, setDishDisposals] = useState<Disposal[]>([]);
@@ -82,7 +82,7 @@ export default function CurrentOrderStatus() {
 
   return (
     <div className='my-3'>
-      {!(customer?.hideOrderStatus === 1) && <OrderStatusCount orderSummaryCount={orderSummaryCount} />}
+      {/* {!(customer?.hideOrderStatus === 1) && <OrderStatusCount orderSummaryCount={orderSummaryCount} />} */}
       <OrderDetail />
       <DishDisposal dishDisposals={dishDisposals} reloadDishDisposals={getDishDisposals} />
     </div>

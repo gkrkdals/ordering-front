@@ -20,7 +20,13 @@ export default function SelectedMenus({ selectedMenus, setSelectedMenus }: Selec
   }
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
-    const { value } = e.target;
+    let { value } = e.target;
+
+    // 8글자 초과 시 알림을 띄우고 8글자까지만 자르기
+    if (value.length > 8) {
+      alert('요청사항은 최대 8글자까지만 입력 가능합니다.'); // 기획 요구사항 반영 [cite: 5, 46]
+      value = value.slice(0, 8);
+    }
 
     setSelectedMenus(prev => {
       const newData = [...prev];

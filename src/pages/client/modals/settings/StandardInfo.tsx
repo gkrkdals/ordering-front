@@ -83,6 +83,17 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
           </div>
         </BigColumn>
       </Column>
+
+      <Column style={{fontSize: '1.2em'}}>
+        <SmallColumn>
+          <div className='text-secondary'>적립금</div>
+        </SmallColumn>
+        <BigColumn>
+          <div className='w-100 d-flex justify-content-end'>
+            {formatCurrency((customer?.pointBalance ?? 0) * 100)}
+          </div>
+        </BigColumn>
+      </Column>
     </>
   );
 }

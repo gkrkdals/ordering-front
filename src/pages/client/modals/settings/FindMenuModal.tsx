@@ -42,7 +42,7 @@ export default function FindMenuModal(props: FindMenuModal) {
           value={searchMenu}
           onChange={(e) => setSearchMenu(e.target.value)}
           placeholder="메뉴명 입력"
-          style={{ width: '100%', marginBottom: 10 }}
+          style={{ width: '100%', marginBottom: 10, fontSize: '1.3rem' }}
         />
         {/*<p style={{ fontSize: 13 }} className='mt-3 mb-2 text-secondary'>추가한 메뉴: </p>*/}
         {/*<p style={{ fontSize: 13, minHeight: 45 }} className='mb-3'>*/}
@@ -55,7 +55,12 @@ export default function FindMenuModal(props: FindMenuModal) {
                 <TRow key={i}>
                   <StartCell
                     hex={menu.soldOut === 1 ? 'AAAAAA' : menu.menuCategory?.hex}
-                    style={{ fontSize: customer && customer.showPrice ? 19 : 23 }}
+                    style={{
+                      fontSize: customer && customer.showPrice ? 19 : 23,
+                      cursor: menu.soldOut !== 1 ? 'pointer' : 'not-allowed',
+                      opacity: menu.soldOut === 1 ? 0.6 : 1,
+                    }}
+                    onClick={() => menu.soldOut !== 1 && handleAddMenu(menu)}
                   >
                     {menu.name}&nbsp;{menu.soldOut === 1 && <span className='text-danger'>(품절)</span>}
                   </StartCell>
@@ -64,17 +69,6 @@ export default function FindMenuModal(props: FindMenuModal) {
                       {menu.menuCategory?.price}
                     </Cell>
                   ) : null}
-                  <Cell>
-                    {
-                      menu.soldOut !== 1 ?
-                        <i
-                          className="bi bi-cart-plus-fill"
-                          onClick={() => handleAddMenu(menu)}
-                          style={{ fontSize: 34 }}
-                        /> :
-                        <i className="bi bi-ban"></i>
-                    }
-                  </Cell>
                 </TRow>
               ))}
             </TBody>

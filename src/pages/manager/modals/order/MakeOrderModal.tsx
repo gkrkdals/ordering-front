@@ -117,8 +117,16 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
           <p className='mb-2'>요청사항 입력</p>
           <FormControl
             value={request}
-            onChange={e => setRequest(e.target.value)}
-            placeholder='요청사항 입력'
+            onChange={e => {
+            const inputValue = e.target.value;
+            
+            if (inputValue.length > 8) {
+              setRequest(inputValue.slice(0, 8));
+            } else {
+              setRequest(inputValue);
+            }
+          }}
+            placeholder='요청사항 입력(최대 8자)'
           />
         </DialogContent>
         <DialogActions>

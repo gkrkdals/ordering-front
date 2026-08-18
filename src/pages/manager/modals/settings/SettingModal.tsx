@@ -12,6 +12,8 @@ import NoAlarmsModal from "@src/pages/manager/modals/settings/features/NoAlarmsM
 import AutoSoldOutModal from "@src/pages/manager/modals/settings/features/AutoSoldOutModal.tsx";
 import MenuCategoryModal from "./features/MenuCategoryModal";
 import WebDiscountModal from "@src/pages/manager/modals/settings/features/WebDiscountModal.tsx";
+import DisposalTimeModal from "./features/DisposalTimeModal";
+import MinUsePointModal from "./features/MinUsePointModal";
 
 interface SettingModalProps extends BasicModalProps {}
 
@@ -26,6 +28,8 @@ export default function SettingModal(props: SettingModalProps) {
   const [openAutoSoldOut, setOpenAutoSoldOut] = useState(false);
   const [openMenuCategory, setOpenMenuCategory] = useState(false);
   const [openWebDiscount, setOpenWebDiscount] = useState(false);
+  const [openDisposalTime, setOpenDisposalTime] = useState(false);
+  const [openMinUsePoint, setOpenMinUsePoint] = useState(false);
 
   function handleOpenMakeQR() {
     props.setOpen(false);
@@ -77,6 +81,16 @@ export default function SettingModal(props: SettingModalProps) {
     setOpenWebDiscount(true);
   }
 
+  function handleOpenDisposalTime() {
+    props.setOpen(false);
+    setOpenDisposalTime(true);
+  }
+
+  function handleOpenMinUsePoint() {
+    props.setOpen(false);
+    setOpenMinUsePoint(true);
+  }
+
   return (
     <>
       <Dialog open={props.open}>
@@ -121,6 +135,14 @@ export default function SettingModal(props: SettingModalProps) {
             <i className="bi bi-arrow-down-circle-fill me-2"></i>
             웹할인 가격 설정
           </div>
+          <div className='d-flex py-3 px-2' onClick={handleOpenDisposalTime}>
+            <i className="bi bi-clock-history me-2"></i>
+            그릇 수거 시간 설정
+          </div>
+          <div className='d-flex py-3 px-2' onClick={handleOpenMinUsePoint}>
+            <i className="bi bi-coin me-2"></i>
+            적립금 하한 설정
+          </div>
 
         </DialogContent>
         <DialogActions>
@@ -140,6 +162,8 @@ export default function SettingModal(props: SettingModalProps) {
       <AutoSoldOutModal open={openAutoSoldOut} setOpen={setOpenAutoSoldOut} />
       <MenuCategoryModal open={openMenuCategory} setOpen={setOpenMenuCategory} />
       <WebDiscountModal open={openWebDiscount} setOpen={setOpenWebDiscount} />
+      <DisposalTimeModal open={openDisposalTime} setOpen={setOpenDisposalTime} />
+      <MinUsePointModal open={openMinUsePoint} setOpen={setOpenMinUsePoint} />
     </>
   )
 }

@@ -8,8 +8,9 @@ import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import FindMenuModal from "@src/pages/client/modals/settings/FindMenuModal.tsx";
 import Menu from "@src/models/common/Menu.ts";
 import OrderCompletedDialog from "@src/pages/client/modals/OrderCompletedDialog.tsx";
-import {useRecoilValue} from "recoil";
+import {useRecoilState} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
+import Customer from "@src/models/common/Customer";
 
 interface OrderButtonProps extends ComponentPropsWithoutRef<'button'> {
   selectedMenus: SelectedMenu[];
@@ -25,12 +26,14 @@ export default function OrderButton({ selectedMenus, setSelectedMenus, addMenuFr
   const [isOrdering, setIsOrdering] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
 
-  const customer = useRecoilValue(customerState);
+  const [customer, setCustomer] = useRecoilState(customerState);
 
   async function addOrder() {
     setIsOrdering(true);
     try {
-      await client.post('/api/order', selectedMenus);
+      await client.post('/api/order', {
+        orderedMenus: selectedMenus,
+      });
       window.dispatchEvent(new CustomEvent("reloadLast"));
       setOrderComplete(true);
     } catch (e) {
@@ -45,6 +48,8 @@ export default function OrderButton({ selectedMenus, setSelectedMenus, addMenuFr
   async function handleOrder() {
     setOpenDialog(false);
     await addOrder();
+    const newCustomerData: Customer = (await client.get('/api/auth/profile')).data;
+    setCustomer(newCustomerData);
   }
 
   return (
@@ -66,6 +71,8 @@ export default function OrderButton({ selectedMenus, setSelectedMenus, addMenuFr
                 setOpenDialog(true);
               } else {
                 await addOrder();
+                const newCustomerData: Customer = (await client.get('/api/auth/profile')).data;
+                setCustomer(newCustomerData);
               }
             }
           }}

@@ -126,29 +126,29 @@ export default function ModifyMenuModal(props: ModifyMenuModal) {
             </Column>
             <Column>
               <SmallColumn>
-                할인가능여부
+                적립가능여부
               </SmallColumn>
               <BigColumn>
                 <div className='d-flex justify-content-between'>
                   <div>
                     <input
-                      id='discountable'
+                      id='rewardable'
                       type="radio"
-                      value={modifyingMenu?.isDiscountable}
-                      checked={modifyingMenu?.isDiscountable === 1}
-                      onChange={() => setModifyingMenu({ ...modifyingMenu, isDiscountable: 1 } as Menu)}
+                      value={modifyingMenu?.isRewardable ?? 1}
+                      checked={(modifyingMenu?.isRewardable ?? 1) === 1}
+                      onChange={() => setModifyingMenu({ ...modifyingMenu, isRewardable: 1 } as Menu)}
                     />
-                    <label htmlFor="discountable">가능</label>
+                    <label htmlFor="rewardable">가능</label>
                   </div>
                   <div>
                     <input
-                      id='notDiscountable'
+                      id='notRewardable'
                       type="radio"
-                      value={modifyingMenu?.isDiscountable}
-                      checked={modifyingMenu?.isDiscountable === 0}
-                      onChange={() => setModifyingMenu({ ...modifyingMenu, isDiscountable: 0 } as Menu)}
+                      value={modifyingMenu?.isRewardable ?? 1}
+                      checked={(modifyingMenu?.isRewardable ?? 1) === 0}
+                      onChange={() => setModifyingMenu({ ...modifyingMenu, isRewardable: 0 } as Menu)}
                     />
-                    <label htmlFor="notDiscountable">불가능</label>
+                    <label htmlFor="notRewardable">불가능</label>
                   </div>
                 </div>
               </BigColumn>

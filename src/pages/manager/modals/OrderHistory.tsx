@@ -11,7 +11,7 @@ interface StandardInfoCreditProps extends BasicModalProps {
   customer: Customer | null;
   selectedDates: Date[];
   setSelectedDates: (dates: Date[]) => void;
-  setSelecedCustomer: (customer: Customer | null) => void;
+  setSelectedCustomer: (customer: Customer | null) => void;
   setSearchCustomer: (searchCustomer: string) => void;
 }
 
@@ -34,7 +34,7 @@ export default function OrderHistory({ selectedDates, setSelectedDates, ...props
     setTimeout(() => {
       setSelectedDates([]);
       props.setSearchCustomer('');
-      props.setSelecedCustomer(null);
+      props.setSelectedCustomer(null);
     }, 200);
   }
 

@@ -17,7 +17,9 @@ const columns: Column[] = [
   {key: 'tel', name: '전화번호'},
   {key: 'floor', name: '층수'},
   {key: 'memo', name: '비고'},
-  {key: 'discount_group_id', name: '할인그룹'},
+  // 할인그룹 기능은 일단 제거
+  // {key: 'discount_group_id', name: '할인그룹'},
+  {key: 'point_balance', name: '적립금(백원)'},
   {key: 'credit', name: '잔금'},
 ];
 

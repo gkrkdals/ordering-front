@@ -118,11 +118,11 @@ export default function OrderDisplay() {
       managerSocket.on('check_request', (data) => startAlarm(checkRequestRef, data));
       managerSocket.on('cooking_started', (data) => playAudio(cookingStartedRef, data));
       managerSocket.on('clear_alarm', clearAlarm);
+      managerSocket.on('is_request_done', () => playAudio(isRequestDoneRef));
       if (getUser() === 'cook') {
         managerSocket.on('cooking_exceeded', (data) => playAudio(cookingExceededRef, data));
       } else {
         managerSocket.on('new_delivery', () => playAudio(newDeliveryRef));
-        managerSocket.on('is_request_done', () => playAudio(isRequestDoneRef));
         managerSocket.on('during_delivery', () => playAudio(duringDeliveryRef))
         managerSocket.on('deliver_delayed', () => playAudio(deliverDelayedRef));
         managerSocket.on('new_dish_disposal', () => playAudio(newDishDisposalRef));
@@ -134,11 +134,11 @@ export default function OrderDisplay() {
       managerSocket.on('check_request', () => startAlarm('check_request.mp3'));
       managerSocket.on('cooking_started', () => playAudio('cooking_started.mp3'));
       managerSocket.on('clear_alarm', clearAlarm)
+      managerSocket.on('is_request_done', () => playAudio('is_request_done.mp3'));
       if (getUser() === 'cook') {
         managerSocket.on('cooking_exceeded', () => playAudio('cooking_exceeded.mp3'));
       } else {
         managerSocket.on('new_delivery', () => playAudio('new_delivery.mp3'));
-        managerSocket.on('is_request_done', () => playAudio('is_request_done.mp3'));
         managerSocket.on('during_delivery', () => playAudio('during_delivery.mp3'));
         managerSocket.on('deliver_delayed', () => playAudio('deliver_delayed.mp3'));
         managerSocket.on('new_dish_disposal', () => playAudio('new_dish_disposal.mp3'));

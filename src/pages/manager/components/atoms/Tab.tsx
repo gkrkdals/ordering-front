@@ -40,7 +40,7 @@ export default function Tab({ setMenu, menu }: TabProps) {
     }
   }
 
-  return (userStateRef.current === 'manager' || userStateRef.current === 'rider') && (
+  return (userStateRef.current === 'manager' || userStateRef.current === 'rider' || userStateRef.current === 'cook') && (
     <>
       <div className='d-flex mb-2'>
         <GoBackButton handleGoBack={handleGoBack} disabled={menu !== 'order'} />
