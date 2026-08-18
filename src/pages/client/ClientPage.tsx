@@ -21,6 +21,9 @@ export default function ClientPage() {
   const [searchParams] = useSearchParams();
   const [selectedMenus, setSelectedMenus] = useState<SelectedMenu[]>([]);
   const [, setUserState] = useRecoilState(customerState);
+  // 하위 컴포넌트들의 마운트 시 API 호출이 jwt 쿠키 확보(signin) 전에 나가면 401이 나므로,
+  // signin이 끝나기 전에는 트리를 렌더하지 않는다.
+  const [ready, setReady] = useState(false);
 
   const handleMenuClick = (menu: Menu) => {
     if (menu.soldOut !== 1) {
@@ -37,9 +40,17 @@ export default function ClientPage() {
     if(id) {
       client
         .post(`/api/auth/signin`, { id })
-        .then((res) => setUserState(res.data));
+        .then((res) => setUserState(res.data))
+        .finally(() => setReady(true));
+    } else {
+      // id 없이 접근한 경우 기존 쿠키에 의존해 그대로 렌더한다.
+      setReady(true);
     }
   }, []);
+
+  if (!ready) {
+    return null;
+  }
 
   return (
     <MenuProvider>

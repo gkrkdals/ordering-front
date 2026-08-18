@@ -36,6 +36,7 @@ export default function Tab({ setMenu, menu }: TabProps) {
         setRecentJob(recentJob.slice(0, -1));
       } catch (error) {
         console.log(error);
+        alert('되돌리기에 실패했습니다');
       }
     }
   }

@@ -13,6 +13,9 @@ import OrderHistory from "@src/pages/client/modals/OrderHistory.tsx";
 import OrderHistoryCalendar from "@src/pages/client/modals/OrderHistoryCalendar.tsx";
 import UsePointModal from "./UsePointModal";
 
+/** 적립금 사용 오픈 여부. 오픈 시점이 확정되면 true로 바꾸면 됩니다. */
+const POINT_USE_ENABLED = false;
+
 interface SettingsModalProps extends BasicModalProps {}
 
 export default function SettingsModal(props: SettingsModalProps) {
@@ -31,6 +34,8 @@ export default function SettingsModal(props: SettingsModalProps) {
 
   const [openUsePoint, setOpenUsePoint] = useState(false);
   const [minUsePoint, setMinUsePoint] = useState<number>(3000);
+  // 적립금 사용 후 잔금을 다시 읽기 위한 키
+  const [creditRefreshKey, setCreditRefreshKey] = useState(0);
 
   async function toggleShowPrice() {
     const newValue = !showPriceToggle;
@@ -103,8 +108,8 @@ export default function SettingsModal(props: SettingsModalProps) {
   useEffect(() => {
     if (props.open) {
       client
-        .get("/api/settings/min-use-point")
-        .then((res) => setMinUsePoint(res.data))
+        .get("/api/settings/point-use-policy")
+        .then((res) => setMinUsePoint(res.data.minUsePoint))
         .catch(() => setMinUsePoint(3000));
     }
   }, [props.open]);
@@ -116,6 +121,7 @@ export default function SettingsModal(props: SettingsModalProps) {
           <StandardInfo
             imgSource={imgSource}
             settings={settings}
+            creditRefreshKey={creditRefreshKey}
           />
           {/*<button*/}
           {/*  style={{ fontSize: '1.2em' }}*/}
@@ -135,7 +141,7 @@ export default function SettingsModal(props: SettingsModalProps) {
             <PrimaryButton
               style={{ fontSize: '1.2em', width: '100%' }}
               onClick={() => setOpenUsePoint(true)}
-              disabled={!customer || customer.pointBalance * 100 < minUsePoint}
+              disabled={!POINT_USE_ENABLED || !customer || customer.pointBalance * 100 < minUsePoint}
             >
               적립금 사용
             </PrimaryButton>
@@ -191,6 +197,7 @@ export default function SettingsModal(props: SettingsModalProps) {
       <UsePointModal
         open={openUsePoint}
         setOpen={setOpenUsePoint}
+        onUsed={() => setCreditRefreshKey(key => key + 1)}
       />
     </>
   )

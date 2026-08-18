@@ -9,9 +9,11 @@ import {formatCurrency} from "@src/utils/data.ts";
 interface StandardInfoProps {
   imgSource: string | null;
   settings: Settings[];
+  /** 값이 바뀌면 잔금을 다시 조회합니다. (적립금 사용 후 갱신용) */
+  creditRefreshKey?: number;
 }
 
-export default function StandardInfo({ imgSource, settings }: StandardInfoProps) {
+export default function StandardInfo({ imgSource, settings, creditRefreshKey }: StandardInfoProps) {
   const [credit, setCredit] = useState<number>(0);
   const customer = useRecoilValue(customerState);
 
@@ -34,7 +36,7 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
     client
       .get('/api/order/credit')
       .then(res => setCredit(res.data))
-  }, []);
+  }, [creditRefreshKey]);
 
   return (
     <>
@@ -45,7 +47,7 @@ export default function StandardInfo({ imgSource, settings }: StandardInfoProps)
         {bankAccount}
       </div>
       <div className='mb-3'/>
-      {settings[0].stringValue.split(/\//g).map((line, i) => (
+      {(settings[0]?.stringValue?.split(/\//g) ?? []).map((line, i) => (
         <div key={i} className='d-flex justify-content-center' style={{ fontSize: '1.4em' }}>
           <p className='m-0'>{line.trim()}</p>
         </div>

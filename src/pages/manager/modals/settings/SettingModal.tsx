@@ -141,7 +141,7 @@ export default function SettingModal(props: SettingModalProps) {
           </div>
           <div className='d-flex py-3 px-2' onClick={handleOpenMinUsePoint}>
             <i className="bi bi-coin me-2"></i>
-            적립금 하한 설정
+            적립금 사용 설정
           </div>
 
         </DialogContent>
