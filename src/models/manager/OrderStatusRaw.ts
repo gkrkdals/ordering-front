@@ -19,4 +19,6 @@ export interface OrderStatusRaw {
   memo: string;
   location: string;
   by_nickname: string;
+  used_point: number;
+  point_balance: number;
 }

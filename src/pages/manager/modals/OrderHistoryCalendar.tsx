@@ -128,7 +128,7 @@ export default function OrderHistoryCalendar(props: StandardInfoCalendarProps) {
         open={openHistory}
         setOpen={setOpenHistory}
         setSearchCustomer={setSearchCustomer}
-        setSelecedCustomer={setSelectedCustomer}
+        setSelectedCustomer={setSelectedCustomer}
       />
     </>
   );

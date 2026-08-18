@@ -114,6 +114,14 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
             </Column>
             <Column>
               <SmallColumn>
+                적립금
+              </SmallColumn>
+              <BigColumn>
+                {formatCurrency((currentOrder?.point_balance ?? 0) * 100)}
+              </BigColumn>
+            </Column>
+            <Column>
+              <SmallColumn>
                 메뉴
               </SmallColumn>
               <BigColumn>
@@ -138,6 +146,15 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
                 </BigColumn>
               </Column>
             }
+
+            <Column>
+              <SmallColumn>
+                적립금 사용
+              </SmallColumn>
+              <BigColumn>
+                {currentOrder?.used_point === 0 ? '없음' : formatCurrency((currentOrder?.used_point ?? 0) * 100)}
+              </BigColumn>
+            </Column>
 
             <Column align='start'>
               <SmallColumn>

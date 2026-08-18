@@ -47,6 +47,7 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
 
   const [, setRecentJob] = useRecoilState(recentJobState);
 
+
   function handleClickOnRow(orderStatus: OrderStatusRaw, num: number) {
     setModifyingOrder({ ...orderStatus, num });
     setOpenInfoModal(true);

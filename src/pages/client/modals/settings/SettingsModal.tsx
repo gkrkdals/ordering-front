@@ -1,8 +1,8 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
-import {SecondaryButton} from "@src/components/atoms/Buttons.tsx";
+import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import Toggle from "@src/components/atoms/Toggle.tsx";
-import {useEffect, useState} from "react";
+import { useEffect, useState} from "react";
 import client from "@src/utils/network/client.ts";
 import {useRecoilState} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
@@ -11,6 +11,7 @@ import {Settings} from "@src/models/manager/settings.ts";
 import StandardInfo from "@src/pages/client/modals/settings/StandardInfo.tsx";
 import OrderHistory from "@src/pages/client/modals/OrderHistory.tsx";
 import OrderHistoryCalendar from "@src/pages/client/modals/OrderHistoryCalendar.tsx";
+import UsePointModal from "./UsePointModal";
 
 interface SettingsModalProps extends BasicModalProps {}
 
@@ -23,10 +24,13 @@ export default function SettingsModal(props: SettingsModalProps) {
   const [openCalendar, setOpenCalendar] = useState(false);
 
   const [showPriceToggle, setShowPriceToggle] = useState(false);
-  const [hideOrderStatus, setHideOrderStatus] = useState(false);
+  const [, setHideOrderStatus] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+
+  const [openUsePoint, setOpenUsePoint] = useState(false);
+  const [minUsePoint, setMinUsePoint] = useState<number>(3000);
 
   async function toggleShowPrice() {
     const newValue = !showPriceToggle;
@@ -41,18 +45,19 @@ export default function SettingsModal(props: SettingsModalProps) {
     }
   }
 
-  async function toggleHideOrderStatus() {
-    const newValue = !hideOrderStatus;
-    if (customer) {
-      await client.put('/api/settings/hide-order-status', {
-        customerId: customer.id,
-        value: newValue ? 1 : 0
-      });
-      const newCustomerData: Customer = (await client.get('/api/auth/profile')).data;
-      setCustomer(newCustomerData);
-      setHideOrderStatus(newCustomerData.hideOrderStatus === 1);
-    }
-  }
+  // 현재 사용하지 않음
+  // async function toggleHideOrderStatus() {
+  //   const newValue = !hideOrderStatus;
+  //   if (customer) {
+  //     await client.put('/api/settings/hide-order-status', {
+  //       customerId: customer.id,
+  //       value: newValue ? 1 : 0
+  //     });
+  //     const newCustomerData: Customer = (await client.get('/api/auth/profile')).data;
+  //     setCustomer(newCustomerData);
+  //     setHideOrderStatus(newCustomerData.hideOrderStatus === 1);
+  //   }
+  // }
 
   async function toggleShowConfirm() {
     const newValue = !showConfirm;
@@ -95,6 +100,15 @@ export default function SettingsModal(props: SettingsModalProps) {
     }
   }, [customer]);
 
+  useEffect(() => {
+    if (props.open) {
+      client
+        .get("/api/settings/min-use-point")
+        .then((res) => setMinUsePoint(res.data))
+        .catch(() => setMinUsePoint(3000));
+    }
+  }, [props.open]);
+
   return (
     <>
       <Dialog open={props.open}>
@@ -110,13 +124,23 @@ export default function SettingsModal(props: SettingsModalProps) {
           {/*>*/}
           {/*  주문내역 보기*/}
           {/*</button>*/}
-          <button
-            style={{ fontSize: '1.2em' }}
-            className='w-100 btn btn-primary'
-            onClick={() => setOpenCalendar(true)}
-          >
-            주문내역 보기
-          </button>
+          <div className="d-flex gap-2">
+            <button
+              style={{ fontSize: '1.2em' }}
+              className='w-100 btn btn-primary'
+              onClick={() => setOpenCalendar(true)}
+            >
+              주문내역 보기
+            </button>
+            <PrimaryButton
+              style={{ fontSize: '1.2em', width: '100%' }}
+              onClick={() => setOpenUsePoint(true)}
+              disabled={!customer || customer.pointBalance * 100 < minUsePoint}
+            >
+              적립금 사용
+            </PrimaryButton>
+
+          </div>
           <p className='mt-5 mb-1' style={{fontSize: '1.4em', fontWeight: 'bold'}}>
             일반설정
           </p>
@@ -127,13 +151,13 @@ export default function SettingsModal(props: SettingsModalProps) {
               onChange={toggleShowPrice}
             />
           </div>
-          <div className='d-flex justify-content-between align-items-center'>
+          {/* <div className='d-flex justify-content-between align-items-center'>
             <div>주문 진행상황 숨기기</div>
             <Toggle
               value={hideOrderStatus}
               onChange={toggleHideOrderStatus}
             />
-          </div>
+          </div> */}
           <div className='d-flex justify-content-between align-items-center'>
             <div>주문 완료 전 확인하기</div>
             <Toggle
@@ -163,6 +187,10 @@ export default function SettingsModal(props: SettingsModalProps) {
         customer={customer}
         selectedDates={selectedDates}
         setSelectedDates={setSelectedDates}
+      />
+      <UsePointModal
+        open={openUsePoint}
+        setOpen={setOpenUsePoint}
       />
     </>
   )

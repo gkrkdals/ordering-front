@@ -1,5 +1,5 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
-import {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import client from "@src/utils/network/client.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {Column, SmallColumn, BigColumn, Wrapper} from "@src/components/atoms/Columns.tsx";
@@ -7,8 +7,34 @@ import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryCon
 import {DangerButton, PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import ModifyCustomerPriceModal from "@src/pages/manager/modals/customer/ModifyCustomerPriceModal.tsx";
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
-import Select from "@src/components/atoms/Select.tsx";
-import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
+import FormControl from "@src/components/atoms/FormControl";
+import {formatDate} from "@src/utils/date.ts";
+// import Select from "@src/components/atoms/Select.tsx";
+// import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
+
+/** 백엔드 PointHistory 엔티티 응답 형태 */
+interface PointHistoryItem {
+  id: number;
+  customerId: number;
+  orderId: number | null;
+  amount: number;
+  pathType: string;
+  description: string;
+  isCanceled: number;
+  createdAt: string;
+}
+
+const PATH_TYPE_LABEL: Record<string, string> = {
+  MENU: '메뉴 적립',
+  BOWL: '그릇수거 적립',
+  USE: '적립금 사용',
+  CANCELED: '사용 취소',
+  ADMIN_ADD: '관리자 지급',
+  ADMIN_REMOVE: '관리자 차감',
+};
+
+/** 고동색 */
+const CANCELED_COLOR = '#8B4513';
 
 interface ModifyCustomerModalProps extends BasicModalProps {
   currentCustomer: CustomerRaw | null;
@@ -26,9 +52,15 @@ export function ModifyCustomerModal(
   const [modifyingCustomer, setModifyingCustomer] = useState<CustomerRaw | null>(null);
   const [openModifyCustomPrice, setOpenModifyCustomPrice] = useState<boolean>(false);
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
+  const [openPointHistory, setOpenPointHistory] = useState<boolean>(false);
+  const [pointHistory, setPointHistory] = useState<PointHistoryItem[]>([]);
+  const [pointHistoryLoading, setPointHistoryLoading] = useState<boolean>(false);
+  const [pointAdjustMode, setPointAdjustMode] = useState<number>(0);
+  const [pointAdjustAmount, setPointAdjustAmount] = useState<string>('');
+  const [pointAdjustMemo, setPointAdjustMemo] = useState<string>('');
 
   const [customerCategories, ] = useContext(CustomerCategoryContext)!;
-  const [discountGroups] = useContext(DiscountGroupContext)!;
+  // const [discountGroups] = useContext(DiscountGroupContext)!;
 
   async function handleProceedingDeletion() {
     setOpen(false);
@@ -36,7 +68,11 @@ export function ModifyCustomerModal(
   }
 
   async function handleUpdate() {
-    await client.put('/api/manager/customer', modifyingCustomer);
+    await client.put('/api/manager/customer', {
+      ...modifyingCustomer,
+      rewardPerBowl: modifyingCustomer?.reward_per_bowl,
+      rewardPerMenu: modifyingCustomer?.reward_per_menu,
+    });
     setOpen(false);
     reload();
   }
@@ -47,8 +83,54 @@ export function ModifyCustomerModal(
     reload();
   }
 
+  async function handleOpenPointHistory() {
+    if (!modifyingCustomer?.id) return;
+    setPointHistoryLoading(true);
+    setOpenPointHistory(true);
+    try {
+      const res = await client.get('/api/manager/customer/point-history', {
+        params: { id: modifyingCustomer.id },
+      });
+      setPointHistory(res.data);
+    } finally {
+      setPointHistoryLoading(false);
+    }
+  }
+
+  async function handleAdjustPoint() {
+    if (!modifyingCustomer?.id) return;
+
+    const amount = parseInt(pointAdjustAmount);
+    if (!/^\d+$/.test(pointAdjustAmount) || isNaN(amount) || amount <= 0) {
+      alert('올바른 적립금 금액을 입력해주세요');
+      return;
+    }
+
+    try {
+      await client.post('/api/manager/customer/point', {
+        customer: modifyingCustomer.id,
+        mode: pointAdjustMode,
+        amount,
+        memo: pointAdjustMemo,
+      });
+      const diff = pointAdjustMode === 0 ? amount : -amount;
+      setModifyingCustomer({
+        ...modifyingCustomer,
+        point_balance: (modifyingCustomer.point_balance ?? 0) + diff,
+      } as CustomerRaw);
+      setPointAdjustAmount('');
+      setPointAdjustMemo('');
+      reload();
+    } catch (err: any) {
+      alert(err.response?.data?.message ?? '적립금 조정에 실패했습니다');
+    }
+  }
+
   useEffect(() => {
     setModifyingCustomer(currentCustomer);
+    setPointAdjustMode(0);
+    setPointAdjustAmount('');
+    setPointAdjustMemo('');
   }, [currentCustomer]);
 
   return (
@@ -130,7 +212,8 @@ export function ModifyCustomerModal(
                 </select>
               </BigColumn>
             </Column>
-            <Column>
+            {/* 할인그룹 기능은 일단 제거 */}
+            {/* <Column>
               <SmallColumn>할인그룹</SmallColumn>
               <BigColumn>
                 <Select
@@ -143,13 +226,100 @@ export function ModifyCustomerModal(
                   ))}
                 </Select>
               </BigColumn>
+            </Column> */}
+            <Column>
+              <SmallColumn>적립금</SmallColumn>
+              <BigColumn>
+                <FormControl
+                  type="number"
+                  value={modifyingCustomer?.point_balance}
+                  disabled
+                  suffix='백원'
+                />
+              </BigColumn>
             </Column>
+            <Column>
+              <SmallColumn>적립금 조정</SmallColumn>
+              <BigColumn>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <select
+                    className='form-select'
+                    style={{ width: '80px' }}
+                    value={pointAdjustMode}
+                    onChange={(e) => setPointAdjustMode(parseInt(e.target.value))}
+                  >
+                    <option value={0}>지급</option>
+                    <option value={1}>차감</option>
+                  </select>
+                  <FormControl
+                    type="number"
+                    value={pointAdjustAmount}
+                    onChange={(e) => setPointAdjustAmount(e.target.value)}
+                    suffix='백원'
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                  <input
+                    type="text"
+                    className='form-control'
+                    placeholder='조정 사유'
+                    value={pointAdjustMemo}
+                    onChange={(e) => setPointAdjustMemo(e.target.value)}
+                  />
+                  <SecondaryButton style={{ whiteSpace: 'nowrap' }} onClick={handleAdjustPoint}>
+                    조정
+                  </SecondaryButton>
+                </div>
+              </BigColumn>
+            </Column>
+            <Column>
+              <SmallColumn>메뉴주문 적립</SmallColumn>
+              <BigColumn>
+                <FormControl 
+                  type="number"
+                  value={modifyingCustomer?.reward_per_menu}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, reward_per_menu: parseInt(e.target.value)} as CustomerRaw)}
+                  suffix='백원'
+                />
+              </BigColumn>
+            </Column>
+
+            <Column>
+              <SmallColumn>그릇수거 적립</SmallColumn>
+              <BigColumn>
+                <FormControl
+                  type="number"
+                  value={modifyingCustomer?.reward_per_bowl}
+                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, reward_per_bowl: parseInt(e.target.value)} as CustomerRaw)}
+                  suffix='백원'
+                />
+              </BigColumn>
+            </Column>
+
+            <Column>
+              <SmallColumn>전체품절 적용</SmallColumn>
+              <BigColumn>
+                {modifyingCustomer?.is_sold_out === 1 ? (
+                  <SecondaryButton style={{width: 85}} onClick={() => setModifyingCustomer({...modifyingCustomer, is_sold_out: 0} as CustomerRaw)}>
+                    비활성화
+                  </SecondaryButton>
+                ) : (
+                  <PrimaryButton style={{width: 85}} onClick={() => setModifyingCustomer({...modifyingCustomer, is_sold_out: 1} as CustomerRaw)}>
+                    활성화
+                  </PrimaryButton>
+                )}
+              </BigColumn>
+            </Column>
+            
           </Wrapper>
         </DialogContent>
         <DialogActions>
           <SecondaryButton onClick={() => setOpen(false)}>취소</SecondaryButton>
           <SecondaryButton onClick={() => setOpenModifyCustomPrice(true)}>
             금액설정
+          </SecondaryButton>
+          <SecondaryButton onClick={handleOpenPointHistory}>
+            적립금 내역
           </SecondaryButton>
           <DangerButton onClick={handleProceedingDeletion}>삭제</DangerButton>
           <PrimaryButton onClick={handleUpdate}>적용</PrimaryButton>
@@ -161,6 +331,58 @@ export function ModifyCustomerModal(
         open={openModifyCustomPrice}
         setOpen={setOpenModifyCustomPrice}
       />
+
+      {/* 적립금 내역 모달 */}
+      <Dialog open={openPointHistory} onClose={() => setOpenPointHistory(false)}>
+        <DialogTitle>
+          적립금 내역 — {modifyingCustomer?.name}
+        </DialogTitle>
+        <DialogContent sx={{ minWidth: '320px', maxHeight: '480px' }}>
+          {pointHistoryLoading ? (
+            <p className='text-secondary text-center py-3'>불러오는 중...</p>
+          ) : pointHistory.length === 0 ? (
+            <p className='text-secondary text-center py-3'>내역이 없습니다.</p>
+          ) : (
+            <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #ddd', textAlign: 'left' }}>
+                  <th style={{ padding: '4px 6px' }}>날짜</th>
+                  <th style={{ padding: '4px 6px' }}>구분</th>
+                  <th style={{ padding: '4px 6px', textAlign: 'right' }}>금액(백원)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pointHistory.map((item) => {
+                  const isCanceled = item.isCanceled === 1;
+                  const rowStyle: React.CSSProperties = isCanceled
+                    ? { color: CANCELED_COLOR }
+                    : {};
+                  return (
+                    <tr key={item.id} style={{ borderBottom: '1px solid #f0f0f0', ...rowStyle }}>
+                      <td style={{ padding: '4px 6px', whiteSpace: 'nowrap' }}>
+                        {formatDate(item.createdAt)}
+                      </td>
+                      <td style={{ padding: '4px 6px' }}>
+                        {isCanceled
+                          ? <span style={{ color: CANCELED_COLOR, fontWeight: 600 }}>취소됨</span>
+                          : (PATH_TYPE_LABEL[item.pathType] ?? item.pathType)}
+                      </td>
+                      <td style={{ padding: '4px 6px', textAlign: 'right' }}>
+                        {isCanceled
+                          ? <span style={{ color: CANCELED_COLOR }}>취소됨</span>
+                          : item.amount}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <SecondaryButton onClick={() => setOpenPointHistory(false)}>닫기</SecondaryButton>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={confirmDelete}>
         <DialogContent>

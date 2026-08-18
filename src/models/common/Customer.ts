@@ -16,6 +16,10 @@ export default interface Customer {
   hideOrderStatus: number;
   showConfirm: number;
   tel: string;
+  rewardPerMenu: number;
+  rewardPerBowl: number;
+  pointBalance: number;
+  isSoldOut: number;
 }
 
 export const defaultCustomer: Customer = {
@@ -30,5 +34,9 @@ export const defaultCustomer: Customer = {
   showPrice: 0,
   hideOrderStatus: 0,
   showConfirm: 0,
-  tel: ''
+  tel: '',
+  rewardPerMenu: 0,
+  rewardPerBowl: 0,
+  pointBalance: 0,
+  isSoldOut: 0,
 }
