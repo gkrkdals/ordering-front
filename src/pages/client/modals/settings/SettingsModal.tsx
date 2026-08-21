@@ -35,6 +35,8 @@ export default function SettingsModal(props: SettingsModalProps) {
 
   const [openUsePoint, setOpenUsePoint] = useState(false);
   const [openPointHistory, setOpenPointHistory] = useState(false);
+  const [openPointCalendar, setOpenPointCalendar] = useState(false);
+  const [pointDates, setPointDates] = useState<Date[]>([]);
   const [minUsePoint, setMinUsePoint] = useState<number>(3000);
   // 적립금 사용 후 잔금을 다시 읽기 위한 키
   const [creditRefreshKey, setCreditRefreshKey] = useState(0);
@@ -152,7 +154,7 @@ export default function SettingsModal(props: SettingsModalProps) {
           {/* 적립·적립취소 내역은 읽기 전용이므로 적립금 사용 오픈 여부와 무관하게 항상 열 수 있다 */}
           <PrimaryButton
             style={{ fontSize: '1.2em', width: '100%', marginTop: 8 }}
-            onClick={() => setOpenPointHistory(true)}
+            onClick={() => setOpenPointCalendar(true)}
           >
             적립금 내역
           </PrimaryButton>
@@ -208,9 +210,20 @@ export default function SettingsModal(props: SettingsModalProps) {
         setOpen={setOpenUsePoint}
         onUsed={() => setCreditRefreshKey(key => key + 1)}
       />
+      {/* 주문내역 보기와 같은 흐름: 날짜 범위를 먼저 고르고 내역을 연다 */}
+      <OrderHistoryCalendar
+        title='적립금 내역 조회 기간'
+        open={openPointCalendar}
+        setOpen={setOpenPointCalendar}
+        selectedDates={pointDates}
+        setSelectedDates={setPointDates}
+        setOpenHistory={setOpenPointHistory}
+      />
       <PointHistoryModal
         open={openPointHistory}
         setOpen={setOpenPointHistory}
+        selectedDates={pointDates}
+        setSelectedDates={setPointDates}
       />
     </>
   )

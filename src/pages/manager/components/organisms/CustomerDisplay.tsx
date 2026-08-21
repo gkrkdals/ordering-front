@@ -17,8 +17,7 @@ const columns: Column[] = [
   {key: 'tel', name: '전화번호'},
   {key: 'floor', name: '층수'},
   {key: 'memo', name: '비고'},
-  // 할인그룹 기능은 일단 제거
-  // {key: 'discount_group_id', name: '할인그룹'},
+  {key: 'discount_group_id', name: '고객 그룹'},
   {key: 'point_balance', name: '적립금(백원)'},
   {key: 'credit', name: '잔금'},
 ];
@@ -71,7 +70,7 @@ export default function CustomerDisplay() {
       />
       <div className='mt-2 d-flex gap-2'>
         <PrimaryButton onClick={() => setOpenDiscount(true)}>
-          할인 그룹 설정
+          고객 그룹 설정
         </PrimaryButton>
         <PrimaryButton onClick={() => setOpenApplyAll(true)}>
           그룹 전체 적용

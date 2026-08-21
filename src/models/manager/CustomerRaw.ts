@@ -8,7 +8,8 @@ export interface CustomerRaw {
   category: number;
   withdrawn: number;
   credit: number;
-  discount_group_id: string;
+  /** 그룹 미지정이면 -1 (목록 SQL이 IFNULL로 채워준다) */
+  discount_group_id: number;
   discount_name: string;
   reward_per_menu: number;
   reward_per_bowl: number;

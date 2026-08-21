@@ -46,7 +46,7 @@ export default function ApplyAllModal(props: ApplyAllModalProps) {
       </DialogTitle>
       <DialogContent>
         <p className='text-secondary'>
-          전체 거래처에 대해 적용할 할인 그룹을 선택하세요.
+          전체 거래처에 대해 적용할 고객 그룹을 선택하세요.
         </p>
         <Select value={selectedGroup} onChange={e => setSelectedGroup(parseInt(e.target.value))}>
           <option value="-1">

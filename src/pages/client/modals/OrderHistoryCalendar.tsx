@@ -10,6 +10,8 @@ interface StandardInfoCalendarProps extends BasicModalProps {
   selectedDates: Date[];
   setSelectedDates: (dates: Date[]) => void;
   setOpenHistory: (open: boolean) => void;
+  /** 무엇을 조회하는 기간인지 (주문내역·적립금내역이 함께 쓴다) */
+  title?: string;
 }
 
 export default function OrderHistoryCalendar({ selectedDates, setSelectedDates, setOpenHistory, ...props }: StandardInfoCalendarProps) {
@@ -64,7 +66,7 @@ export default function OrderHistoryCalendar({ selectedDates, setSelectedDates, 
     <Dialog open={props.open}>
       <DialogContent>
         <p style={{ fontSize: '1.2rem' }}>
-          날짜 범위 선택
+          {props.title ?? '날짜 범위 선택'}
         </p>
         <div className='d-flex justify-content-center' style={{ fontSize: '0.8rem' }}>
           <Calendar

@@ -5,7 +5,6 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {Column, SmallColumn, BigColumn, Wrapper} from "@src/components/atoms/Columns.tsx";
 import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";
 import {DangerButton, PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
-import ModifyCustomerPriceModal from "@src/pages/manager/modals/customer/ModifyCustomerPriceModal.tsx";
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
 import FormControl from "@src/components/atoms/FormControl";
 import {formatDate} from "@src/utils/date.ts";
@@ -14,8 +13,8 @@ import {
   POINT_TYPE_LABEL,
   PointHistoryItem,
 } from "@src/models/common/PointEnum.ts";
-// import Select from "@src/components/atoms/Select.tsx";
-// import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
+import Select from "@src/components/atoms/Select.tsx";
+import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
 
 
 interface ModifyCustomerModalProps extends BasicModalProps {
@@ -31,8 +30,8 @@ export function ModifyCustomerModal(
     reload,
   }: ModifyCustomerModalProps
 ) {
+  const [discountGroups, ] = useContext(DiscountGroupContext)!;
   const [modifyingCustomer, setModifyingCustomer] = useState<CustomerRaw | null>(null);
-  const [openModifyCustomPrice, setOpenModifyCustomPrice] = useState<boolean>(false);
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const [openPointHistory, setOpenPointHistory] = useState<boolean>(false);
   const [pointHistory, setPointHistory] = useState<PointHistoryItem[]>([]);
@@ -194,21 +193,20 @@ export function ModifyCustomerModal(
                 </select>
               </BigColumn>
             </Column>
-            {/* 할인그룹 기능은 일단 제거 */}
-            {/* <Column>
-              <SmallColumn>할인그룹</SmallColumn>
+            <Column>
+              <SmallColumn>고객 그룹</SmallColumn>
               <BigColumn>
                 <Select
-                  value={modifyingCustomer?.discount_group_id}
-                  onChange={(e) => setModifyingCustomer({ ...modifyingCustomer, discount_group_id: e.target.value } as CustomerRaw)}
+                  value={modifyingCustomer?.discount_group_id ?? -1}
+                  onChange={(e) => setModifyingCustomer({ ...modifyingCustomer, discount_group_id: parseInt(e.target.value) } as CustomerRaw)}
                 >
-                  <option value="-1">할인그룹 없음</option>
+                  <option value="-1">그룹 없음</option>
                   {discountGroups.map((group, i) => (
                     <option key={i} value={group.id.toString()}>{group.name}</option>
                   ))}
                 </Select>
               </BigColumn>
-            </Column> */}
+            </Column>
             <Column>
               <SmallColumn>적립금</SmallColumn>
               <BigColumn>
@@ -254,6 +252,9 @@ export function ModifyCustomerModal(
                 </div>
               </BigColumn>
             </Column>
+            <p className='text-secondary mt-3 mb-1' style={{ fontSize: '0.85em' }}>
+              적립을 0으로 두면 고객 그룹 설정을 따릅니다. 메뉴 금액은 고객 그룹에서만 정합니다.
+            </p>
             <Column>
               <SmallColumn>메뉴주문 적립</SmallColumn>
               <BigColumn>
@@ -297,9 +298,6 @@ export function ModifyCustomerModal(
         </DialogContent>
         <DialogActions>
           <SecondaryButton onClick={() => setOpen(false)}>취소</SecondaryButton>
-          <SecondaryButton onClick={() => setOpenModifyCustomPrice(true)}>
-            금액설정
-          </SecondaryButton>
           <SecondaryButton onClick={handleOpenPointHistory}>
             적립금 내역
           </SecondaryButton>
@@ -307,12 +305,6 @@ export function ModifyCustomerModal(
           <PrimaryButton onClick={handleUpdate}>적용</PrimaryButton>
         </DialogActions>
       </Dialog>
-
-      <ModifyCustomerPriceModal
-        customer={modifyingCustomer}
-        open={openModifyCustomPrice}
-        setOpen={setOpenModifyCustomPrice}
-      />
 
       {/* 적립금 내역 모달 */}
       <Dialog open={openPointHistory} onClose={() => setOpenPointHistory(false)}>

@@ -8,6 +8,7 @@ import {DiscountGroupExt} from "@src/models/manager/DiscountGroup.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 import Select from "@src/components/atoms/Select.tsx";
 import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
+import GroupPriceModal from "@src/pages/manager/modals/customer/GroupPriceModal.tsx";
 
 interface DiscountGroupModalProps extends BasicModalProps {}
 
@@ -17,6 +18,14 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
   const [modifiedDiscountGroups, setModifiedDiscountGroups] = useState<DiscountGroupExt[]>([]);
   const [addedDiscountGroups, setAddedDiscountGroups] = useState<DiscountGroupExt[]>([]);
   const [, setDiscountGroups] = useContext(DiscountGroupContext)!;
+
+  const [openGroupPrice, setOpenGroupPrice] = useState(false);
+  const [priceTargetGroup, setPriceTargetGroup] = useState<DiscountGroupExt | null>(null);
+
+  function handleOpenGroupPrice(group: DiscountGroupExt) {
+    setPriceTargetGroup(group);
+    setOpenGroupPrice(true);
+  }
 
   const onChange1 = (index: number, key: string, value: any) => {
     setModifiedDiscountGroups(modifiedDiscountGroups.map((p, i) => {
@@ -57,6 +66,8 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
       discountType: 'amount',
       discountValue: 0,
       description: '',
+      rewardPerMenu: null,
+      rewardPerBowl: null,
       modified: false,
       deleted: false,
     }))
@@ -102,17 +113,19 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
       }}
     >
       <DialogTitle>
-        할인 그룹 설정
+        고객 그룹 설정
       </DialogTitle>
       <DialogContent style={{width: '100%'}}>
         <Table>
           <THead>
             <TRow>
-              <Cell style={{ width: 180 }}>그룹명</Cell>
-              <Cell style={{ width: 130 }}>유형</Cell>
-              <Cell style={{ width: 100 }}>할인값</Cell>
+              <Cell style={{ width: 150 }}>그룹명</Cell>
+              <Cell style={{ width: 110 }}>유형</Cell>
+              <Cell style={{ width: 90 }}>할인값</Cell>
+              <Cell style={{ width: 90 }}>메뉴적립</Cell>
+              <Cell style={{ width: 90 }}>수거적립</Cell>
               <Cell>비고</Cell>
-              <Cell style={{ width: 80 }}></Cell>
+              <Cell style={{ width: 160 }}></Cell>
             </TRow>
           </THead>
           <TBody>
@@ -144,14 +157,35 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
                 </Cell>
                 <Cell>
                   <FormControl
+                    type="number"
+                    value={discountGroup.rewardPerMenu ?? ''}
+                    onChange={e => onChange1(i, 'rewardPerMenu', e.target.value)}
+                    placeholder='미설정'
+                  />
+                </Cell>
+                <Cell>
+                  <FormControl
+                    type="number"
+                    value={discountGroup.rewardPerBowl ?? ''}
+                    onChange={e => onChange1(i, 'rewardPerBowl', e.target.value)}
+                    placeholder='미설정'
+                  />
+                </Cell>
+                <Cell>
+                  <FormControl
                     value={discountGroup.description}
                     onChange={e => onChange1(i, 'description', e.target.value)}
                   />
                 </Cell>
                 <Cell>
-                  <DangerButton onClick={() => onDelete1(i)}>
-                    삭제
-                  </DangerButton>
+                  <div className='d-flex gap-1'>
+                    <SecondaryButton small onClick={() => handleOpenGroupPrice(discountGroup)}>
+                      가격
+                    </SecondaryButton>
+                    <DangerButton small onClick={() => onDelete1(i)}>
+                      삭제
+                    </DangerButton>
+                  </div>
                 </Cell>
               </TRow>
             ))}
@@ -181,12 +215,29 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
                 </Cell>
                 <Cell>
                   <FormControl
+                    type="number"
+                    value={discountGroup.rewardPerMenu ?? ''}
+                    onChange={e => onChange2(i, 'rewardPerMenu', e.target.value)}
+                    placeholder='미설정'
+                  />
+                </Cell>
+                <Cell>
+                  <FormControl
+                    type="number"
+                    value={discountGroup.rewardPerBowl ?? ''}
+                    onChange={e => onChange2(i, 'rewardPerBowl', e.target.value)}
+                    placeholder='미설정'
+                  />
+                </Cell>
+                <Cell>
+                  <FormControl
                     value={discountGroup.description}
                     onChange={e => onChange2(i, 'description', e.target.value)}
                   />
                 </Cell>
                 <Cell>
-                  <DangerButton onClick={() => onDelete2(i)}>
+                  {/* 가격은 그룹을 저장한 뒤에 설정할 수 있다 */}
+                  <DangerButton small onClick={() => onDelete2(i)}>
                     삭제
                   </DangerButton>
                 </Cell>
@@ -196,7 +247,7 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
         </Table>
         <div className='mt-2'>
           <PrimaryButton onClick={handleAddNewRow}>
-            할인 그룹 추가
+            고객 그룹 추가
           </PrimaryButton>
         </div>
       </DialogContent>
@@ -208,6 +259,12 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
           저장
         </PrimaryButton>
       </DialogActions>
+
+      <GroupPriceModal
+        open={openGroupPrice}
+        setOpen={setOpenGroupPrice}
+        group={priceTargetGroup}
+      />
     </Dialog>
   )
 }

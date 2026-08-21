@@ -59,10 +59,9 @@ export default function CustomerTable(props: CustomerTableProps) {
                 <Cell>{customer.tel}</Cell>
                 <Cell>{customer.floor}</Cell>
                 <Cell>{customer.memo}</Cell>
-                {/* 할인그룹 기능은 일단 제거 */}
-                {/* <Cell>
+                <Cell>
                   {customer.discount_name}
-                </Cell> */}
+                </Cell>
                 <Cell>{customer.point_balance}</Cell>
                 <Cell
                   onClick={e => handleClickOnCredit(e, customer)}
