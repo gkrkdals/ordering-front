@@ -1,6 +1,6 @@
 import Customer from "@src/models/common/Customer.ts";
-import {useRef} from "react";
-import FormControl from "@src/components/atoms/FormControl.tsx";
+import {useState} from "react";
+import SearchAutocomplete from "@src/components/molecules/SearchAutocomplete.tsx";
 
 interface SelectCustomerProps {
   uniqueId: string;
@@ -9,30 +9,25 @@ interface SelectCustomerProps {
 }
 
 export default function SelectCustomer(props: SelectCustomerProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [selected, setSelected] = useState<Customer | null>(null);
 
-  function handleSelectCustomer() {
-    const value = inputRef.current!.value;
-    const foundCustomer = props.customers.find(customer => customer.name === value);
+  function handleSelect(customer: Customer | null) {
+    setSelected(customer);
 
-    if (foundCustomer) {
-      props.setSelectedCustomer(foundCustomer.id);
+    if (customer) {
+      props.setSelectedCustomer(customer.id);
     }
   }
 
   return (
-    <>
-      <FormControl
-        ref={inputRef}
-        onInput={handleSelectCustomer}
-        list={props.uniqueId}
-        placeholder='고객 선택'
-      />
-      <datalist id={props.uniqueId}>
-        {props.customers.map((customer, i) =>
-          <option key={i} value={customer.name}>{customer.name}</option>
-        )}
-      </datalist>
-    </>
+    <SearchAutocomplete
+      id={props.uniqueId}
+      options={props.customers}
+      getLabel={customer => customer.name}
+      secondary={customer => customer.tel}
+      value={selected}
+      onSelect={handleSelect}
+      placeholder='고객 선택'
+    />
   );
 }

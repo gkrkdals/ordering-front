@@ -12,6 +12,7 @@ import StandardInfo from "@src/pages/client/modals/settings/StandardInfo.tsx";
 import OrderHistory from "@src/pages/client/modals/OrderHistory.tsx";
 import OrderHistoryCalendar from "@src/pages/client/modals/OrderHistoryCalendar.tsx";
 import UsePointModal from "./UsePointModal";
+import PointHistoryModal from "./PointHistoryModal";
 
 /** 적립금 사용 오픈 여부. 오픈 시점이 확정되면 true로 바꾸면 됩니다. */
 const POINT_USE_ENABLED = false;
@@ -33,6 +34,7 @@ export default function SettingsModal(props: SettingsModalProps) {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
 
   const [openUsePoint, setOpenUsePoint] = useState(false);
+  const [openPointHistory, setOpenPointHistory] = useState(false);
   const [minUsePoint, setMinUsePoint] = useState<number>(3000);
   // 적립금 사용 후 잔금을 다시 읽기 위한 키
   const [creditRefreshKey, setCreditRefreshKey] = useState(0);
@@ -147,6 +149,13 @@ export default function SettingsModal(props: SettingsModalProps) {
             </PrimaryButton>
 
           </div>
+          {/* 적립·적립취소 내역은 읽기 전용이므로 적립금 사용 오픈 여부와 무관하게 항상 열 수 있다 */}
+          <PrimaryButton
+            style={{ fontSize: '1.2em', width: '100%', marginTop: 8 }}
+            onClick={() => setOpenPointHistory(true)}
+          >
+            적립금 내역
+          </PrimaryButton>
           <p className='mt-5 mb-1' style={{fontSize: '1.4em', fontWeight: 'bold'}}>
             일반설정
           </p>
@@ -198,6 +207,10 @@ export default function SettingsModal(props: SettingsModalProps) {
         open={openUsePoint}
         setOpen={setOpenUsePoint}
         onUsed={() => setCreditRefreshKey(key => key + 1)}
+      />
+      <PointHistoryModal
+        open={openPointHistory}
+        setOpen={setOpenPointHistory}
       />
     </>
   )

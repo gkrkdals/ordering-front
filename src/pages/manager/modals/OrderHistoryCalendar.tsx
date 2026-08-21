@@ -1,14 +1,14 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent} from "@mui/material";
 import Calendar from "react-calendar";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useState} from "react";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import type {Value} from "react-calendar/dist/cjs/shared/types.js";
 import './MyCalendar.css';
 import OrderHistory from "@src/pages/manager/modals/OrderHistory.tsx";
 import {CustomerContext} from "@src/contexts/manager/CustomerContext.tsx";
 import Customer from "@src/models/common/Customer.ts";
-import FormControl from "@src/components/atoms/FormControl.tsx";
+import SearchAutocomplete from "@src/components/molecules/SearchAutocomplete.tsx";
 
 interface StandardInfoCalendarProps extends BasicModalProps {}
 
@@ -18,13 +18,11 @@ export default function OrderHistoryCalendar(props: StandardInfoCalendarProps) {
   const [openHistory, setOpenHistory] = useState<boolean>(false);
   const [customers] = useContext(CustomerContext)!;
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const [searchCustomer, setSearchCustomer] = useState("");
 
   function handleClose() {
     setTimeout(() => {
       setSelectedDates([]);
       setSelectedCustomer(null);
-      setSearchCustomer('');
     }, 200);
     props.setOpen(false);
   }
@@ -70,10 +68,6 @@ export default function OrderHistoryCalendar(props: StandardInfoCalendarProps) {
     return null;
   }
 
-  useEffect(() => {
-    setSelectedCustomer(customers.find(c => c.name === searchCustomer) ?? null);
-  }, [searchCustomer]);
-
 
 
   return (
@@ -81,17 +75,15 @@ export default function OrderHistoryCalendar(props: StandardInfoCalendarProps) {
       <Dialog open={props.open}>
         <DialogContent>
           <div className='d-flex justify-content-between mb-3'>
-            <FormControl
-              value={searchCustomer}
-              onChange={e => setSearchCustomer(e.target.value)}
+            <SearchAutocomplete
+              id='historyCustomers'
+              options={customers}
+              getLabel={customer => customer.name}
+              secondary={customer => customer.tel}
+              value={selectedCustomer}
+              onSelect={setSelectedCustomer}
               placeholder='고객 검색'
-              list='historyCustomers'
             />
-            <datalist id='historyCustomers'>
-              {customers.map((item, i) => (
-                <option key={i} value={item.name}>{item.tel}</option>
-              ))}
-            </datalist>
           </div>
           <div className='mb-3'>
             <span className='text-secondary' style={{ fontSize: '1.1rem' }}>
@@ -127,7 +119,6 @@ export default function OrderHistoryCalendar(props: StandardInfoCalendarProps) {
         setSelectedDates={setSelectedDates}
         open={openHistory}
         setOpen={setOpenHistory}
-        setSearchCustomer={setSearchCustomer}
         setSelectedCustomer={setSelectedCustomer}
       />
     </>

@@ -9,32 +9,14 @@ import ModifyCustomerPriceModal from "@src/pages/manager/modals/customer/ModifyC
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
 import FormControl from "@src/components/atoms/FormControl";
 import {formatDate} from "@src/utils/date.ts";
+import {
+  POINT_CANCELED_COLOR,
+  POINT_TYPE_LABEL,
+  PointHistoryItem,
+} from "@src/models/common/PointEnum.ts";
 // import Select from "@src/components/atoms/Select.tsx";
 // import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
 
-/** 백엔드 PointHistory 엔티티 응답 형태 */
-interface PointHistoryItem {
-  id: number;
-  customerId: number;
-  orderId: number | null;
-  amount: number;
-  pathType: string;
-  description: string;
-  isCanceled: number;
-  createdAt: string;
-}
-
-const PATH_TYPE_LABEL: Record<string, string> = {
-  MENU: '메뉴 적립',
-  BOWL: '그릇수거 적립',
-  USE: '적립금 사용',
-  CANCELED: '사용 취소',
-  ADMIN_ADD: '관리자 지급',
-  ADMIN_REMOVE: '관리자 차감',
-};
-
-/** 고동색 */
-const CANCELED_COLOR = '#8B4513';
 
 interface ModifyCustomerModalProps extends BasicModalProps {
   currentCustomer: CustomerRaw | null;
@@ -355,7 +337,7 @@ export function ModifyCustomerModal(
                 {pointHistory.map((item) => {
                   const isCanceled = item.isCanceled === 1;
                   const rowStyle: React.CSSProperties = isCanceled
-                    ? { color: CANCELED_COLOR }
+                    ? { color: POINT_CANCELED_COLOR }
                     : {};
                   return (
                     <tr key={item.id} style={{ borderBottom: '1px solid #f0f0f0', ...rowStyle }}>
@@ -364,12 +346,12 @@ export function ModifyCustomerModal(
                       </td>
                       <td style={{ padding: '4px 6px' }}>
                         {isCanceled
-                          ? <span style={{ color: CANCELED_COLOR, fontWeight: 600 }}>취소됨</span>
-                          : (PATH_TYPE_LABEL[item.pathType] ?? item.pathType)}
+                          ? <span style={{ color: POINT_CANCELED_COLOR, fontWeight: 600 }}>취소됨</span>
+                          : (POINT_TYPE_LABEL[item.pathType] ?? item.pathType)}
                       </td>
                       <td style={{ padding: '4px 6px', textAlign: 'right' }}>
                         {isCanceled
-                          ? <span style={{ color: CANCELED_COLOR }}>취소됨</span>
+                          ? <span style={{ color: POINT_CANCELED_COLOR }}>취소됨</span>
                           : item.amount}
                       </td>
                     </tr>

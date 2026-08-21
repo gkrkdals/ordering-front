@@ -9,6 +9,7 @@ import Menu from "@src/models/common/Menu.ts";
 import {useDebounce} from "@src/hooks/UseTable.tsx";
 import client from "@src/utils/network/client.ts";
 import {LAST_SEQ} from "@src/utils/data.ts";
+import {matchesSearch} from "@src/utils/hangul.ts";
 
 interface SetMenuShownOrder extends BasicModalProps {}
 
@@ -74,7 +75,7 @@ export default function SetMenuShownOrder(props: SetMenuShownOrder) {
           </THead>
           <TBody>
             {modifyingMenus
-              .filter(menu => menu.id !== 0 && menu.name.includes(debouncedText))
+              .filter(menu => menu.id !== 0 && matchesSearch(menu.name, debouncedText))
               .map((item, i) => (
                 <TRow key={i}>
                   <Cell hex={item.menuCategory?.hex}>{item.name}</Cell>

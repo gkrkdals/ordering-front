@@ -6,6 +6,7 @@ import Customer from "@src/models/common/Customer.ts";
 import client from "@src/utils/network/client.ts";
 import {MenuContext} from "@src/contexts/manager/MenuContext.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";
+import SearchAutocomplete from "@src/components/molecules/SearchAutocomplete.tsx";
 
 interface MakeOrderModal extends BasicModalProps {}
 
@@ -16,9 +17,6 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
 
-  const [searchCustomer, setSearchCustomer] = useState<string>('');
-  const [searchMenu, setSearchMenu] = useState<string>('');
-
   const [request, setRequest] = useState('')
 
   const [confirm, setConfirm] = useState<boolean>(false);
@@ -28,8 +26,6 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
   function initialize() {
     setSelectedCustomer(null);
     setSelectedMenu(null);
-    setSearchCustomer('');
-    setSearchMenu('');
     setRequest('');
   }
 
@@ -55,14 +51,6 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
   }
 
   useEffect(() => {
-    setSelectedCustomer(customers.find(c => c.name === searchCustomer) ?? null);
-  }, [searchCustomer]);
-
-  useEffect(() => {
-    setSelectedMenu(menus.find(m => m.name === searchMenu) ?? null);
-  }, [searchMenu]);
-
-  useEffect(() => {
     if (open) {
       client
         .get('/api/manager/customer/all')
@@ -79,38 +67,25 @@ export default function MakeOrderModal({open, setOpen}: MakeOrderModal) {
         <DialogContent>
           <div className='card px-3 py-2 mb-3 d-grid'>
             <p>고객 입력</p>
-            <input
-              type="text"
-              className='form-control'
-              list='customers'
-              value={searchCustomer}
-              onChange={e => setSearchCustomer(e.target.value)}
+            <SearchAutocomplete
+              id='customers'
+              options={customers}
+              getLabel={customer => customer.name}
+              secondary={customer => customer.tel}
+              value={selectedCustomer}
+              onSelect={setSelectedCustomer}
               placeholder='고객 검색'
             />
-            <datalist id='customers'>
-              {customers.map((item, i) => (
-                <option key={i} value={item.name}>{item.tel}</option>
-              ))}
-            </datalist>
             <hr/>
             <p>메뉴 선택</p>
-            <input
-              type="text"
-              className='form-control'
-              list='menus'
-              value={searchMenu}
-              onChange={e => {
-                console.log("asdfsadf")
-                setSearchMenu(e.target.value);
-              }}
-              onInput={() => console.log('fdsafdsa')}
+            <SearchAutocomplete
+              id='menus'
+              options={menus}
+              getLabel={menu => menu.name}
+              value={selectedMenu}
+              onSelect={setSelectedMenu}
               placeholder='메뉴 검색'
             />
-            <datalist id='menus'>
-              {menus.map((item, i) => (
-                <option key={i} value={item.name}>{item.name}</option>
-              ))}
-            </datalist>
           </div>
           <p className='text-secondary mb-1'>선택된 고객: {selectedCustomer?.name}</p>
           <p className='text-secondary'>선택된 메뉴: {selectedMenu?.name}</p>

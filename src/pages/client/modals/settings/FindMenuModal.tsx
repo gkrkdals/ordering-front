@@ -8,6 +8,7 @@ import {MenuContext} from "@src/contexts/client/MenuContext.tsx";
 import Menu from "@src/models/common/Menu.ts";
 import {useRecoilValue} from "recoil";
 import customerState from "@src/recoil/atoms/CustomerState.ts";
+import {matchesSearch} from "@src/utils/hangul.ts";
 
 interface FindMenuModal extends BasicModalProps {
   addMenuFromFind: (menu: Menu[]) => void;
@@ -16,7 +17,7 @@ interface FindMenuModal extends BasicModalProps {
 export default function FindMenuModal(props: FindMenuModal) {
   const [searchMenu, setSearchMenu] = useState('');
   const [menus, ] = useContext(MenuContext)!;
-  const filteredMenus = useMemo(() => menus.filter(value => value.name.includes(searchMenu) || searchMenu === ''), [searchMenu, menus]);
+  const filteredMenus = useMemo(() => menus.filter(value => matchesSearch(value.name, searchMenu)), [searchMenu, menus]);
   const customer = useRecoilValue(customerState);
 
   function handleClose() {
