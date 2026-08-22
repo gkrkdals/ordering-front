@@ -13,9 +13,11 @@ interface MenuTableProps {
   reload: () => void;
   sort: Sort;
   setSort: (sort: Sort) => void;
+  /** 품절을 적용할 고객 그룹. 0이면 전체 공통(menu.sold_out) */
+  groupId?: number;
 }
 
-export default function MenuTable({columns, menus, page, reload, sort, setSort}: MenuTableProps) {
+export default function MenuTable({columns, menus, page, reload, sort, setSort, groupId}: MenuTableProps) {
   const [open, setOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
   const [openMenuOrder, setOpenMenuOrder] = useState(false);
@@ -28,7 +30,7 @@ export default function MenuTable({columns, menus, page, reload, sort, setSort}:
 
   async function toggleSoldOut(e: React.MouseEvent<HTMLTableCellElement, MouseEvent>, menu: Menu) {
     e.stopPropagation();
-    await client.put('/api/manager/menu/sold-out', {menu: menu.id, soldOut: menu.soldOut === 1});
+    await client.put('/api/manager/menu/sold-out', {menu: menu.id, soldOut: menu.soldOut === 1, groupId});
     reload();
   }
 
