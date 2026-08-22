@@ -18,7 +18,8 @@ export function useDisposalTime() {
 
   useEffect(() => {
     client
-      .get('/api/manager/settings/disposal-time')
+      // 고객이 속한 그룹의 수거 시간 (그룹 값이 없으면 서버가 전역 값을 준다)
+      .get('/api/order/dish/disposal-time')
       .then(res => setWeeklySettings(res.data as DisposalTimeSetting[]))
       .catch(() => {
         // 설정이 없거나 조회 실패 시 전체 시간 가능으로 처리

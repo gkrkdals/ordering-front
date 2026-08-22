@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import {DisposalTimeSetting} from "@src/models/manager/settings.ts";
 import client from "@src/utils/network/client.ts";
 import FormControl from "@src/components/atoms/FormControl.tsx";
+import GroupSelect, {GLOBAL_GROUP_ID} from "@src/pages/manager/components/molecules/GroupSelect.tsx";
 
 interface TimeSegment {
   sml: number;
@@ -20,6 +21,8 @@ export default function DisposalTimeModal(props: BasicModalProps) {
   const [disposalTimes, setDisposalTimes] = useState<TimeSegment[]>([]);
   const [isPerforming, setIsPerforming] = useState(false);
   const [warning, setWarning] = useState('');
+  const [groupId, setGroupId] = useState<number>(GLOBAL_GROUP_ID);
+  const [usingGlobal, setUsingGlobal] = useState(false);
 
   const set = (index: number, key: keyof TimeSegment, value: TimeSegment[keyof TimeSegment]) => {
     setDisposalTimes(disposalTimes.map((disposalTime, i) => {
@@ -43,7 +46,7 @@ export default function DisposalTimeModal(props: BasicModalProps) {
   const handleSave = async () => {
     setIsPerforming(true);
     try {
-      await client.put('/api/manager/settings/disposal-time', disposalTimes);
+      await client.put('/api/manager/settings/disposal-time', { days: disposalTimes, groupId });
       props.setOpen(false);
     } catch {
       setWarning('저장에 실패했습니다.');
@@ -56,9 +59,11 @@ export default function DisposalTimeModal(props: BasicModalProps) {
     if (props.open) {
       setWarning('');
       client
-        .get('/api/manager/settings/disposal-time')
+        .get('/api/manager/settings/disposal-time', { params: { groupId } })
         .then(res => {
           const data = res.data as DisposalTimeSetting[];
+          // 그룹 전용 행이 없으면 서버가 전역 값을 내려준다
+          setUsingGlobal(data.every(row => (row.groupId ?? GLOBAL_GROUP_ID) === GLOBAL_GROUP_ID));
           setDisposalTimes(data.map(disposalTime => {
             // 미설정 요일은 stringValue 가 null 이므로 빈 칸으로 표시합니다.
             const timeSegments = (disposalTime.stringValue ?? '').split(/[:~]/g);
@@ -78,12 +83,13 @@ export default function DisposalTimeModal(props: BasicModalProps) {
           setWarning('설정을 불러오지 못했습니다.');
         });
     }
-  }, [props.open]);
+  }, [props.open, groupId]);
 
   return (
     <Dialog open={props.open}>
       <DialogTitle>그릇 수거 요청 시간 설정</DialogTitle>
       <DialogContent>
+        <GroupSelect value={groupId} onChange={setGroupId} usingGlobal={usingGlobal} />
         <p className='mb-3'>
           요일별로 그릇 수거 요청이 가능한 시간을 설정하세요.
           <br />

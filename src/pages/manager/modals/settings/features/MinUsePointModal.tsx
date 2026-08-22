@@ -4,15 +4,18 @@ import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material
 import { PrimaryButton, SecondaryButton } from "@src/components/atoms/Buttons.tsx";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 import client from "@src/utils/network/client.ts";
+import GroupSelect, {GLOBAL_GROUP_ID} from "@src/pages/manager/components/molecules/GroupSelect.tsx";
 
 /** 적립금 사용 단위(원). 서버의 POINT_USE_UNIT과 같은 고정값입니다. */
 const POINT_USE_UNIT = 1000;
 
 export default function MinUsePointModal(props: BasicModalProps) {
   const [minValue, setMinValue] = useState<string>('');
+  const [groupId, setGroupId] = useState<number>(GLOBAL_GROUP_ID);
 
   function initialize() {
     setMinValue('');
+    setGroupId(GLOBAL_GROUP_ID);
   }
 
   function handleClose() {
@@ -29,24 +32,25 @@ export default function MinUsePointModal(props: BasicModalProps) {
       return;
     }
 
-    await client.put("/api/manager/settings/point-use-policy", { minUsePoint });
+    await client.put("/api/manager/settings/point-use-policy", { minUsePoint, groupId });
     handleClose();
   }
 
   useEffect(() => {
     if (props.open) {
       client
-        .get('/api/manager/settings/point-use-policy')
+        .get('/api/manager/settings/point-use-policy', { params: { groupId } })
         .then(res => {
           setMinValue(res.data.minUsePoint.toString());
         });
     }
-  }, [props.open]);
+  }, [props.open, groupId]);
 
   return (
     <Dialog open={props.open}>
       <DialogTitle>적립금 사용 설정</DialogTitle>
       <DialogContent>
+        <GroupSelect value={groupId} onChange={setGroupId} />
         <p className='mb-1'>최소 사용 금액 (원, {POINT_USE_UNIT.toLocaleString()}원 단위)</p>
         <FormControl
           type="number"

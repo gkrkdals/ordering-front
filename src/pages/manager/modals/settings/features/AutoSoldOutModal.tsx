@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import {Settings} from "@src/models/manager/settings.ts";
 import client from "@src/utils/network/client.ts";
 import FormControl from "@src/components/atoms/FormControl.tsx";
+import GroupSelect, {GLOBAL_GROUP_ID} from "@src/pages/manager/components/molecules/GroupSelect.tsx";
 
 interface TimeSegment {
   sml: number;
@@ -18,6 +19,8 @@ interface TimeSegment {
 export default function AutoSoldOutModal(props: BasicModalProps) {
 
   const [businessHours, setBusinessHours] = useState<TimeSegment[]>([]);
+  const [groupId, setGroupId] = useState<number>(GLOBAL_GROUP_ID);
+  const [usingGlobal, setUsingGlobal] = useState(false);
   const set = (index: number, key: keyof TimeSegment, value: TimeSegment[keyof TimeSegment]) => {
     setBusinessHours(businessHours.map((businessHour, i) => {
       if (index === i) {
@@ -37,16 +40,18 @@ export default function AutoSoldOutModal(props: BasicModalProps) {
   };
 
   const handleSave = async () => {
-    await client.put('/api/manager/settings/hour', businessHours);
+    await client.put('/api/manager/settings/hour', { hours: businessHours, groupId });
     props.setOpen(false);
   };
 
   useEffect(() => {
     if (props.open) {
       client
-        .get('/api/manager/settings/hour')
+        .get('/api/manager/settings/hour', { params: { groupId } })
         .then(res => {
           const data = res.data as Settings[];
+          // 그룹 전용 행이 없으면 서버가 전역 값을 내려준다
+          setUsingGlobal(data.every(row => (row.groupId ?? GLOBAL_GROUP_ID) === GLOBAL_GROUP_ID));
           setBusinessHours(data.map(hours => {
             const timeSegments = hours.stringValue.split(/[:~]/g);
 
@@ -61,11 +66,12 @@ export default function AutoSoldOutModal(props: BasicModalProps) {
           }))
         });
     }
-  }, [props.open]);
+  }, [props.open, groupId]);
 
   return (
     <Dialog open={props.open}>
       <DialogContent>
+        <GroupSelect value={groupId} onChange={setGroupId} usingGlobal={usingGlobal} />
         {businessHours.map((hour, i) =>
           <div key={i} className='d-flex my-2'>
             <div className='me-4 my-auto'>{hour.name}</div>

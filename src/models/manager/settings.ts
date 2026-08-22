@@ -5,6 +5,8 @@ export interface Settings {
   name: string;
   value: number;
   stringValue: string;
+  /** 이 설정이 속한 고객 그룹. 0이면 전체 공통 */
+  groupId?: number;
 }
 
 /**
