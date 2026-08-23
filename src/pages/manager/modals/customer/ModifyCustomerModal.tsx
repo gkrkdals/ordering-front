@@ -8,6 +8,7 @@ import {DangerButton, PrimaryButton, SecondaryButton} from "@src/components/atom
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
 import FormControl from "@src/components/atoms/FormControl";
 import {formatDate} from "@src/utils/date.ts";
+import {POINT_UNIT_MESSAGE, pointToWon, pointToWonText, wonTextToPoint} from "@src/utils/point.ts";
 import {
   POINT_CANCELED_COLOR,
   POINT_TYPE_LABEL,
@@ -38,6 +39,9 @@ export function ModifyCustomerModal(
   const [pointHistoryLoading, setPointHistoryLoading] = useState<boolean>(false);
   const [pointAdjustMode, setPointAdjustMode] = useState<number>(0);
   const [pointAdjustAmount, setPointAdjustAmount] = useState<string>('');
+  // 적립금은 백원 단위로 저장되지만 화면에서는 원 단위로 입력받는다 (utils/point.ts)
+  const [rewardMenuWon, setRewardMenuWon] = useState<string>('');
+  const [rewardBowlWon, setRewardBowlWon] = useState<string>('');
   const [pointAdjustMemo, setPointAdjustMemo] = useState<string>('');
 
   const [customerCategories, ] = useContext(CustomerCategoryContext)!;
@@ -49,10 +53,19 @@ export function ModifyCustomerModal(
   }
 
   async function handleUpdate() {
+    const rewardPerMenu = wonTextToPoint(rewardMenuWon);
+    const rewardPerBowl = wonTextToPoint(rewardBowlWon);
+
+    if (rewardPerMenu === undefined || rewardPerBowl === undefined) {
+      alert(POINT_UNIT_MESSAGE);
+      return;
+    }
+
     await client.put('/api/manager/customer', {
       ...modifyingCustomer,
-      rewardPerBowl: modifyingCustomer?.reward_per_bowl,
-      rewardPerMenu: modifyingCustomer?.reward_per_menu,
+      // 고객 컬럼은 NOT NULL 이고 0 이 '미설정'(그룹 값을 따름)을 뜻한다
+      rewardPerBowl: rewardPerBowl ?? 0,
+      rewardPerMenu: rewardPerMenu ?? 0,
     });
     setOpen(false);
     reload();
@@ -81,9 +94,9 @@ export function ModifyCustomerModal(
   async function handleAdjustPoint() {
     if (!modifyingCustomer?.id) return;
 
-    const amount = parseInt(pointAdjustAmount);
-    if (!/^\d+$/.test(pointAdjustAmount) || isNaN(amount) || amount <= 0) {
-      alert('올바른 적립금 금액을 입력해주세요');
+    const amount = wonTextToPoint(pointAdjustAmount);
+    if (amount === undefined || amount === null || amount <= 0) {
+      alert(POINT_UNIT_MESSAGE);
       return;
     }
 
@@ -109,6 +122,8 @@ export function ModifyCustomerModal(
 
   useEffect(() => {
     setModifyingCustomer(currentCustomer);
+    setRewardMenuWon(pointToWonText(currentCustomer?.reward_per_menu || null));
+    setRewardBowlWon(pointToWonText(currentCustomer?.reward_per_bowl || null));
     setPointAdjustMode(0);
     setPointAdjustAmount('');
     setPointAdjustMemo('');
@@ -212,9 +227,9 @@ export function ModifyCustomerModal(
               <BigColumn>
                 <FormControl
                   type="number"
-                  value={modifyingCustomer?.point_balance}
+                  value={pointToWon(modifyingCustomer?.point_balance)}
                   disabled
-                  suffix='백원'
+                  suffix='원'
                 />
               </BigColumn>
             </Column>
@@ -235,7 +250,7 @@ export function ModifyCustomerModal(
                     type="number"
                     value={pointAdjustAmount}
                     onChange={(e) => setPointAdjustAmount(e.target.value)}
-                    suffix='백원'
+                    suffix='원'
                   />
                 </div>
                 <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
@@ -258,11 +273,12 @@ export function ModifyCustomerModal(
             <Column>
               <SmallColumn>메뉴주문 적립</SmallColumn>
               <BigColumn>
-                <FormControl 
+                <FormControl
                   type="number"
-                  value={modifyingCustomer?.reward_per_menu}
-                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, reward_per_menu: parseInt(e.target.value)} as CustomerRaw)}
-                  suffix='백원'
+                  value={rewardMenuWon}
+                  onChange={(e) => setRewardMenuWon(e.target.value)}
+                  placeholder='미설정'
+                  suffix='원'
                 />
               </BigColumn>
             </Column>
@@ -272,9 +288,10 @@ export function ModifyCustomerModal(
               <BigColumn>
                 <FormControl
                   type="number"
-                  value={modifyingCustomer?.reward_per_bowl}
-                  onChange={(e) => setModifyingCustomer({...modifyingCustomer, reward_per_bowl: parseInt(e.target.value)} as CustomerRaw)}
-                  suffix='백원'
+                  value={rewardBowlWon}
+                  onChange={(e) => setRewardBowlWon(e.target.value)}
+                  placeholder='미설정'
+                  suffix='원'
                 />
               </BigColumn>
             </Column>
@@ -322,7 +339,7 @@ export function ModifyCustomerModal(
                 <tr style={{ borderBottom: '1px solid #ddd', textAlign: 'left' }}>
                   <th style={{ padding: '4px 6px' }}>날짜</th>
                   <th style={{ padding: '4px 6px' }}>구분</th>
-                  <th style={{ padding: '4px 6px', textAlign: 'right' }}>금액(백원)</th>
+                  <th style={{ padding: '4px 6px', textAlign: 'right' }}>금액(원)</th>
                 </tr>
               </thead>
               <tbody>
@@ -344,7 +361,7 @@ export function ModifyCustomerModal(
                       <td style={{ padding: '4px 6px', textAlign: 'right' }}>
                         {isCanceled
                           ? <span style={{ color: POINT_CANCELED_COLOR }}>취소됨</span>
-                          : item.amount}
+                          : pointToWon(item.amount).toLocaleString()}
                       </td>
                     </tr>
                   );

@@ -10,6 +10,7 @@ import Select from "@src/components/atoms/Select.tsx";
 import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
 import GroupPriceModal from "@src/pages/manager/modals/customer/GroupPriceModal.tsx";
 import DisposalTimeModal from "@src/pages/manager/modals/settings/features/DisposalTimeModal.tsx";
+import {POINT_UNIT_MESSAGE, pointToWon, wonTextToPoint} from "@src/utils/point.ts";
 
 interface DiscountGroupModalProps extends BasicModalProps {}
 
@@ -92,10 +93,30 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
     setTimeout(initialize, 300);
   }
 
+  /** 화면에서는 적립을 원 단위로 다루므로 저장 직전에 백원으로 되돌린다 */
+  function toPayload(groups: DiscountGroupExt[]) {
+    return groups.map(group => ({
+      ...group,
+      rewardPerMenu: wonTextToPoint(String(group.rewardPerMenu ?? '')),
+      rewardPerBowl: wonTextToPoint(String(group.rewardPerBowl ?? '')),
+    }));
+  }
+
   async function handleSave() {
+    const modified = toPayload(modifiedDiscountGroups);
+    const added = toPayload(addedDiscountGroups);
+
+    const hasInvalid = [...modified, ...added]
+      .some(group => group.rewardPerMenu === undefined || group.rewardPerBowl === undefined);
+
+    if (hasInvalid) {
+      alert(POINT_UNIT_MESSAGE);
+      return;
+    }
+
     await client.put('/api/manager/customer/discount-group', {
-      modified: modifiedDiscountGroups,
-      added: addedDiscountGroups,
+      modified,
+      added,
     });
     handleClose();
     const res = await client.get('/api/manager/customer/discount-group');
@@ -106,7 +127,7 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
     if (props.open) {
       client
         .get('/api/manager/customer/discount-group')
-        .then(res => setModifiedDiscountGroups(res.data));
+        .then(res => setModifiedDiscountGroups(toDisplay(res.data)));
     }
   }, [props.open]);
 
@@ -125,14 +146,19 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
         고객 그룹 설정
       </DialogTitle>
       <DialogContent style={{width: '100%'}}>
+        <p className='text-secondary mb-3' style={{ fontSize: '0.9em' }}>
+          할인값은 유형이 <b>일정금액</b>이면 원, <b>퍼센트</b>면 %입니다.
+          적립은 <b>원 단위</b>로 입력하며, 저장 단위 때문에 <b>100원 단위</b>로만 지정할 수 있습니다.
+          적립을 비워두면 고객별 설정을 따르고, 고객에도 값이 없으면 적립하지 않습니다.
+        </p>
         <Table>
           <THead>
             <TRow>
-              <Cell style={{ width: 150 }}>그룹명</Cell>
-              <Cell style={{ width: 110 }}>유형</Cell>
-              <Cell style={{ width: 90 }}>할인값</Cell>
-              <Cell style={{ width: 90 }}>메뉴적립</Cell>
-              <Cell style={{ width: 90 }}>수거적립</Cell>
+              <Cell style={{ width: 140 }}>그룹명</Cell>
+              <Cell style={{ width: 105 }}>유형</Cell>
+              <Cell style={{ width: 95 }}>할인값<br/><small className='text-muted'>원 / %</small></Cell>
+              <Cell style={{ width: 95 }}>메뉴적립<br/><small className='text-muted'>원</small></Cell>
+              <Cell style={{ width: 95 }}>수거적립<br/><small className='text-muted'>원</small></Cell>
               <Cell>비고</Cell>
               <Cell style={{ width: 230 }}></Cell>
             </TRow>
@@ -287,4 +313,13 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
       />
     </Dialog>
   )
+}
+
+/** API 의 백원 단위 적립을 화면용 원 단위로 바꾼다 */
+function toDisplay(groups: DiscountGroupExt[]): DiscountGroupExt[] {
+  return groups.map(group => ({
+    ...group,
+    rewardPerMenu: group.rewardPerMenu === null ? null : pointToWon(group.rewardPerMenu),
+    rewardPerBowl: group.rewardPerBowl === null ? null : pointToWon(group.rewardPerBowl),
+  }));
 }
