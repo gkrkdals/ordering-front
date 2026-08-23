@@ -9,6 +9,7 @@ import FormControl from "@src/components/atoms/FormControl.tsx";
 import Select from "@src/components/atoms/Select.tsx";
 import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
 import GroupPriceModal from "@src/pages/manager/modals/customer/GroupPriceModal.tsx";
+import DisposalTimeModal from "@src/pages/manager/modals/settings/features/DisposalTimeModal.tsx";
 
 interface DiscountGroupModalProps extends BasicModalProps {}
 
@@ -22,9 +23,17 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
   const [openGroupPrice, setOpenGroupPrice] = useState(false);
   const [priceTargetGroup, setPriceTargetGroup] = useState<DiscountGroupExt | null>(null);
 
+  const [openDisposalTime, setOpenDisposalTime] = useState(false);
+  const [disposalTargetGroup, setDisposalTargetGroup] = useState<DiscountGroupExt | null>(null);
+
   function handleOpenGroupPrice(group: DiscountGroupExt) {
     setPriceTargetGroup(group);
     setOpenGroupPrice(true);
+  }
+
+  function handleOpenDisposalTime(group: DiscountGroupExt) {
+    setDisposalTargetGroup(group);
+    setOpenDisposalTime(true);
   }
 
   const onChange1 = (index: number, key: string, value: any) => {
@@ -125,7 +134,7 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
               <Cell style={{ width: 90 }}>메뉴적립</Cell>
               <Cell style={{ width: 90 }}>수거적립</Cell>
               <Cell>비고</Cell>
-              <Cell style={{ width: 160 }}></Cell>
+              <Cell style={{ width: 230 }}></Cell>
             </TRow>
           </THead>
           <TBody>
@@ -181,6 +190,9 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
                   <div className='d-flex gap-1'>
                     <SecondaryButton small onClick={() => handleOpenGroupPrice(discountGroup)}>
                       가격
+                    </SecondaryButton>
+                    <SecondaryButton small style={{ whiteSpace: 'nowrap' }} onClick={() => handleOpenDisposalTime(discountGroup)}>
+                      수거시간
                     </SecondaryButton>
                     <DangerButton small onClick={() => onDelete1(i)}>
                       삭제
@@ -264,6 +276,14 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
         open={openGroupPrice}
         setOpen={setOpenGroupPrice}
         group={priceTargetGroup}
+      />
+
+      {/* 설정 화면의 그릇수거 시간 팝업을 그대로 쓰되, 이 행의 그룹으로 고정해서 연다 */}
+      <DisposalTimeModal
+        open={openDisposalTime}
+        setOpen={setOpenDisposalTime}
+        fixedGroupId={disposalTargetGroup?.id}
+        fixedGroupName={disposalTargetGroup?.name}
       />
     </Dialog>
   )
