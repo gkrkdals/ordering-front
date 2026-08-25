@@ -21,4 +21,6 @@ export interface OrderStatusRaw {
   by_nickname: string;
   used_point: number;
   point_balance: number;
+  discount_group_id: number | null;
+  group_name: string | null;
 }

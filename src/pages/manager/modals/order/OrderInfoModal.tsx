@@ -82,6 +82,14 @@ export default function OrderInfoModal(props: ModifyOrderModalProps) {
             </Column>
             <Column>
               <SmallColumn>
+                그룹
+              </SmallColumn>
+              <BigColumn>
+                {currentOrder?.group_name ?? '그룹 없음'}
+              </BigColumn>
+            </Column>
+            <Column>
+              <SmallColumn>
                 주소
               </SmallColumn>
               <BigColumn>
