@@ -1,6 +1,6 @@
 import MenuTable from "@src/pages/manager/components/molecules/MenuTable.tsx";
 import Menu from "@src/models/common/Menu.ts";
-import {useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import MakeMenuModal from "@src/pages/manager/modals/menu/MakeMenuModal.tsx";
 import useTable from "@src/hooks/UseTable.tsx";
 import TopBar from "@src/pages/manager/components/molecules/TopBar.tsx";
@@ -10,12 +10,14 @@ import {PrimaryButton} from "@src/components/atoms/Buttons.tsx";
 import SetMenuShownOrder from "@src/pages/manager/modals/menu/SetMenuShownOrder.tsx";
 import client from "@src/utils/network/client.ts";
 import GroupSelect, {GLOBAL_GROUP_ID} from "@src/pages/manager/components/molecules/GroupSelect.tsx";
+import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
 
 const columns: Column[] = [
   {key: '', name: '순번'},
   {key: 'name', name: '이름'},
   {key: 'soldOut', name: '비고'},
-  {key: 'isRewardable', name: '적립여부'}
+  {key: 'isRewardable', name: '적립여부'},
+  {key: '', name: '판매시간'}
 ];
 
 export default function MenuDisplay() {
@@ -26,6 +28,10 @@ export default function MenuDisplay() {
   const [sort, setSort, sortParams] = useTableSort(columns);
   // 고른 그룹의 품절 상태로 목록을 본다 (전체 공통이면 menu.sold_out)
   const [groupId, setGroupId] = useState<number>(GLOBAL_GROUP_ID);
+  const [discountGroups] = useContext(DiscountGroupContext)!;
+  const groupName = groupId === GLOBAL_GROUP_ID
+    ? '전체 공통'
+    : discountGroups.find(group => group.id === groupId)?.name ?? '';
   const params = useMemo(() => ({ ...sortParams, groupId }), [sortParams, groupId]);
 
   const {
@@ -76,6 +82,7 @@ export default function MenuDisplay() {
         sort={sort}
         setSort={setSort}
         groupId={groupId}
+        groupName={groupName}
       />
       <div className='d-sm-flex justify-content-between'>
         <div className='d-flex gap-3'>

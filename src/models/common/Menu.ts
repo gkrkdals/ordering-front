@@ -10,6 +10,8 @@ export default interface Menu {
   isRewardable?: number;
   menuCategory?: MenuCategory;
   seq: number;
+  /** 판매시간이 설정된 메뉴인지 (관리자 목록 표시용) */
+  hasSchedule?: boolean;
 }
 
 export const defaultMenu: Menu = {
