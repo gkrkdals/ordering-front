@@ -10,6 +10,7 @@ import Select from "@src/components/atoms/Select.tsx";
 import {DiscountGroupContext} from "@src/contexts/manager/DiscountGroupContext.tsx";
 import GroupPriceModal from "@src/pages/manager/modals/customer/GroupPriceModal.tsx";
 import DisposalTimeModal from "@src/pages/manager/modals/settings/features/DisposalTimeModal.tsx";
+import AutoSoldOutModal from "@src/pages/manager/modals/settings/features/AutoSoldOutModal.tsx";
 import {POINT_UNIT_MESSAGE, pointToWon, wonTextToPoint} from "@src/utils/point.ts";
 
 interface DiscountGroupModalProps extends BasicModalProps {}
@@ -27,6 +28,9 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
   const [openDisposalTime, setOpenDisposalTime] = useState(false);
   const [disposalTargetGroup, setDisposalTargetGroup] = useState<DiscountGroupExt | null>(null);
 
+  const [openBusinessHour, setOpenBusinessHour] = useState(false);
+  const [hourTargetGroup, setHourTargetGroup] = useState<DiscountGroupExt | null>(null);
+
   function handleOpenGroupPrice(group: DiscountGroupExt) {
     setPriceTargetGroup(group);
     setOpenGroupPrice(true);
@@ -35,6 +39,11 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
   function handleOpenDisposalTime(group: DiscountGroupExt) {
     setDisposalTargetGroup(group);
     setOpenDisposalTime(true);
+  }
+
+  function handleOpenBusinessHour(group: DiscountGroupExt) {
+    setHourTargetGroup(group);
+    setOpenBusinessHour(true);
   }
 
   const onChange1 = (index: number, key: string, value: any) => {
@@ -137,7 +146,7 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
         "& .MuiDialog-container": {
           "& .MuiPaper-root": {
             width: "100%",
-            maxWidth: "900px", // Set your desired max-width here
+            maxWidth: "1100px", // 행마다 가격·영업시간·수거시간·삭제 버튼이 들어간다
           },
         },
       }}
@@ -160,7 +169,7 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
               <Cell style={{ width: 95 }}>메뉴적립<br/><small className='text-muted'>원</small></Cell>
               <Cell style={{ width: 95 }}>수거적립<br/><small className='text-muted'>원</small></Cell>
               <Cell>비고</Cell>
-              <Cell style={{ width: 230 }}></Cell>
+              <Cell style={{ width: 320 }}></Cell>
             </TRow>
           </THead>
           <TBody>
@@ -213,9 +222,12 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
                   />
                 </Cell>
                 <Cell>
-                  <div className='d-flex gap-1'>
+                  <div className='d-flex gap-1 flex-wrap'>
                     <SecondaryButton small onClick={() => handleOpenGroupPrice(discountGroup)}>
                       가격
+                    </SecondaryButton>
+                    <SecondaryButton small style={{ whiteSpace: 'nowrap' }} onClick={() => handleOpenBusinessHour(discountGroup)}>
+                      영업시간
                     </SecondaryButton>
                     <SecondaryButton small style={{ whiteSpace: 'nowrap' }} onClick={() => handleOpenDisposalTime(discountGroup)}>
                       수거시간
@@ -310,6 +322,14 @@ export default function DiscountGroupModal(props: DiscountGroupModalProps) {
         setOpen={setOpenDisposalTime}
         fixedGroupId={disposalTargetGroup?.id}
         fixedGroupName={disposalTargetGroup?.name}
+      />
+
+      {/* 설정 화면의 자동 품절/해제 시간 팝업을 이 행의 그룹으로 고정해서 연다 */}
+      <AutoSoldOutModal
+        open={openBusinessHour}
+        setOpen={setOpenBusinessHour}
+        fixedGroupId={hourTargetGroup?.id}
+        fixedGroupName={hourTargetGroup?.name}
       />
     </Dialog>
   )
