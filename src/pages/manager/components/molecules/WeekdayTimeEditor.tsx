@@ -16,8 +16,19 @@ export type TimeRange = Pick<TimeSegment, 'startHour' | 'startMinute' | 'endHour
 
 export const EMPTY_RANGE: TimeRange = { startHour: '', startMinute: '', endHour: '', endMinute: '' };
 
-export const WEEKDAY_SMLS = [1, 2, 3, 4, 5];
-export const WEEKEND_SMLS = [6, 7];
+/** 일괄 입력 구간. prefillSml 요일의 현재 값으로 입력칸을 미리 채운다 */
+export const BULK_GROUPS = [
+  { label: '월~목', smls: [1, 2, 3, 4], prefillSml: 1 },
+  { label: '금~토', smls: [5, 6], prefillSml: 5 },
+  { label: '일', smls: [7], prefillSml: 7 },
+];
+
+export const EMPTY_BULK_RANGES: TimeRange[] = BULK_GROUPS.map(() => EMPTY_RANGE);
+
+/** 일괄 입력칸을 각 구간 첫 요일의 현재 값으로 채워 지금 설정을 그대로 보여준다 */
+export function toBulkRanges(segments: TimeSegment[]): TimeRange[] {
+  return BULK_GROUPS.map(group => toRange(segments.find(row => row.sml === group.prefillSml)));
+}
 
 /** 서버가 준 'HH:MM~HH:MM' 문자열을 네 칸으로 쪼갠다. 미설정이면 빈 칸 */
 export function toSegments(
@@ -49,17 +60,16 @@ export function toRange(segment: TimeSegment | undefined): TimeRange {
 interface WeekdayTimeEditorProps {
   segments: TimeSegment[];
   setSegments: (segments: TimeSegment[]) => void;
-  weekdayRange: TimeRange;
-  setWeekdayRange: (range: TimeRange) => void;
-  weekendRange: TimeRange;
-  setWeekendRange: (range: TimeRange) => void;
+  /** BULK_GROUPS 순서와 같은 길이의 일괄 입력값 */
+  bulkRanges: TimeRange[];
+  setBulkRanges: (ranges: TimeRange[]) => void;
   /** 요일 칸 위에 띄울 설명 */
   description: React.ReactNode;
   onChanged?: () => void;
 }
 
 /**
- * 요일별 시간 범위 편집기 (주중·주말 일괄 입력 포함).
+ * 요일별 시간 범위 편집기 (월~목·금~토·일 일괄 입력 포함).
  *
  * 그릇수거 시간과 메뉴 판매시간이 같은 형식('HH:MM~HH:MM', 자정 넘김 허용)을 쓰므로
  * 두 화면이 이 컴포넌트를 공유한다.
@@ -76,7 +86,7 @@ export default function WeekdayTimeEditor(props: WeekdayTimeEditorProps) {
     ));
   };
 
-  /** 주중(월~금) 또는 주말(토·일) 칸에 넣은 시간을 해당 요일들에 한 번에 채운다 */
+  /** 구간 칸에 넣은 시간을 해당 요일들에 한 번에 채운다 */
   const applyRange = (smls: number[], range: TimeRange) => {
     props.onChanged?.();
     props.setSegments(props.segments.map(segment =>
@@ -88,24 +98,21 @@ export default function WeekdayTimeEditor(props: WeekdayTimeEditorProps) {
     <>
       <div className='card px-3 py-2 mb-3'>
         <p className='mb-2'>
-          주중·주말 일괄 입력
+          요일 일괄 입력
           <br />
           <small className='text-muted'>
             채우기를 누르면 아래 요일 칸이 한 번에 바뀝니다. 특정 요일만 다르면 아래에서 따로 고치세요.
           </small>
         </p>
-        <BulkRangeRow
-          label='주중(월~금)'
-          range={props.weekdayRange}
-          setRange={props.setWeekdayRange}
-          onApply={() => applyRange(WEEKDAY_SMLS, props.weekdayRange)}
-        />
-        <BulkRangeRow
-          label='주말(토·일)'
-          range={props.weekendRange}
-          setRange={props.setWeekendRange}
-          onApply={() => applyRange(WEEKEND_SMLS, props.weekendRange)}
-        />
+        {BULK_GROUPS.map((group, i) =>
+          <BulkRangeRow
+            key={group.label}
+            label={group.label}
+            range={props.bulkRanges[i] ?? EMPTY_RANGE}
+            setRange={range => props.setBulkRanges(props.bulkRanges.map((r, j) => j === i ? range : r))}
+            onApply={() => applyRange(group.smls, props.bulkRanges[i] ?? EMPTY_RANGE)}
+          />
+        )}
       </div>
 
       <p className='mb-3'>{props.description}</p>

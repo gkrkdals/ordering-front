@@ -6,10 +6,10 @@ import client from "@src/utils/network/client.ts";
 import Menu from "@src/models/common/Menu.ts";
 import {GLOBAL_GROUP_ID} from "@src/pages/manager/components/molecules/GroupSelect.tsx";
 import WeekdayTimeEditor, {
-  EMPTY_RANGE,
+  EMPTY_BULK_RANGES,
   TimeRange,
   TimeSegment,
-  toRange,
+  toBulkRanges,
   toSegments,
 } from "@src/pages/manager/components/molecules/WeekdayTimeEditor.tsx";
 
@@ -35,8 +35,7 @@ interface MenuScheduleModalProps extends BasicModalProps {
  */
 export default function MenuScheduleModal(props: MenuScheduleModalProps) {
   const [segments, setSegments] = useState<TimeSegment[]>([]);
-  const [weekdayRange, setWeekdayRange] = useState<TimeRange>(EMPTY_RANGE);
-  const [weekendRange, setWeekendRange] = useState<TimeRange>(EMPTY_RANGE);
+  const [bulkRanges, setBulkRanges] = useState<TimeRange[]>(EMPTY_BULK_RANGES);
   const [usingGlobal, setUsingGlobal] = useState(false);
   const [isPerforming, setIsPerforming] = useState(false);
   const [warning, setWarning] = useState('');
@@ -78,9 +77,7 @@ export default function MenuScheduleModal(props: MenuScheduleModalProps) {
 
         const parsed = toSegments(rows);
         setSegments(parsed);
-        // 일괄 입력칸은 월요일·토요일 값으로 채워 지금 설정을 그대로 보여준다
-        setWeekdayRange(toRange(parsed.find(row => row.sml === 1)));
-        setWeekendRange(toRange(parsed.find(row => row.sml === 6)));
+        setBulkRanges(toBulkRanges(parsed));
       })
       .catch(() => {
         setSegments([]);
@@ -106,10 +103,8 @@ export default function MenuScheduleModal(props: MenuScheduleModalProps) {
         <WeekdayTimeEditor
           segments={segments}
           setSegments={setSegments}
-          weekdayRange={weekdayRange}
-          setWeekdayRange={setWeekdayRange}
-          weekendRange={weekendRange}
-          setWeekendRange={setWeekendRange}
+          bulkRanges={bulkRanges}
+          setBulkRanges={setBulkRanges}
           onChanged={() => setWarning('')}
           description={
             <>

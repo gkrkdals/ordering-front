@@ -6,10 +6,10 @@ import {Settings} from "@src/models/manager/settings.ts";
 import client from "@src/utils/network/client.ts";
 import GroupSelect, {GLOBAL_GROUP_ID} from "@src/pages/manager/components/molecules/GroupSelect.tsx";
 import WeekdayTimeEditor, {
-  EMPTY_RANGE,
+  EMPTY_BULK_RANGES,
   TimeRange,
   TimeSegment,
-  toRange,
+  toBulkRanges,
   toSegments,
 } from "@src/pages/manager/components/molecules/WeekdayTimeEditor.tsx";
 
@@ -33,9 +33,8 @@ export default function AutoSoldOutModal(props: AutoSoldOutModalProps) {
   // 그룹이 고정된 경우(고객 그룹 설정에서 연 경우)에는 드롭다운 선택값을 무시한다
   const groupId = props.fixedGroupId ?? selectedGroupId;
 
-  // 주중·주말을 한 번에 채우기 위한 입력값. 실제 저장 대상은 아래 요일별 7행이다.
-  const [weekdayRange, setWeekdayRange] = useState<TimeRange>(EMPTY_RANGE);
-  const [weekendRange, setWeekendRange] = useState<TimeRange>(EMPTY_RANGE);
+  // 구간별로 한 번에 채우기 위한 입력값. 실제 저장 대상은 아래 요일별 7행이다.
+  const [bulkRanges, setBulkRanges] = useState<TimeRange[]>(EMPTY_BULK_RANGES);
 
   const handleSave = async () => {
     setIsPerforming(true);
@@ -61,14 +60,11 @@ export default function AutoSoldOutModal(props: AutoSoldOutModalProps) {
 
           const parsed = toSegments(data);
           setBusinessHours(parsed);
-          // 일괄 입력칸은 월요일·토요일 값으로 채워 지금 설정을 그대로 보여준다
-          setWeekdayRange(toRange(parsed.find(row => row.sml === 1)));
-          setWeekendRange(toRange(parsed.find(row => row.sml === 6)));
+          setBulkRanges(toBulkRanges(parsed));
         })
         .catch(() => {
           setBusinessHours([]);
-          setWeekdayRange(EMPTY_RANGE);
-          setWeekendRange(EMPTY_RANGE);
+          setBulkRanges(EMPTY_BULK_RANGES);
           setWarning('설정을 불러오지 못했습니다.');
         });
     }
@@ -98,10 +94,8 @@ export default function AutoSoldOutModal(props: AutoSoldOutModalProps) {
         <WeekdayTimeEditor
           segments={businessHours}
           setSegments={setBusinessHours}
-          weekdayRange={weekdayRange}
-          setWeekdayRange={setWeekdayRange}
-          weekendRange={weekendRange}
-          setWeekendRange={setWeekendRange}
+          bulkRanges={bulkRanges}
+          setBulkRanges={setBulkRanges}
           onChanged={() => setWarning('')}
           description={
             <>
