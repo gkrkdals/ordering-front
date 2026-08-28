@@ -51,7 +51,7 @@ export default function MinUsePointModal(props: BasicModalProps) {
       <DialogTitle>적립금 사용 설정</DialogTitle>
       <DialogContent>
         <GroupSelect value={groupId} onChange={setGroupId} />
-        <p className='mb-1'>최소 사용 금액 (원, {POINT_USE_UNIT.toLocaleString()}원 단위)</p>
+        {/*<p className='mb-1'>최소 사용 금액 (원, {POINT_USE_UNIT.toLocaleString()}원 단위)</p>*/}
         <FormControl
           type="number"
           value={minValue}
@@ -59,9 +59,9 @@ export default function MinUsePointModal(props: BasicModalProps) {
           placeholder="예: 3000"
         />
 
-        <p className='text-secondary mt-3 mb-0'>
-          고객 화면 안내: "{(parseInt(minValue, 10) || 0).toLocaleString()}원 이상 {POINT_USE_UNIT.toLocaleString()}원단위"
-        </p>
+        {/*<p className='text-secondary mt-3 mb-0'>*/}
+        {/*  고객 화면 안내: "{(parseInt(minValue, 10) || 0).toLocaleString()}원 이상 {POINT_USE_UNIT.toLocaleString()}원단위"*/}
+        {/*</p>*/}
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={handleClose}>닫기</SecondaryButton>

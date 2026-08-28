@@ -15,7 +15,7 @@ import UsePointModal from "./UsePointModal";
 import PointHistoryModal from "./PointHistoryModal";
 
 /** 적립금 사용 오픈 여부. 오픈 시점이 확정되면 true로 바꾸면 됩니다. */
-const POINT_USE_ENABLED = false;
+const POINT_USE_ENABLED = true;
 
 interface SettingsModalProps extends BasicModalProps {}
 
