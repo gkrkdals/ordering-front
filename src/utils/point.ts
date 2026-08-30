@@ -51,3 +51,16 @@ export function wonTextToPoint(wonText: string): number | null | undefined {
 
   return won / POINT_UNIT;
 }
+
+/** 천원 단위 표기용 제수 */
+export const THOUSAND_WON = 1000;
+
+/**
+ * 백원 단위 적립금 → 천원.
+ *
+ * 관리자 고객 목록에서 잔금 컬럼과 같은 축으로 읽히도록 쓴다.
+ * 저장 단위가 백원이라 100원 단위 잔액은 소수 1자리로 표시된다(500원 → 0.5).
+ */
+export function pointToThousandWon(point: number | null | undefined): number {
+  return pointToWon(point) / THOUSAND_WON;
+}

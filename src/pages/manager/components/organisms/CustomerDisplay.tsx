@@ -18,7 +18,7 @@ const columns: Column[] = [
   {key: 'floor', name: '층수'},
   {key: 'memo', name: '비고'},
   {key: 'discount_group_id', name: '고객 그룹'},
-  {key: 'point_balance', name: '적립금(원)'},
+  {key: 'point_balance', name: '적립금(천원)'},
   {key: 'credit', name: '잔금'},
 ];
 

@@ -5,7 +5,7 @@ import ModifyCustomerCredit from "@src/pages/manager/modals/customer/ModifyCusto
 import {Column} from "@src/models/manager/Column.ts";
 import {CustomerRaw} from "@src/models/manager/CustomerRaw.ts";
 import {CustomerCategoryContext} from "@src/contexts/manager/CustomerCategoryContext.tsx";
-import {pointToWon} from "@src/utils/point.ts";
+import {pointToThousandWon} from "@src/utils/point.ts";
 
 interface CustomerTableProps {
   columns: Column[];
@@ -63,7 +63,7 @@ export default function CustomerTable(props: CustomerTableProps) {
                 <Cell>
                   {customer.discount_name}
                 </Cell>
-                <Cell>{pointToWon(customer.point_balance).toLocaleString()}</Cell>
+                <Cell>{pointToThousandWon(customer.point_balance)}</Cell>
                 <Cell
                   onClick={e => handleClickOnCredit(e, customer)}
                 >
