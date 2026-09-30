@@ -23,4 +23,5 @@ export interface OrderStatusRaw {
   point_balance: number;
   discount_group_id: number | null;
   group_name: string | null;
+  is_qr_order: number; // 1: 고객 QR 주문
 }

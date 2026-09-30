@@ -15,6 +15,9 @@ import {PermissionEnum} from "@src/models/manager/PermissionEnum.ts";
 import {getUser} from "@src/utils/network/socket.ts";
 import recentJobState from "@src/recoil/atoms/RecentJobState.ts";
 
+// 고객이 QR로 직접 주문한 건의 잔금란 배경색
+const QR_ORDER_HEX = '#FFE08A';
+
 export interface OrderStatusWithNumber extends OrderStatusRaw {
   num: number;
 }
@@ -86,6 +89,9 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
             }));
           } catch (e) {
             console.error(e)
+            // 실패를 알리지 않으면 관리자는 버튼이 먹었는지 알 수 없다.
+            // (요청이 타임아웃되면 여기로 오고, finally 에서 버튼 잠김이 풀린다)
+            alert('상태 변경에 실패했습니다. 다시 시도해주세요.');
           } finally {
             setCannotUpdate(false);
           }
@@ -167,7 +173,11 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
                 >
                   {cannotUpdate ? '(처리 중)' : getStatusName(status)}
                 </Cell>
-                {isRemaining && <Cell>{status.credit / 1000}</Cell>}
+                {isRemaining && (
+                  <Cell style={status.is_qr_order ? { backgroundColor: QR_ORDER_HEX } : undefined}>
+                    {status.credit / 1000}
+                  </Cell>
+                )}
               </TRow>
             )
           }))}
