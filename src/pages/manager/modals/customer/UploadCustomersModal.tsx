@@ -1,7 +1,7 @@
 import BasicModalProps from "@src/interfaces/BasicModalProps.ts";
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import React, {useState} from "react";
-import client from "@src/utils/network/client.ts";
+import client, { LONG_REQUEST_TIMEOUT } from "@src/utils/network/client.ts";
 import FormControl from "@src/components/atoms/FormControl.tsx";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 
@@ -23,7 +23,8 @@ export default function UploadCustomersModal(props: UploadCustomersModalProps) {
       await client.post("/api/manager/customer/excel", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-        }
+        },
+        timeout: LONG_REQUEST_TIMEOUT,
       });
     }
     props.setOpen(false);

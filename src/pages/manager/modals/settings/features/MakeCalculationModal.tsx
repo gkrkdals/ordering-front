@@ -3,7 +3,7 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import Select from "@src/components/atoms/Select.tsx";
 import {useContext, useEffect, useState} from "react";
-import client from "@src/utils/network/client.ts";
+import client, { LONG_REQUEST_TIMEOUT } from "@src/utils/network/client.ts";
 import SelectMenu from "@src/components/molecules/SelectMenu.tsx";
 import {MenuContext} from "@src/contexts/manager/MenuContext.tsx";
 import {CustomerContext} from "@src/contexts/manager/CustomerContext.tsx";
@@ -60,6 +60,7 @@ export function MakeCalculationModal(props: MakeCalculationModalProps) {
             customer: selectedCustomer,
           },
           responseType: "blob",
+          timeout: LONG_REQUEST_TIMEOUT,
         });
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");

@@ -3,7 +3,7 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import {PrimaryButton, SecondaryButton} from "@src/components/atoms/Buttons.tsx";
 import React, {useState} from "react";
 import FormControl from "@src/components/atoms/FormControl.tsx";
-import client from "@src/utils/network/client.ts";
+import client, { LONG_REQUEST_TIMEOUT } from "@src/utils/network/client.ts";
 
 interface UploadMenusModalProps extends BasicModalProps {
 
@@ -26,7 +26,8 @@ export default function UploadMenusModal(props: UploadMenusModalProps) {
       await client.post("/api/manager/menu/excel", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-        }
+        },
+        timeout: LONG_REQUEST_TIMEOUT,
       });
     }
     props.setOpen(false);
