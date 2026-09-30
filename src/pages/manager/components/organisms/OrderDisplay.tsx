@@ -58,6 +58,9 @@ export default function OrderDisplay() {
   // 인터벌 ID 레퍼런스
   const intervalId = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+  // refresh 이벤트 디바운스 타이머
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
   // 데이터 정렬
   const [sort, setSort, params] = useTableSort(columns);
 
@@ -96,6 +99,7 @@ export default function OrderDisplay() {
 
   function cleanup() {
     clearAlarm();
+    clearTimeout(refreshTimer.current);
     managerSocket.removeAllListeners();
     managerSocket.disconnect();
   }
@@ -105,6 +109,13 @@ export default function OrderDisplay() {
     const res = await client.get('/api/manager/order/sales');
     setSales(res.data);
   }, [reload]);
+
+  // 주문 상태가 연달아 바뀌면 refresh 가 그만큼 쏟아지고, 매번 목록·매출 2회 요청이 나간다.
+  // 마지막 이벤트 기준 300ms 뒤에 한 번만 새로고침해 중복 요청을 묶는다.
+  const debouncedReloadData = useCallback(() => {
+    clearTimeout(refreshTimer.current);
+    refreshTimer.current = setTimeout(() => { reloadData().then() }, 300);
+  }, [reloadData]);
 
   useEffect(() => {
     client
@@ -185,7 +196,7 @@ export default function OrderDisplay() {
       managerSocket.on("connect_error", (err) => {
         console.log(`connect_error due to ${err.message}`);
       });
-      managerSocket.on('refresh', reloadData);
+      managerSocket.on('refresh', debouncedReloadData);
       if (!isNative() && getUser() === 'manager') {
         managerSocket.on("print_receipt", (menu) => printerClient.post('/print', menu))
         console.log("printer service started");
@@ -290,7 +301,7 @@ export default function OrderDisplay() {
   // url, 페이지, params 변경 후 socket에 저장되어 있던 refresh 리스너를 새로 장착
   useEffect(() => {
     managerSocket.removeListener('refresh');
-    managerSocket.on('refresh', reloadData);
+    managerSocket.on('refresh', debouncedReloadData);
 
   }, [url, currentPage, params, debouncedSearchText])
 
