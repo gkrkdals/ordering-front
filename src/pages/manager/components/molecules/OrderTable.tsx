@@ -151,7 +151,7 @@ export default function OrderTable({ columns, orderstatus, page, reload, count, 
         <TBody>
           {orderstatus.map(((status, i) => {
             return (
-              <TRow key={`1-${i}`} style={{ cursor: 'pointer' }} onClick={() => handleClickOnRow(status, (page - 1) * 20 + i + 1)}>
+              <TRow key={status.id} style={{ cursor: 'pointer' }} onClick={() => handleClickOnRow(status, (page - 1) * 20 + i + 1)}>
                 {!isRemaining && <Cell style={{width: 50}}>{count - ((page - 1) * 20 + i)}</Cell>}
                 <Cell
                   style={{

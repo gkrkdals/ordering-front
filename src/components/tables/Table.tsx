@@ -55,11 +55,13 @@ export function TRow({children, ...props}: TableRowProps) {
   return <tr {...props} style={{verticalAlign: 'middle', ...props.style }}>{children}</tr>;
 }
 
+// hex 가 없을 때 '#undefined' 를 넣으면 브라우저가 잘못된 값으로 거부해 이전 배경색이 남는다.
+// (행 재배치 시 색 잔상) 반드시 undefined 로 두어 React 가 속성을 제거하게 한다.
 export function Cell(
   { hex, children, ...props }
     : TableCellProps) {
   return (
-    <td {...props} className={`text-center ${props.className}`} style={{backgroundColor: `#${hex}`, ...props.style,}}>
+    <td {...props} className={`text-center ${props.className}`} style={{backgroundColor: hex ? `#${hex}` : undefined, ...props.style,}}>
       {children}
 
     </td>
@@ -70,7 +72,7 @@ export function StartCell(
   { hex, children, ...props }
   : TableCellProps) {
   return (
-    <td {...props} className="text-start" style={{backgroundColor: `#${hex}`, ...props.style,}}>
+    <td {...props} className="text-start" style={{backgroundColor: hex ? `#${hex}` : undefined, ...props.style,}}>
       {children}
 
     </td>
